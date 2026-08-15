@@ -15,6 +15,13 @@
       "when": 1786777735339,
       "tag": "0001_nappy_george_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786780177084,
+      "tag": "0002_freezing_cerebro",
+      "breakpoints": true
     }
   ]
 }

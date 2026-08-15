@@ -19,14 +19,14 @@
 - [ ] Add Vitest coverage for core server procedures and validation logic
 - [x] Run typecheck, tests, and visual verification; fix all discovered issues
 - [ ] Review todo.md and save the final project checkpoint
-- [ ] Update AI summary integration to use gen.pollinations.ai
+- [x] Update AI summary integration to use gen.pollinations.ai
 - [ ] Add Paddle paid tier, checkout configuration, entitlement handling, and billing settings UI
 - [x] Add installable PWA manifest, service worker, and install prompt UI
 - [ ] Add browser notification permission flow and notification preference controls
 - [ ] Request Pollinations, Paddle, GitHub, and Supabase secrets after implementation
-- [ ] Add node:sqlite local fallback when Supabase credentials are unavailable
+- [x] Add node:sqlite local fallback when Supabase credentials are unavailable
 - [x] Hide Paddle pricing, checkout, and paid-tier messaging when Paddle credentials are unavailable
-- [ ] Use free text.pollinations.ai fallback when no Pollinations API key is configured
+- [x] Use free text.pollinations.ai fallback when no Pollinations API key is configured
 - [x] Add Pro and Pro+ tier definitions, feature limits, and conditional pricing UI
 - [x] Add tests for integration fallback and tier visibility behavior
 
@@ -61,7 +61,7 @@
 - [x] Add live device preview switcher
 - [ ] Add revision history and restore points
 - [ ] Add portfolio duplication and template cloning
-- [ ] Add custom domain DNS verification guide
+- [x] Add custom domain DNS verification guide
 - [ ] Add domain health and SSL status view
 - [ ] Add GitHub token scope and privacy controls
 - [ ] Add scheduled GitHub repository sync

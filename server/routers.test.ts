@@ -10,6 +10,10 @@ function publicContext(): TrpcContext {
   };
 }
 
+function authenticatedContext(): TrpcContext {
+  return { ...publicContext(), user: { id: 9981, openId: "fallback-test-user", email: "fallback@example.com", name: "Fallback Tester", loginMethod: "test", role: "user", createdAt: new Date(), updatedAt: new Date(), lastSignedIn: new Date() } };
+}
+
 describe("core portfolio procedures", () => {
   it("returns the demo public profile by slug", async () => {
     const caller = appRouter.createCaller(publicContext());
@@ -28,7 +32,16 @@ describe("core portfolio procedures", () => {
 
   it("records an analytics event successfully for an unknown public slug", async () => {
     const caller = appRouter.createCaller(publicContext());
-    await expect(caller.analytics.record({ slug: "unknown-profile", referrer: "github.com" })).resolves.toEqual({ ok: true });
+    await expect(caller.analytics.record({ slug: "unknown-profile", referrer: "github.com" })).resolves.toEqual({ ok: true, recorded: true });
+  });
+
+  it("persists profile settings through the local fallback", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await caller.portfolio.saveSettings({ slug: "fallback-tester", template: "terminal", customCss: ".hero { color: red; }", isPublic: true });
+    const publicCaller = appRouter.createCaller(publicContext());
+    const profile = await publicCaller.portfolio.bySlug({ slug: "fallback-tester" });
+    expect(profile?.slug).toBe("fallback-tester");
+    expect(profile?.template).toBe("terminal");
   });
 
   it("rejects invalid public profile slugs", async () => {
