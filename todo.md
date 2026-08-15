@@ -68,8 +68,8 @@
 - [ ] Add sync failure notifications and retry controls
 - [ ] Add AI summary regeneration controls
 - [ ] Add AI tone and length settings
-- [ ] Add AI-generated skills and technology clustering
-- [ ] Add AI-generated portfolio headline suggestions
+- [x] Add AI-generated skills and technology clustering
+- [x] Add AI-generated portfolio headline suggestions
 - [ ] Add analytics date range filters
 - [ ] Add analytics CSV export
 - [ ] Add privacy-preserving analytics consent controls
@@ -95,7 +95,7 @@
 - [x] Wire Settings slug and visibility controls to persisted mutations
 - [x] Wire custom-domain add/list controls to persisted procedures
 - [x] Add richer public portfolio micro-interactions and project metadata badges
-- [ ] Add AI-generated portfolio headline and skill cluster preview states
+- [x] Add AI-generated portfolio headline and skill cluster preview states
 - [x] Add loading, empty, and error states for live profile and analytics queries
 - [x] Re-run typecheck, tests, and visual screenshots after the improvement batch
 
