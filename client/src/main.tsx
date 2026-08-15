@@ -72,6 +72,16 @@ const trpcClient = trpc.createClient({
   ],
 });
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { void navigator.serviceWorker.register("/sw.js"); });
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  (window as Window & { deferredInstallPrompt?: Event }).deferredInstallPrompt = event;
+  window.dispatchEvent(new CustomEvent("githubfolio-install-ready"));
+});
+
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
