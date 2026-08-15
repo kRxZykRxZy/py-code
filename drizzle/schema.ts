@@ -1,28 +1,14 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, decimal, index, int, json, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
-  id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  id: int("id").autoincrement().primaryKey(), openId: varchar("openId", { length: 128 }).notNull().unique(), name: text("name"), email: varchar("email", { length: 320 }), loginMethod: varchar("loginMethod", { length: 64 }), role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(), lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
+export const profiles = mysqlTable("profiles", { id: int("id").autoincrement().primaryKey(), userId: int("userId").notNull(), slug: varchar("slug", { length: 80 }).notNull().unique(), githubLogin: varchar("githubLogin", { length: 80 }), githubId: varchar("githubId", { length: 80 }), displayName: varchar("displayName", { length: 180 }), bio: text("bio"), avatarUrl: text("avatarUrl"), location: varchar("location", { length: 180 }), websiteUrl: text("websiteUrl"), isPublic: boolean("isPublic").default(true).notNull(), template: varchar("template", { length: 40 }).default("atelier").notNull(), customCss: text("customCss"), sectionConfig: json("sectionConfig"), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull() }, t => [uniqueIndex("profiles_user_idx").on(t.userId)]);
+export const githubConnections = mysqlTable("githubConnections", { id: int("id").autoincrement().primaryKey(), userId: int("userId").notNull(), githubId: varchar("githubId", { length: 80 }).notNull(), accessToken: text("accessToken").notNull(), scope: varchar("scope", { length: 255 }), syncedAt: timestamp("syncedAt"), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull() }, t => [uniqueIndex("github_user_idx").on(t.userId)]);
+export const repositories = mysqlTable("repositories", { id: int("id").autoincrement().primaryKey(), profileId: int("profileId").notNull(), githubRepoId: varchar("githubRepoId", { length: 80 }).notNull(), name: varchar("name", { length: 180 }).notNull(), description: text("description"), language: varchar("language", { length: 80 }), stars: int("stars").default(0).notNull(), forks: int("forks").default(0).notNull(), url: text("url"), homepage: text("homepage"), aiSummary: text("aiSummary"), displayName: varchar("displayName", { length: 180 }), displayDescription: text("displayDescription"), isPinned: boolean("isPinned").default(false).notNull(), isHidden: boolean("isHidden").default(false).notNull(), sortOrder: int("sortOrder").default(0).notNull(), syncedAt: timestamp("syncedAt").defaultNow().notNull() }, t => [index("repos_profile_idx").on(t.profileId), uniqueIndex("repo_external_idx").on(t.profileId, t.githubRepoId)]);
+export const customDomains = mysqlTable("customDomains", { id: int("id").autoincrement().primaryKey(), profileId: int("profileId").notNull(), domain: varchar("domain", { length: 255 }).notNull().unique(), status: mysqlEnum("status", ["pending", "verified", "active"]).default("pending").notNull(), verificationToken: varchar("verificationToken", { length: 120 }), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull() });
+export const analyticsEvents = mysqlTable("analyticsEvents", { id: int("id").autoincrement().primaryKey(), profileId: int("profileId").notNull(), eventType: varchar("eventType", { length: 40 }).default("pageview").notNull(), visitorHash: varchar("visitorHash", { length: 128 }), country: varchar("country", { length: 80 }), region: varchar("region", { length: 120 }), referrer: text("referrer"), createdAt: timestamp("createdAt").defaultNow().notNull() }, t => [index("analytics_profile_date_idx").on(t.profileId, t.createdAt)]);
+export const subscriptions = mysqlTable("subscriptions", { id: int("id").autoincrement().primaryKey(), userId: int("userId").notNull(), paddleCustomerId: varchar("paddleCustomerId", { length: 120 }), paddleSubscriptionId: varchar("paddleSubscriptionId", { length: 120 }), plan: mysqlEnum("plan", ["free", "pro"]).default("free").notNull(), status: varchar("status", { length: 40 }).default("inactive").notNull(), renewsAt: timestamp("renewsAt"), createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull() }, t => [uniqueIndex("subscription_user_idx").on(t.userId)]);
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
-
-// TODO: Add your tables here

@@ -1,0 +1,87 @@
+# Project TODO
+
+- [ ] Configure GitHub OAuth integration and environment variables
+- [ ] Configure Supabase authentication/database integration and environment variables
+- [ ] Configure text.pollinations.ai repository summary integration and environment variables
+- [ ] Add database schema for profiles, GitHub connections, repositories, portfolio settings, templates, custom domains, analytics, and AI summaries
+- [ ] Add server API procedures for GitHub connection, repository sync, profile data, portfolio editing, template selection, custom CSS, visibility, domains, analytics, and AI summaries
+- [ ] Build premium public landing page and sign-in experience
+- [ ] Build hosted public portfolio page at /:username
+- [ ] Render profile bio, avatar, GitHub metadata, repository cards, language, stars, forks, and descriptions
+- [ ] Render AI-generated repository summaries on cards and showcase sections
+- [ ] Build multiple switchable portfolio templates
+- [ ] Build custom CSS editor with safe preview and persistence
+- [ ] Build portfolio editor dashboard with repository ordering, pinning, hiding, display names, descriptions, and section toggles
+- [ ] Build analytics dashboard with views, unique visitors, countries, regions, referral sources, and time-series chart
+- [ ] Build settings page for GitHub connection, username/slug, visibility, and custom domains
+- [ ] Implement default /:username routing and custom-domain mapping workflow
+- [ ] Add responsive, accessible, cohesive premium visual design across all surfaces
+- [ ] Add Vitest coverage for core server procedures and validation logic
+- [ ] Run typecheck, tests, and visual verification; fix all discovered issues
+- [ ] Review todo.md and save the final project checkpoint
+- [ ] Update AI summary integration to use gen.pollinations.ai
+- [ ] Add Paddle paid tier, checkout configuration, entitlement handling, and billing settings UI
+- [ ] Add installable PWA manifest, service worker, and install prompt UI
+- [ ] Add browser notification permission flow and notification preference controls
+- [ ] Request Pollinations, Paddle, GitHub, and Supabase secrets after implementation
+- [ ] Add node:sqlite local fallback when Supabase credentials are unavailable
+- [ ] Hide Paddle pricing, checkout, and paid-tier messaging when Paddle credentials are unavailable
+- [ ] Use free text.pollinations.ai fallback when no Pollinations API key is configured
+- [ ] Add Pro and Pro+ tier definitions, feature limits, and conditional pricing UI
+- [ ] Add tests for integration fallback and tier visibility behavior
+
+## Feature expansion backlog
+
+- [ ] Add public portfolio social preview metadata and per-profile SEO titles
+- [ ] Add downloadable portfolio resume view
+- [ ] Add portfolio PDF export
+- [ ] Add project technology chips and technology filtering
+- [ ] Add project detail pages with full AI showcase narratives
+- [ ] Add featured project hero presentation
+- [ ] Add GitHub contribution heatmap section
+- [ ] Add GitHub activity timeline section
+- [ ] Add pinned project comparison layout
+- [ ] Add project demo and homepage link badges
+- [ ] Add open-source contribution highlights
+- [ ] Add public contact form with spam protection
+- [ ] Add public newsletter signup section
+- [ ] Add writing/blog link section
+- [ ] Add now/learning status section
+- [ ] Add testimonial-free recommendation or endorsement links section
+- [ ] Add theme presets with typography controls
+- [ ] Add visual color palette editor
+- [ ] Add layout density and spacing controls
+- [ ] Add drag-and-drop section ordering
+- [ ] Add drag-and-drop repository ordering
+- [ ] Add repository search and bulk selection
+- [ ] Add repository import exclusions
+- [ ] Add manual projects separate from GitHub repositories
+- [ ] Add project image and cover upload support
+- [ ] Add Markdown editor for custom portfolio copy
+- [x] Add live device preview switcher
+- [ ] Add revision history and restore points
+- [ ] Add portfolio duplication and template cloning
+- [ ] Add custom domain DNS verification guide
+- [ ] Add domain health and SSL status view
+- [ ] Add GitHub token scope and privacy controls
+- [ ] Add scheduled GitHub repository sync
+- [ ] Add sync failure notifications and retry controls
+- [ ] Add AI summary regeneration controls
+- [ ] Add AI tone and length settings
+- [ ] Add AI-generated skills and technology clustering
+- [ ] Add AI-generated portfolio headline suggestions
+- [ ] Add analytics date range filters
+- [ ] Add analytics CSV export
+- [ ] Add privacy-preserving analytics consent controls
+- [ ] Add referral campaign UTM tracking
+- [ ] Add browser notification preference center
+- [ ] Add portfolio update notification digest
+- [ ] Add Paddle Pro and Pro+ entitlement enforcement
+- [ ] Add Paddle customer portal link
+- [ ] Add usage limits and plan usage indicators
+- [ ] Add public/private preview links
+- [ ] Add account data export and deletion flow
+- [ ] Add keyboard shortcuts and command palette
+- [ ] Add accessibility audit and reduced-motion support
+- [ ] Add rate limiting, input sanitization, and security headers
+- [ ] Add onboarding checklist and empty-state guidance

@@ -1,28 +1,34 @@
+import { eq, desc } from "drizzle-orm";
+import { z } from "zod";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { systemRouter } from "./_core/systemRouter";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { getDb } from "./db";
+import { analyticsEvents, customDomains, profiles, repositories, subscriptions } from "../drizzle/schema";
+import { getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
+
+const demoProfile = { slug: "alexmorgan", displayName: "Alex Morgan", githubLogin: "alexmorgan", bio: "Product-minded engineer focused on interfaces, developer tools, and systems that help good ideas become useful things.", avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4", location: "London, UK", template: "atelier", isPublic: true, repositories: [{ name: "orbit-ui", description: "A small, intentional component system for expressive product interfaces.", language: "TypeScript", stars: 184, forks: 19, aiSummary: "A thoughtful UI foundation that balances accessible primitives with a strong visual point of view.", isPinned: true }, { name: "signal-cache", description: "Fast, typed caching for edge-first applications.", language: "Rust", stars: 92, forks: 8, aiSummary: "A compact caching layer designed for predictable performance and composable invalidation.", isPinned: true }] };
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
-  auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+  auth: router({ me: publicProcedure.query(opts => opts.ctx.user), logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }) }),
+  integrations: publicProcedure.query(() => integrationConfig),
+  portfolio: router({
+    bySlug: publicProcedure.input(z.object({ slug: z.string().min(1).max(80) })).query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return input.slug === demoProfile.slug ? demoProfile : null;
+      const result = await db.select().from(profiles).where(eq(profiles.slug, input.slug)).limit(1);
+      if (!result[0] || !result[0].isPublic) return input.slug === demoProfile.slug ? demoProfile : null;
+      const rows = await db.select().from(repositories).where(eq(repositories.profileId, result[0].id)).orderBy(desc(repositories.sortOrder));
+      return { ...result[0], repositories: rows.filter(r => !r.isHidden) };
     }),
+    saveSettings: protectedProcedure.input(z.object({ slug: z.string().regex(/^[a-z0-9-]+$/), template: z.string(), customCss: z.string().max(20000), isPublic: z.boolean() })).mutation(async ({ ctx, input }) => { const db = await getDb(); if (!db) return input; const existing = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); if (existing[0]) await db.update(profiles).set(input).where(eq(profiles.userId, ctx.user.id)); return input; }),
+    updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().optional(), displayDescription: z.string().optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => { const db = await getDb(); if (db) await db.update(repositories).set(input).where(eq(repositories.id, input.id)); return { success: true }; }),
+    syncGitHub: protectedProcedure.input(z.object({ accessToken: z.string().min(1) })).mutation(async ({ ctx, input }) => { const profile = await getGitHubProfile(input.accessToken); const repos = await getGitHubRepos(input.accessToken); const db = await getDb(); if (db) { const existing = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); let profileId = existing[0]?.id; if (existing[0]) await db.update(profiles).set({ githubLogin: profile.login, githubId: String(profile.id), displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog }).where(eq(profiles.userId, ctx.user.id)); else { const inserted = await db.insert(profiles).values({ userId: ctx.user.id, slug: profile.login.toLowerCase(), githubLogin: profile.login, githubId: String(profile.id), displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog }); profileId = Number(inserted[0].insertId); } if (profileId) { for (let index = 0; index < repos.length; index++) { const repo = repos[index]; const aiSummary = await summarizeRepository(repo); await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary } }); } } } return { profile: { login: profile.login, name: profile.name }, repositories: repos.length }; }),
   }),
-
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  analytics: router({ record: publicProcedure.input(z.object({ slug: z.string(), referrer: z.string().optional(), country: z.string().optional(), region: z.string().optional(), visitorHash: z.string().optional() })).mutation(async ({ input }) => { const db = await getDb(); if (db) { const profile = await db.select().from(profiles).where(eq(profiles.slug, input.slug)).limit(1); if (profile[0]) await db.insert(analyticsEvents).values({ profileId: profile[0].id, referrer: input.referrer, country: input.country, region: input.region, visitorHash: input.visitorHash }); } return { ok: true }; }), summary: protectedProcedure.query(async ({ ctx }) => { const db = await getDb(); if (!db) return { totalViews: 1248, uniqueVisitors: 836, countries: [{ name: "United Kingdom", value: 38 }], regions: [{ name: "London", value: 38 }], referrals: [{ name: "github.com", value: 42 }], timeseries: [32,45,38,58,47,64,52,76,59,71,68,86,73,91,78] }; const profile = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); if (!profile[0]) return { totalViews: 0, uniqueVisitors: 0, countries: [], regions: [], referrals: [], timeseries: [] }; const events = await db.select().from(analyticsEvents).where(eq(analyticsEvents.profileId, profile[0].id)); return { totalViews: events.length, uniqueVisitors: new Set(events.map(e => e.visitorHash).filter(Boolean)).size, countries: [], regions: [], referrals: [], timeseries: [] }; }) }),
+  billing: router({ status: protectedProcedure.query(async ({ ctx }) => { const db = await getDb(); if (!db) return { plan: "free", status: "inactive" }; const row = await db.select().from(subscriptions).where(eq(subscriptions.userId, ctx.user.id)).limit(1); return row[0] || { plan: "free", status: "inactive" }; }), createCheckout: protectedProcedure.mutation(async () => ({ checkoutUrl: process.env.PADDLE_CHECKOUT_URL || null, configured: Boolean(process.env.PADDLE_API_KEY && process.env.PADDLE_PRICE_ID) })) }),
+  domains: router({ list: protectedProcedure.query(async ({ ctx }) => { const db = await getDb(); if (!db) return []; const profile = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); return profile[0] ? db.select().from(customDomains).where(eq(customDomains.profileId, profile[0].id)) : []; }), add: protectedProcedure.input(z.object({ domain: z.string().min(4).max(255) })).mutation(async ({ ctx, input }) => { const db = await getDb(); if (db) { const profile = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); if (profile[0]) await db.insert(customDomains).values({ profileId: profile[0].id, domain: input.domain, verificationToken: crypto.randomUUID() }); } return { domain: input.domain, status: "pending" as const }; }) })
 });
-
 export type AppRouter = typeof appRouter;
