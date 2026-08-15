@@ -53,7 +53,7 @@
 - [ ] Add layout density and spacing controls
 - [ ] Add drag-and-drop section ordering
 - [ ] Add drag-and-drop repository ordering
-- [ ] Add repository search and bulk selection
+- [x] Add repository search and bulk selection
 - [ ] Add repository import exclusions
 - [ ] Add manual projects separate from GitHub repositories
 - [ ] Add project image and cover upload support
