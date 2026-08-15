@@ -14,6 +14,10 @@ function authenticatedContext(): TrpcContext {
   return { ...publicContext(), user: { id: 9981, openId: "fallback-test-user", email: "fallback@example.com", name: "Fallback Tester", loginMethod: "test", role: "user", createdAt: new Date(), updatedAt: new Date(), lastSignedIn: new Date() } };
 }
 
+function adminContext(): TrpcContext {
+  return { ...publicContext(), user: { id: 9982, openId: "owner-admin", email: "owner@example.com", name: "Owner Admin", loginMethod: "test", role: "admin", createdAt: new Date(), updatedAt: new Date(), lastSignedIn: new Date() } };
+}
+
 describe("core portfolio procedures", () => {
   it("returns the demo public profile by slug", async () => {
     const caller = appRouter.createCaller(publicContext());
@@ -37,11 +41,77 @@ describe("core portfolio procedures", () => {
 
   it("persists profile settings through the local fallback", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "pro", managedDomainAddOn: false, managedDomainStatus: "none" });
     await caller.portfolio.saveSettings({ slug: "fallback-tester", template: "terminal", customCss: ".hero { color: red; }", isPublic: true });
     const publicCaller = appRouter.createCaller(publicContext());
     const profile = await publicCaller.portfolio.bySlug({ slug: "fallback-tester" });
     expect(profile?.slug).toBe("fallback-tester");
     expect(profile?.template).toBe("terminal");
+  });
+
+  it("blocks free accounts from saving custom CSS while allowing template settings without it", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "free", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "editorial", customCss: ".hero { color: red; }", isPublic: true })).rejects.toThrow("custom CSS");
+    await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "editorial", customCss: "", isPublic: true })).resolves.toMatchObject({ template: "editorial", customCss: "" });
+  });
+
+  it("persists public slug and visibility settings independently of custom CSS", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.portfolio.updatePublishing({ slug: "fallback-private", isPublic: false })).resolves.toEqual({ slug: "fallback-private", isPublic: false });
+  });
+
+  it("applies the larger Pro+ custom CSS allowance server-side", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    const longCss = ".x{}".repeat(501);
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "pro", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "atelier", customCss: longCss, isPublic: true })).rejects.toThrow("2,000 characters");
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "proPlus", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "atelier", customCss: longCss, isPublic: true })).resolves.toMatchObject({ customCss: longCss });
+  });
+
+  it("persists notification preferences through the local store", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const saved = await caller.notifications.update({ browser: "granted", digest: false });
+    expect(saved.browser).toBe("granted");
+    expect(saved.digest).toBe(false);
+    await expect(caller.notifications.get()).resolves.toMatchObject({ browser: "granted", digest: false });
+  });
+
+  it("blocks non-admin users from customer plan management", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.admin.customers()).rejects.toThrow("Admin access required");
+    await expect(caller.admin.updateCustomer({ userId: 9981, plan: "pro", managedDomainAddOn: true, managedDomainName: "example.dev", managedDomainStatus: "requested" })).rejects.toThrow("Admin access required");
+  });
+
+  it("allows the owner-admin to update a managed-domain subscription", async () => {
+    const caller = appRouter.createCaller(adminContext());
+    const result = await caller.admin.updateCustomer({ userId: 9982, plan: "pro", managedDomainAddOn: true, managedDomainName: "portfolio.dev", managedDomainStatus: "requested" });
+    expect(result).toMatchObject({ userId: 9982, plan: "pro", managedDomainAddOn: true, managedDomainName: "portfolio.dev", managedDomainStatus: "requested" });
+  });
+
+  it("rejects malformed plan and managed-domain status changes before they reach the admin procedure", async () => {
+    const caller = appRouter.createCaller(adminContext());
+    await expect(caller.admin.updateCustomer({ userId: 9982, plan: "enterprise" as never, managedDomainAddOn: false, managedDomainStatus: "none" })).rejects.toBeTruthy();
+    await expect(caller.admin.updateCustomer({ userId: 9982, plan: "pro", managedDomainAddOn: true, managedDomainStatus: "shipped" as never })).rejects.toBeTruthy();
+  });
+
+  it("blocks free accounts from connecting or requesting domains", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "free", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.domains.add({ domain: "fallback.dev" })).rejects.toThrow("active Pro or Pro+ plan");
+    await expect(caller.billing.requestManagedDomain({ domain: "managed.dev" })).rejects.toThrow("active Pro or Pro+ plan");
+  });
+
+  it("records a managed-domain request for an active paid account", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "pro", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.billing.requestManagedDomain({ domain: "managed.dev" })).resolves.toMatchObject({ managedDomainAddOn: true, managedDomainName: "managed.dev", managedDomainStatus: "requested" });
   });
 
   it("rejects invalid public profile slugs", async () => {

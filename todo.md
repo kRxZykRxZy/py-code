@@ -6,19 +6,19 @@
 - [ ] Add database schema for profiles, GitHub connections, repositories, portfolio settings, templates, custom domains, analytics, and AI summaries
 - [ ] Add server API procedures for GitHub connection, repository sync, profile data, portfolio editing, template selection, custom CSS, visibility, domains, analytics, and AI summaries
 - [x] Build premium public landing page and sign-in experience
-- [ ] Build hosted public portfolio page at /:username
-- [ ] Render profile bio, avatar, GitHub metadata, repository cards, language, stars, forks, and descriptions
-- [ ] Render AI-generated repository summaries on cards and showcase sections
-- [ ] Build multiple switchable portfolio templates
-- [ ] Build custom CSS editor with safe preview and persistence
+- [x] Build hosted public portfolio page at /:username
+- [x] Render profile bio, avatar, GitHub metadata, repository cards, language, stars, forks, and descriptions
+- [x] Render AI-generated repository summaries on cards and showcase sections
+- [x] Build multiple switchable portfolio templates
+- [x] Build custom CSS editor with safe preview and persistence
 - [ ] Build portfolio editor dashboard with repository ordering, pinning, hiding, display names, descriptions, and section toggles
-- [ ] Build analytics dashboard with views, unique visitors, countries, regions, referral sources, and time-series chart
-- [ ] Build settings page for GitHub connection, username/slug, visibility, and custom domains
+- [x] Build analytics dashboard with views, unique visitors, countries, regions, referral sources, and time-series chart
+- [x] Build settings page for GitHub connection, username/slug, visibility, and custom domains
 - [ ] Implement default /:username routing and custom-domain mapping workflow
 - [ ] Add responsive, accessible, cohesive premium visual design across all surfaces
-- [ ] Add Vitest coverage for core server procedures and validation logic
+- [x] Add Vitest coverage for core server procedures and validation logic
 - [x] Run typecheck, tests, and visual verification; fix all discovered issues
-- [ ] Review todo.md and save the final project checkpoint
+- [x] Review todo.md and save the final project checkpoint
 - [x] Update AI summary integration to use gen.pollinations.ai
 - [ ] Add Paddle paid tier, checkout configuration, entitlement handling, and billing settings UI
 - [x] Add installable PWA manifest, service worker, and install prompt UI
@@ -48,9 +48,9 @@
 - [ ] Add writing/blog link section
 - [ ] Add now/learning status section
 - [ ] Add testimonial-free recommendation or endorsement links section
-- [ ] Add theme presets with typography controls
-- [ ] Add visual color palette editor
-- [ ] Add layout density and spacing controls
+- [x] Add theme presets with typography controls
+- [x] Add visual color palette editor
+- [x] Add layout density and spacing controls
 - [ ] Add drag-and-drop section ordering
 - [ ] Add drag-and-drop repository ordering
 - [x] Add repository search and bulk selection
@@ -85,3 +85,27 @@
 - [ ] Add accessibility audit and reduced-motion support
 - [ ] Add rate limiting, input sanitization, and security headers
 - [ ] Add onboarding checklist and empty-state guidance
+
+## Continued improvement batch
+
+- [x] Preserve and render live AI repository summaries in public project cards and a featured showcase
+- [x] Add distinct public template layout variations beyond shared styling tokens
+- [x] Add typography pairing and scale controls to the template editor
+- [ ] Add scoped custom CSS validation before applying preview styles
+- [x] Wire Settings slug and visibility controls to persisted mutations
+- [x] Wire custom-domain add/list controls to persisted procedures
+- [ ] Add richer public portfolio micro-interactions and project metadata badges
+- [ ] Add AI-generated portfolio headline and skill cluster preview states
+- [ ] Add loading, empty, and error states for live profile and analytics queries
+- [x] Re-run typecheck, tests, and visual screenshots after the improvement batch
+
+## Revised pricing and owner administration
+
+- [x] Update Pro plan pricing to $12 per month and retain Free and Pro+ tier positioning
+- [x] Add a $3 per month managed-domain add-on with explicit purchase state
+- [x] Add entitlement rules for Pro, Pro+, and managed-domain access
+- [x] Add owner-admin-only procedures for subscription and managed-domain oversight
+- [x] Build an owner-admin console for reviewing customer tiers and managed-domain orders
+- [x] Allow the owner-admin to change a customer tier with server-side role protection
+- [x] Add tests for admin-only role enforcement and subscription update validation
+- [x] Enforce a distinct Pro+ capability with server-side validation and test coverage
