@@ -73,6 +73,13 @@ describe("core portfolio procedures", () => {
     await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "atelier", customCss: longCss, isPublic: true })).resolves.toMatchObject({ customCss: longCss });
   });
 
+  it("rejects unsafe custom CSS before persisting it for a paid account", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "pro", managedDomainAddOn: false, managedDomainStatus: "none" });
+    await expect(caller.portfolio.saveSettings({ slug: "fallback-tester", template: "atelier", customCss: ".card { background: url(https://example.com/a.png); }", isPublic: true })).rejects.toThrow("External URLs");
+  });
+
   it("persists notification preferences through the local store", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     const saved = await caller.notifications.update({ browser: "granted", digest: false });

@@ -41,7 +41,7 @@
 - [ ] Add GitHub contribution heatmap section
 - [ ] Add GitHub activity timeline section
 - [ ] Add pinned project comparison layout
-- [ ] Add project demo and homepage link badges
+- [x] Add project demo and homepage link badges
 - [ ] Add open-source contribution highlights
 - [ ] Add public contact form with spam protection
 - [ ] Add public newsletter signup section
@@ -84,19 +84,19 @@
 - [ ] Add keyboard shortcuts and command palette
 - [ ] Add accessibility audit and reduced-motion support
 - [ ] Add rate limiting, input sanitization, and security headers
-- [ ] Add onboarding checklist and empty-state guidance
+- [x] Add onboarding checklist and empty-state guidance
 
 ## Continued improvement batch
 
 - [x] Preserve and render live AI repository summaries in public project cards and a featured showcase
 - [x] Add distinct public template layout variations beyond shared styling tokens
 - [x] Add typography pairing and scale controls to the template editor
-- [ ] Add scoped custom CSS validation before applying preview styles
+- [x] Add scoped custom CSS validation before applying preview styles
 - [x] Wire Settings slug and visibility controls to persisted mutations
 - [x] Wire custom-domain add/list controls to persisted procedures
-- [ ] Add richer public portfolio micro-interactions and project metadata badges
+- [x] Add richer public portfolio micro-interactions and project metadata badges
 - [ ] Add AI-generated portfolio headline and skill cluster preview states
-- [ ] Add loading, empty, and error states for live profile and analytics queries
+- [x] Add loading, empty, and error states for live profile and analytics queries
 - [x] Re-run typecheck, tests, and visual screenshots after the improvement batch
 
 ## Revised pricing and owner administration
