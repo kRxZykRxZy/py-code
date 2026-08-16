@@ -75,6 +75,19 @@ export function classifyProjectCategory(input: { name?: string; description?: st
   if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
   return input.language ? `${input.language} project` : "Software project";
 }
+export async function generateProjectComparison(repositories: Array<{ name: string; description?: string | null; language?: string | null }>): Promise<string> {
+  const selected = repositories.slice(0, 4);
+  const fallback = selected.length >= 2 ? `${selected.map((repo) => repo.name).join(" and ")} show a range of ${Array.from(new Set(selected.map((repo) => repo.language).filter(Boolean))).join(" and ") || "technical"} work, balancing distinct project goals with a consistent builder perspective.` : "Select at least two projects to compare their strengths and technical focus.";
+  if (selected.length < 2) return fallback;
+  const prompt = `Compare these GitHub projects in two concise sentences. Mention their distinct strengths and shared technical theme. Return plain text only. Projects: ${selected.map((repo) => `${repo.name}: ${repo.description || "No description"} (${repo.language || "unknown language"})`).join(" | ")}`;
+  const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
+  try {
+    const response = await axios.get(`${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=97`, { timeout: 12000, headers: process.env.POLLINATIONS_API_KEY ? { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` } : undefined });
+    const raw = typeof response.data === "string" ? response.data : response.data?.text;
+    const summary = typeof raw === "string" ? raw.replace(/[\r\n]+/g, " ").replace(/[^a-zA-Z0-9.,'!?&()\-:; ]/g, "").trim().slice(0, 600) : "";
+    return summary || fallback;
+  } catch { return fallback; }
+}
 export async function classifyProjectCategoryWithAI(input: { name?: string; description?: string | null; topics?: unknown; language?: string | null }): Promise<string> {
   const fallback = classifyProjectCategory(input);
   const prompt = `Classify this GitHub project into exactly one concise category label of 2 to 4 words. Return plain text only. Prefer categories such as Developer tool, Backend service, Mobile app, Web experience, Data and AI, or Software project. Name: ${input.name || ""}. Description: ${input.description || ""}. Language: ${input.language || ""}. Topics: ${Array.isArray(input.topics) ? input.topics.slice(0, 12).join(", ") : ""}.`;

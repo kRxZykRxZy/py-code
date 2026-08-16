@@ -92,6 +92,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Complexity {repo.complexityLevel}");
     expect(home).toContain("aria-label={`${repo.name} repository health score`}");
     expect(home).toContain("aria-label={`${repo.name} complexity level`}");
+    expect(home).toContain("compareProjects");
+    expect(home).toContain("projectComparison");
+    expect(home).toContain("AI project comparison");
   });
 
   it("keeps repository ordering controls draggable and accessible", async () => {
