@@ -8,7 +8,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { getDb } from "./db";
 import { analyticsEvents, customDomains, githubConnections, profiles, repositories, subscriptions, users } from "../drizzle/schema";
-import { generatePortfolioNarrative, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
+import { generatePortfolioNarrative, getGitHubOrganizationRepos, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
 import { validatePortfolioCss } from "./customCss";
 import { sanitizeMarkdownSource, markdownLimits } from "../shared/markdown";
 import { sanitizeHttpUrl, sanitizePlainText } from "./sanitization";
@@ -149,7 +149,9 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
       const accessToken = input?.accessToken || connection?.accessToken;
       if (!accessToken) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Sign in with GitHub before syncing your portfolio" });
       const profile = await getGitHubProfile(accessToken);
-      const repos = await getGitHubRepos(accessToken);
+      const personalRepos = await getGitHubRepos(accessToken);
+      const organizationRepos = await getGitHubOrganizationRepos(accessToken);
+      const repos = Array.from(new Map([...personalRepos, ...organizationRepos].map((repo) => [repo.id, repo])).values());
       const existingProfile = db ? (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0] : null;
       const connectionForExclusions = db ? null : localGet<{ login?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
       const fallbackProfile = connectionForExclusions?.login ? localGet<any>(`profile:${connectionForExclusions.login.toLowerCase()}`, null) : null;
@@ -168,11 +170,11 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
           for (let index = 0; index < visibleRepos.length; index++) {
             const repo = visibleRepos[index];
             const aiSummary = await summarizeRepository(repo);
-            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null } });
+            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), aiSummary, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null } });
           }
         }
       } else {
-        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, ...(fallbackProfile || {}), slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: visibleRepos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary: null, isPinned: false, sortOrder: index, updatedAt: repo.updated_at || null })) });
+        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, ...(fallbackProfile || {}), slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: visibleRepos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), aiSummary: null, isPinned: false, sortOrder: index, updatedAt: repo.updated_at || null })) });
       }
       return repos.length === visibleRepos.length ? { profile: { login: profile.login, name: profile.name }, repositories: visibleRepos.length } : { profile: { login: profile.login, name: profile.name }, repositories: visibleRepos.length, excluded: repos.length - visibleRepos.length };
     }),

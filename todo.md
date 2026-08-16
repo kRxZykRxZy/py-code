@@ -201,10 +201,10 @@
 - [x] F031 Add repository import exclusion rules
 - [x] F032 Add repository exclusion search
 - [x] F033 Add repository exclusion persistence
-- [ ] F034 Add GitHub organization repository support
-- [ ] F035 Add GitHub topic filtering
-- [ ] F036 Add repository archived-state badges
-- [ ] F037 Add repository fork-state badges
+- [x] F034 Add GitHub organization repository support
+- [x] F035 Add GitHub topic filtering
+- [x] F036 Add repository archived-state badges
+- [x] F037 Add repository fork-state badges
 - [ ] F038 Add repository license metadata
 - [ ] F039 Add repository default-branch metadata
 - [ ] F040 Add repository issue-count metadata
@@ -339,3 +339,5 @@
 - [x] Wire template cloning actions to the authenticated user’s real current profile slug
 - [x] Wire revision actions to the authenticated user’s real current profile slug and verify restore hydration
 - [x] Add non-default-slug regression coverage for template cloning and revisions
+- [x] Implement actual GitHub organization repository syncing through the GitHub organizations API
+- [x] Add regression coverage proving organization-owned repositories are fetched, persisted, and rendered/filterable

@@ -6,7 +6,8 @@ vi.mock("./db", () => ({ getDb: vi.fn().mockResolvedValue(null) }));
 vi.mock("./integrations", () => ({
   integrationConfig: { paddleConfigured: false, paidTiers: [], storageMode: "local-sqlite" },
   getGitHubProfile: vi.fn().mockResolvedValue({ id: 42, login: "octo-dev", name: "Octo Dev", bio: "GitHub builder", avatar_url: "https://example.test/avatar.png", location: null, blog: null }),
-  getGitHubRepos: vi.fn().mockResolvedValue([{ id: 9001, name: "folio", description: "Portfolio app", language: "TypeScript", stargazers_count: 7, forks_count: 2, html_url: "https://github.com/octo-dev/folio", homepage: null }]),
+  getGitHubRepos: vi.fn().mockResolvedValue([{ id: 9001, name: "folio", description: "Portfolio app", language: "TypeScript", stargazers_count: 7, forks_count: 2, html_url: "https://github.com/octo-dev/folio", homepage: null, topics: ["portfolio", "typescript"], archived: true, fork: true, owner: { login: "octo-labs", type: "Organization" } }]),
+  getGitHubOrganizationRepos: vi.fn().mockResolvedValue([{ id: 9002, name: "org-folio", description: "Organization portfolio app", language: "TypeScript", stargazers_count: 4, forks_count: 1, html_url: "https://github.com/octo-labs/org-folio", homepage: null, topics: ["organization"], archived: false, fork: false, owner: { login: "octo-labs", type: "Organization" } }]),
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
 }));
@@ -23,7 +24,8 @@ describe("GitHub local fallback sync", () => {
   it("syncs using the authorization token persisted at GitHub-only sign-in", async () => {
     localSet("githubConnection:github:42", { githubId: "42", accessToken: "stored-oauth-token", scope: "read:user" });
     const result = await appRouter.createCaller(githubContext()).portfolio.syncGitHub();
-    expect(result).toEqual({ profile: { login: "octo-dev", name: "Octo Dev" }, repositories: 1 });
+    expect(result).toEqual({ profile: { login: "octo-dev", name: "Octo Dev" }, repositories: 2 });
+    expect(localGet<any>("profile:octo-dev", null)?.repositories).toEqual(expect.arrayContaining([expect.objectContaining({ name: "folio", organizationName: "octo-labs", topics: ["portfolio", "typescript"], isArchived: true, isFork: true }), expect.objectContaining({ name: "org-folio", organizationName: "octo-labs", topics: ["organization"], isArchived: false, isFork: false })]));
   });
 
   it("regenerates stored project summaries without requiring a manual GitHub token", async () => {

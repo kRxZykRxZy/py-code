@@ -3,7 +3,7 @@ import axios from "axios";
 const GITHUB_API = "https://api.github.com";
 
 export type GitHubProfile = { id: number; login: string; name: string | null; bio: string | null; avatar_url: string; location: string | null; blog: string | null };
-export type GitHubRepo = { id: number; name: string; description: string | null; language: string | null; stargazers_count: number; forks_count: number; html_url: string; homepage: string | null; updated_at?: string | null };
+export type GitHubRepo = { id: number; name: string; description: string | null; language: string | null; stargazers_count: number; forks_count: number; html_url: string; homepage: string | null; updated_at?: string | null; topics?: string[]; archived?: boolean; fork?: boolean; owner?: { login?: string; type?: string } };
 
 export async function getGitHubProfile(token: string): Promise<GitHubProfile> {
   const { data } = await axios.get(`${GITHUB_API}/user`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
@@ -12,6 +12,16 @@ export async function getGitHubProfile(token: string): Promise<GitHubProfile> {
 export async function getGitHubRepos(token: string): Promise<GitHubRepo[]> {
   const { data } = await axios.get(`${GITHUB_API}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
   return data;
+}
+export async function getGitHubOrganizationRepos(token: string): Promise<GitHubRepo[]> {
+  const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
+  const { data: organizations } = await axios.get(`${GITHUB_API}/user/orgs?per_page=100`, { headers });
+  const repositories = await Promise.all((Array.isArray(organizations) ? organizations : []).slice(0, 50).map(async (organization: { login?: string }) => {
+    if (!organization.login) return [] as GitHubRepo[];
+    const { data } = await axios.get(`${GITHUB_API}/orgs/${encodeURIComponent(organization.login)}/repos?type=all&sort=updated&per_page=100`, { headers });
+    return Array.isArray(data) ? data as GitHubRepo[] : [];
+  }));
+  return repositories.flat();
 }
 export type SummaryTone = "thoughtful" | "technical" | "playful";
 export type SummaryLength = "short" | "standard" | "detailed";
