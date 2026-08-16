@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
+import { localGet, localSet } from "./localStore";
 
 function publicContext(): TrpcContext {
   return {
@@ -150,6 +151,20 @@ describe("billing usage procedures", () => {
 });
 
 
+
+describe("private portfolio preview links", () => {
+  it("blocks missing tokens, allows the generated token, and preserves it through settings saves", async () => {
+    localSet("githubConnection:fallback-test-user", { login: "preview-user" });
+    const token = "stable-preview-token";
+    localSet("profile:preview-user", { slug: "preview-user", displayName: "Preview User", isPublic: false, previewToken: token, repositories: [] });
+    const caller = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    await expect(publicCaller.portfolio.bySlug({ slug: "preview-user" })).resolves.toBeNull();
+    await expect(publicCaller.portfolio.bySlug({ slug: "preview-user", previewToken: token })).resolves.toMatchObject({ slug: "preview-user", isPublic: false });
+    await caller.portfolio.saveSettings({ slug: "preview-user", template: "atelier", customCss: "", isPublic: false });
+    expect(localGet<any>("profile:preview-user", null)?.previewToken).toBe(token);
+  });
+});
 
 describe("billing customer portal", () => {
   it("does not expose a portal URL when Paddle portal configuration is absent", async () => {

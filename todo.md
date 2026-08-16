@@ -84,7 +84,7 @@
 - [ ] Add Paddle Pro and Pro+ entitlement enforcement
 - [x] Add Paddle customer portal link
 - [x] Add usage limits and plan usage indicators
-- [ ] Add public/private preview links
+- [x] Add public/private preview links
 - [x] Add account data export and deletion flow
 - [x] Scope local fallback account deletion to the active user’s repository records and prove cross-account isolation
 - [x] Add keyboard shortcuts and command palette
@@ -121,3 +121,6 @@
 - [x] Enforce a distinct Pro+ capability with server-side validation and test coverage
 - [x] Add a repository usage indicator to the Settings plan-usage UI
 - [x] Add regression coverage for all plan usage indicators in Settings
+- [x] Preserve previewToken across local fallback profile settings writes
+- [x] Add explicit public live-link handling alongside private preview links
+- [x] Add behavioral tests for preview-link access and token persistence

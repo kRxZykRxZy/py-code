@@ -21,6 +21,17 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label="Portfolio sections"');
   });
 
+  it("keeps secure preview-link wiring visible across route and Settings", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
+    expect(home).toContain("previewToken");
+    expect(home).toContain("Copy preview link");
+    expect(home).toContain("trpc.portfolio.previewLink.useQuery");
+    expect(router).toContain("previewToken");
+    expect(router).toContain("previewLink:");
+    expect(router).toContain("createPreviewToken");
+  });
+
   it("keeps all plan usage indicators visible in Settings", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("Repositories");
