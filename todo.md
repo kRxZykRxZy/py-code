@@ -71,7 +71,7 @@
 - [x] Add GitHub token scope and privacy controls
 - [ ] Add scheduled GitHub repository sync
 - [ ] Add sync failure notifications and retry controls
-- [ ] Add AI summary regeneration controls
+- [x] Add AI summary regeneration controls
 - [ ] Add AI tone and length settings
 - [x] Add AI-generated skills and technology clustering
 - [x] Add AI-generated portfolio headline suggestions

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { TrpcContext } from "./_core/context";
-import { localSet } from "./localStore";
+import { localGet, localSet } from "./localStore";
 
 vi.mock("./db", () => ({ getDb: vi.fn().mockResolvedValue(null) }));
 vi.mock("./integrations", () => ({
@@ -23,5 +23,12 @@ describe("GitHub local fallback sync", () => {
     localSet("githubConnection:github:42", { githubId: "42", accessToken: "stored-oauth-token", scope: "read:user" });
     const result = await appRouter.createCaller(githubContext()).portfolio.syncGitHub();
     expect(result).toEqual({ profile: { login: "octo-dev", name: "Octo Dev" }, repositories: 1 });
+  });
+
+  it("regenerates stored project summaries without requiring a manual GitHub token", async () => {
+    localSet("githubConnection:github:42", { githubId: "42", login: "octo-dev", accessToken: "stored-oauth-token", scope: "read:user" });
+    localSet("profile:octo-dev", { slug: "octo-dev", repositories: [{ name: "folio", description: "Portfolio app", language: "TypeScript", aiSummary: "Old summary" }] });
+    await expect(appRouter.createCaller(githubContext()).portfolio.regenerateSummaries()).resolves.toEqual({ regenerated: 1 });
+    expect(localGet<any>("profile:octo-dev", null)?.repositories?.[0]?.aiSummary).toBe("A portfolio app.");
   });
 });
