@@ -83,7 +83,7 @@
 - [ ] Add portfolio update notification digest
 - [ ] Add Paddle Pro and Pro+ entitlement enforcement
 - [ ] Add Paddle customer portal link
-- [ ] Add usage limits and plan usage indicators
+- [x] Add usage limits and plan usage indicators
 - [ ] Add public/private preview links
 - [x] Add account data export and deletion flow
 - [x] Scope local fallback account deletion to the active user’s repository records and prove cross-account isolation
@@ -119,3 +119,5 @@
 - [x] Allow the owner-admin to change a customer tier with server-side role protection
 - [x] Add tests for admin-only role enforcement and subscription update validation
 - [x] Enforce a distinct Pro+ capability with server-side validation and test coverage
+- [x] Add a repository usage indicator to the Settings plan-usage UI
+- [x] Add regression coverage for all plan usage indicators in Settings

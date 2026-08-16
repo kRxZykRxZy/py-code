@@ -126,3 +126,26 @@ describe("core portfolio procedures", () => {
     await expect(caller.portfolio.bySlug({ slug: "" })).rejects.toBeTruthy();
   });
 });
+
+
+describe("billing usage procedures", () => {
+  it("returns free-plan limits and local usage counts", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "free", managedDomainAddOn: false, managedDomainStatus: "none" });
+    const usage = await caller.billing.usage();
+    expect(usage.plan).toBe("free");
+    expect(usage.limits).toEqual({ aiSummaries: 3, customCssChars: 0 });
+    expect(usage.usage).toEqual(expect.objectContaining({ repositories: expect.any(Number), aiSummaries: expect.any(Number), customCssChars: expect.any(Number) }));
+  });
+
+  it("returns the larger Pro+ CSS allowance and unlimited summaries", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const adminCaller = appRouter.createCaller(adminContext());
+    await adminCaller.admin.updateCustomer({ userId: 9981, plan: "proPlus", managedDomainAddOn: false, managedDomainStatus: "none" });
+    const usage = await caller.billing.usage();
+    expect(usage.plan).toBe("proPlus");
+    expect(usage.limits).toEqual({ aiSummaries: null, customCssChars: 20_000 });
+  });
+});
+

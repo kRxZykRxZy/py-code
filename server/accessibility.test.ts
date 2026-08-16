@@ -21,6 +21,14 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label="Portfolio sections"');
   });
 
+  it("keeps all plan usage indicators visible in Settings", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("Repositories");
+    expect(home).toContain("AI summaries");
+    expect(home).toContain("Custom CSS");
+    expect(home).toContain("trpc.billing.usage.useQuery");
+  });
+
   it("keeps the keyboard-accessible workspace command palette", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("WorkspaceCommandPalette");
