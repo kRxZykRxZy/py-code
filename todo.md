@@ -241,8 +241,8 @@
 - [x] F069 Add endorsement-link management
 - [x] F070 Add public guestbook opt-in
 - [x] F071 Add public guestbook moderation
-- [ ] F072 Add project share cards
-- [ ] F073 Add copy-share-link actions
+- [x] F072 Add project share cards
+- [x] F073 Add copy-share-link actions
 - [ ] F074 Add QR code portfolio sharing
 - [ ] F075 Add downloadable PDF resume export
 - [ ] F076 Add print stylesheet customization
@@ -369,3 +369,6 @@
 - [x] Add owner-facing guestbook moderation controls for approve/reject
 - [x] Filter pending guestbook entries from public profile API responses
 - [x] Add regression coverage for pending guestbook API privacy
+
+- [x] Add robust clipboard copy handling with fallback and failure feedback
+- [x] Add regression coverage for successful and failed project-link copy behavior
