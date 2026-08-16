@@ -196,3 +196,16 @@ describe("public activity timeline data", () => {
     await expect(publicCaller.portfolio.bySlug({ slug: "activity-user" })).resolves.toMatchObject({ repositories: [{ name: "timeline-project", updatedAt: "2026-08-15T10:00:00.000Z" }] });
   });
 });
+
+describe("profile content authoring", () => {
+  it("persists headline and tagline content in the local fallback section configuration", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const current = await caller.portfolio.myProfile();
+    const slug = current?.slug || `content-author-${Date.now()}`;
+    if (!current) await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems", location: "London" });
+    const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
+    expect(publicProfile?.sectionConfig?.content).toMatchObject({ headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems" });
+    expect(publicProfile?.location).toBe("London");
+  });
+});

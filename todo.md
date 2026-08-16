@@ -162,3 +162,168 @@
 - [x] Map database lastActivityAt to public updatedAt in portfolio.bySlug
 - [x] Add source-contract coverage for database activity timestamp mapping; database fixtures remain environment-dependent
 - [x] Add a visible activity-grid empty state and regression coverage
+
+## 150-feature expansion roadmap
+
+### Portfolio authoring and content management
+- [x] F001 Add persisted portfolio headline editing
+- [x] F002 Add persisted short tagline editing
+- [x] F003 Add persisted location and timezone editing
+- [x] F004 Add persisted availability status editing
+- [x] F005 Add persisted current-focus editing
+- [x] F006 Add persisted now-status editing
+- [x] F007 Add persisted currently-learning editing
+- [ ] F008 Add persisted writing-note entries
+- [ ] F009 Add writing-note URL validation
+- [ ] F010 Add writing-note publish dates
+- [ ] F011 Add writing-note ordering controls
+- [ ] F012 Add manual projects separate from GitHub repositories
+- [ ] F013 Add manual project descriptions
+- [ ] F014 Add manual project technology tags
+- [ ] F015 Add manual project external links
+- [ ] F016 Add manual project visibility controls
+- [ ] F017 Add project cover-image metadata
+- [ ] F018 Add project image upload flow
+- [ ] F019 Add project image alt text
+- [ ] F020 Add project image crop metadata
+- [ ] F021 Add Markdown portfolio copy editor
+- [ ] F022 Add Markdown preview mode
+- [ ] F023 Add Markdown sanitization tests
+- [ ] F024 Add section-specific call-to-action editing
+- [ ] F025 Add reusable content blocks
+- [ ] F026 Add content-block ordering
+- [ ] F027 Add content-block visibility controls
+- [ ] F028 Add portfolio duplication workflow
+- [ ] F029 Add template cloning workflow
+- [ ] F030 Add revision history and restore points
+
+### GitHub intelligence and project data
+- [ ] F031 Add repository import exclusion rules
+- [ ] F032 Add repository exclusion search
+- [ ] F033 Add repository exclusion persistence
+- [ ] F034 Add GitHub organization repository support
+- [ ] F035 Add GitHub topic filtering
+- [ ] F036 Add repository archived-state badges
+- [ ] F037 Add repository fork-state badges
+- [ ] F038 Add repository license metadata
+- [ ] F039 Add repository default-branch metadata
+- [ ] F040 Add repository issue-count metadata
+- [ ] F041 Add repository pull-request metadata
+- [ ] F042 Add repository contributor-count metadata
+- [ ] F043 Add repository release metadata
+- [ ] F044 Add repository commit-activity summaries
+- [ ] F045 Add repository language breakdowns
+- [ ] F046 Add GitHub contribution heatmap from contribution data
+- [ ] F047 Add GitHub activity timeline from synced events
+- [ ] F048 Add GitHub profile follower metadata
+- [ ] F049 Add GitHub profile following metadata
+- [ ] F050 Add GitHub pinned-repository import
+- [ ] F051 Add repository health scoring
+- [ ] F052 Add project complexity indicators
+- [ ] F053 Add AI project category classification
+- [ ] F054 Add AI technology clustering persistence
+- [ ] F055 Add AI project comparison summaries
+- [ ] F056 Add AI portfolio bio rewrite suggestions
+- [ ] F057 Add AI project title suggestions
+- [ ] F058 Add AI project tag suggestions
+- [ ] F059 Add AI summary edit-and-approve workflow
+- [ ] F060 Add AI generation audit history
+
+### Public portfolio, sharing, SEO, and engagement
+- [ ] F061 Add public contact form with spam protection
+- [ ] F062 Add contact form validation states
+- [ ] F063 Add contact form rate limiting
+- [ ] F064 Add contact form owner notifications
+- [ ] F065 Add functional newsletter signup persistence
+- [ ] F066 Add newsletter duplicate-subscription handling
+- [ ] F067 Add newsletter unsubscribe flow
+- [ ] F068 Add public recommendation links
+- [ ] F069 Add endorsement-link management
+- [ ] F070 Add public guestbook opt-in
+- [ ] F071 Add public guestbook moderation
+- [ ] F072 Add project share cards
+- [ ] F073 Add copy-share-link actions
+- [ ] F074 Add QR code portfolio sharing
+- [ ] F075 Add downloadable PDF resume export
+- [ ] F076 Add print stylesheet customization
+- [ ] F077 Add per-project social metadata
+- [ ] F078 Add Open Graph image generation
+- [ ] F079 Add Twitter card metadata
+- [ ] F080 Add JSON-LD Person metadata
+- [ ] F081 Add JSON-LD SoftwareSourceCode metadata
+- [ ] F082 Add sitemap generation
+- [ ] F083 Add robots.txt controls
+- [ ] F084 Add canonical URL controls
+- [ ] F085 Add locale metadata
+- [ ] F086 Add language alternate links
+- [ ] F087 Add custom favicon upload
+- [ ] F088 Add custom domain host resolution
+- [ ] F089 Add custom-domain health checks
+- [ ] F090 Add custom-domain SSL monitoring
+
+### Analytics, notifications, billing, and customer features
+- [ ] F091 Add analytics retention controls
+- [ ] F092 Add analytics export date filters
+- [ ] F093 Add analytics event sampling controls
+- [ ] F094 Add live visitor presence metrics
+- [ ] F095 Add project-level view analytics
+- [ ] F096 Add outbound-link click analytics
+- [ ] F097 Add contact conversion analytics
+- [ ] F098 Add newsletter conversion analytics
+- [ ] F099 Add dashboard cohort comparisons
+- [ ] F100 Add analytics timezone selector
+- [ ] F101 Add portfolio update notification digest
+- [ ] F102 Add digest frequency controls
+- [ ] F103 Add notification delivery history
+- [ ] F104 Add failed notification retry controls
+- [ ] F105 Add browser push subscription persistence
+- [ ] F106 Add email notification preferences
+- [ ] F107 Add Paddle customer portal deep links
+- [ ] F108 Add Paddle webhook signature validation
+- [ ] F109 Add Paddle subscription lifecycle sync
+- [ ] F110 Add Paddle cancellation state handling
+- [ ] F111 Add Paddle invoice history view
+- [ ] F112 Add Paddle tax and billing address fields
+- [ ] F113 Add plan upgrade proration messaging
+- [ ] F114 Add plan downgrade safeguards
+- [ ] F115 Add managed-domain order timeline
+- [ ] F116 Add managed-domain renewal reminders
+- [ ] F117 Add usage-limit warning notifications
+- [ ] F118 Add admin customer search
+- [ ] F119 Add admin customer export
+- [ ] F120 Add admin audit log
+
+### Reliability, security, accessibility, integrations, and administration
+- [ ] F121 Add scheduled GitHub repository sync
+- [ ] F122 Add sync schedule controls
+- [ ] F123 Add sync failure persistence
+- [ ] F124 Add sync failure notifications
+- [ ] F125 Add sync retry controls
+- [ ] F126 Add sync backoff policy
+- [ ] F127 Add idempotent repository synchronization
+- [ ] F128 Add database migration health checks
+- [ ] F129 Add local fallback health diagnostics
+- [ ] F130 Add application status page
+- [ ] F131 Add structured server logging
+- [ ] F132 Add request correlation IDs
+- [ ] F133 Add security event audit log
+- [ ] F134 Add session revocation controls
+- [ ] F135 Add OAuth scope downgrade handling
+- [ ] F136 Add account recovery safeguards
+- [ ] F137 Add export encryption option
+- [ ] F138 Add data retention deletion jobs
+- [ ] F139 Add CSP violation reporting
+- [ ] F140 Add accessibility automated browser checks
+- [ ] F141 Add keyboard navigation end-to-end tests
+- [ ] F142 Add screen-reader landmark checks
+- [ ] F143 Add color-contrast regression checks
+- [ ] F144 Add reduced-motion visual checks
+- [ ] F145 Add Google Analytics connector option
+- [ ] F146 Add Plausible analytics connector option
+- [ ] F147 Add Sentry error connector option
+- [ ] F148 Add GitHub App authentication option
+- [ ] F149 Add REST API tokens for portfolio management
+- [ ] F150 Add public API documentation and versioning
+- [x] Add visible location editor control with hydration and persistence
+- [x] Add timezone persistence through profile content and editor control
+- [x] Add regression coverage proving location and timezone save and hydrate
