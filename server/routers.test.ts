@@ -225,9 +225,9 @@ describe("profile content authoring", () => {
     const caller = appRouter.createCaller(authenticatedContext());
     const slug = `blocks-author-${Date.now()}`;
     await caller.portfolio.updatePublishing({ slug, isPublic: true });
-    await caller.portfolio.updateProfileCopy({ slug, callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", contentBlocks: [{ id: "principles", title: "Principles", body: "**Build calmly**", visible: true, sortOrder: 1 }, { id: "hidden", title: "Hidden", body: "Not public", visible: false, sortOrder: 0 }] });
+    await caller.portfolio.updateProfileCopy({ slug, callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", skillClusters: ["Developer tools", "<script>Data and AI</script>"], contentBlocks: [{ id: "principles", title: "Principles", body: "**Build calmly**", visible: true, sortOrder: 1 }, { id: "hidden", title: "Hidden", body: "Not public", visible: false, sortOrder: 0 }] });
     const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
-    expect(publicProfile?.sectionConfig?.content).toMatchObject({ callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", contentBlocks: [{ id: "principles", title: "Principles", visible: true, sortOrder: 1 }, { id: "hidden", visible: false }] });
+    expect(publicProfile?.sectionConfig?.content).toMatchObject({ callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", skillClusters: ["Developer tools", "scriptData and AI/script"], contentBlocks: [{ id: "principles", title: "Principles", visible: true, sortOrder: 1 }, { id: "hidden", visible: false }] });
   });
 
   it("rejects unsafe CTA URLs", async () => {
