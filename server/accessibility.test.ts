@@ -97,6 +97,11 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("AI project comparison");
     expect(home).toContain("rewriteBio");
     expect(home).toContain("Rewrite bio");
+    expect(home).toContain("suggestTitle");
+    expect(home).toContain("Suggest title for");
+    expect(home).toContain("displayName: repo.displayName || repo.name");
+    expect(home).toContain("repo.displayName || repo.name");
+    expect(home).toContain("r.displayName || r.name");
   });
 
   it("keeps repository ordering controls draggable and accessible", async () => {

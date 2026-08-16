@@ -224,7 +224,7 @@
 - [x] F054 Add AI technology clustering persistence
 - [x] F055 Add AI project comparison summaries
 - [x] F056 Add AI portfolio bio rewrite suggestions
-- [ ] F057 Add AI project title suggestions
+- [x] F057 Add AI project title suggestions
 - [ ] F058 Add AI project tag suggestions
 - [ ] F059 Add AI summary edit-and-approve workflow
 - [ ] F060 Add AI generation audit history

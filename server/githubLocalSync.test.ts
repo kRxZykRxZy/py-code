@@ -23,6 +23,7 @@ vi.mock("./integrations", () => ({
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
   rewritePortfolioBio: vi.fn().mockResolvedValue("A clearer developer bio."),
+  suggestProjectTitle: vi.fn().mockResolvedValue("Folio Workspace"),
 }));
 
 import { appRouter } from "./routers";

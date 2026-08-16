@@ -75,6 +75,17 @@ export function classifyProjectCategory(input: { name?: string; description?: st
   if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
   return input.language ? `${input.language} project` : "Software project";
 }
+export async function suggestProjectTitle(input: { name?: string; description?: string | null; language?: string | null; topics?: unknown }): Promise<string> {
+  const fallback = (input.name || "Project").replace(/[-_]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()).slice(0, 80);
+  const prompt = `Suggest one memorable but accurate portfolio title for this GitHub project. Return title case plain text only, 2 to 6 words, no punctuation. Do not invent claims. Name: ${input.name || ""}. Description: ${input.description || ""}. Language: ${input.language || ""}. Topics: ${Array.isArray(input.topics) ? input.topics.slice(0, 8).join(", ") : ""}`;
+  const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
+  try {
+    const response = await axios.get(`${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=109`, { timeout: 12000, headers: process.env.POLLINATIONS_API_KEY ? { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` } : undefined });
+    const raw = typeof response.data === "string" ? response.data : response.data?.text;
+    const title = typeof raw === "string" ? raw.replace(/[\r\n]+/g, " ").replace(/[^a-zA-Z0-9& -]/g, "").trim().slice(0, 80) : "";
+    return title || fallback;
+  } catch { return fallback; }
+}
 export async function rewritePortfolioBio(input: { bio?: string; headline?: string; repositories?: Array<{ name: string; language?: string | null }> }): Promise<string> {
   const original = (input.bio || "").trim();
   const fallback = original || "A product-minded engineer building thoughtful software and useful developer experiences.";
