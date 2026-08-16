@@ -17,6 +17,20 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({ me: publicProcedure.query(opts => opts.ctx.user), logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }) }),
   integrations: publicProcedure.query(() => integrationConfig),
+  github: router({
+    connection: protectedProcedure.query(async ({ ctx }) => {
+      const db = await getDb();
+      const connection = db ? (await db.select().from(githubConnections).where(eq(githubConnections.userId, ctx.user.id)).limit(1))[0] : localGet<{ githubId: string; scope?: string | null; login?: string; updatedAt?: number } | null>(`githubConnection:${ctx.user.openId}`, null);
+      if (!connection) return { connected: false, login: null, scopes: [], updatedAt: null };
+      return { connected: true, login: "login" in connection ? connection.login ?? null : null, scopes: (connection.scope || "").split(",").filter(Boolean), updatedAt: "updatedAt" in connection ? connection.updatedAt : null };
+    }),
+    disconnect: protectedProcedure.mutation(async ({ ctx }) => {
+      const db = await getDb();
+      if (db) await db.delete(githubConnections).where(eq(githubConnections.userId, ctx.user.id));
+      else localSet(`githubConnection:${ctx.user.openId}`, null);
+      return { disconnected: true } as const;
+    }),
+  }),
   portfolio: router({
     bySlug: publicProcedure.input(z.object({ slug: z.string().min(1).max(80) })).query(async ({ input }) => {
       const db = await getDb();
