@@ -35,6 +35,8 @@ section[id] { scroll-margin-top: 1.5rem; }
 .font-mono { font-family: 'DM Mono', monospace; }
 ::selection { background: #b9f5dc; color: #12332a; }
 
+@media print { body { background: white !important; } .skip-link, button, nav, [role="navigation"] { display: none !important; } .portfolio-preview-shell { color: #14221f !important; background: white !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

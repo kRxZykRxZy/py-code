@@ -245,7 +245,7 @@
 - [x] F073 Add copy-share-link actions
 - [x] F074 Add QR code portfolio sharing
 - [ ] F075 Add downloadable PDF resume export
-- [ ] F076 Add print stylesheet customization
+- [x] F076 Add print stylesheet customization
 - [ ] F077 Add per-project social metadata
 - [ ] F078 Add Open Graph image generation
 - [ ] F079 Add Twitter card metadata
