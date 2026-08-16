@@ -203,9 +203,19 @@ describe("profile content authoring", () => {
     const current = await caller.portfolio.myProfile();
     const slug = current?.slug || `content-author-${Date.now()}`;
     if (!current) await caller.portfolio.updatePublishing({ slug, isPublic: true });
-    await caller.portfolio.updateProfileCopy({ slug, headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems", location: "London" });
+    await caller.portfolio.updateProfileCopy({ slug, headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems", writingNotes: [{ title: "Building quietly", url: "https://example.com/notes/building-quietly", publishedAt: "2026-08-16", sortOrder: 0 }], manualProjects: [{ title: "Field Notes", description: "A small manual project.", tags: ["Research", "Writing"], url: "https://example.com/field-notes", visible: true, sortOrder: 0 }], location: "London" });
     const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
-    expect(publicProfile?.sectionConfig?.content).toMatchObject({ headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems" });
+    expect(publicProfile?.sectionConfig?.content).toMatchObject({ headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems", writingNotes: [{ title: "Building quietly", url: "https://example.com/notes/building-quietly", publishedAt: "2026-08-16", sortOrder: 0 }], manualProjects: [{ title: "Field Notes", description: "A small manual project.", tags: ["Research", "Writing"], url: "https://example.com/field-notes", visible: true, sortOrder: 0 }] });
     expect(publicProfile?.location).toBe("London");
   });
 });
+
+  it("rejects unsafe writing-note URLs", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-note", writingNotes: [{ title: "Unsafe", url: "javascript:alert(1)", sortOrder: 0 }] })).rejects.toThrow("Writing note links must use http or https");
+  });
+
+  it("rejects unsafe manual-project URLs", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-manual-project", manualProjects: [{ title: "Unsafe", description: "Bad link", tags: [], url: "javascript:alert(1)", visible: true, sortOrder: 0 }] })).rejects.toThrow("Manual project links must use http or https");
+  });

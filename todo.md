@@ -173,15 +173,15 @@
 - [x] F005 Add persisted current-focus editing
 - [x] F006 Add persisted now-status editing
 - [x] F007 Add persisted currently-learning editing
-- [ ] F008 Add persisted writing-note entries
-- [ ] F009 Add writing-note URL validation
-- [ ] F010 Add writing-note publish dates
-- [ ] F011 Add writing-note ordering controls
-- [ ] F012 Add manual projects separate from GitHub repositories
-- [ ] F013 Add manual project descriptions
-- [ ] F014 Add manual project technology tags
-- [ ] F015 Add manual project external links
-- [ ] F016 Add manual project visibility controls
+- [x] F008 Add persisted writing-note entries
+- [x] F009 Add writing-note URL validation
+- [x] F010 Add writing-note publish dates
+- [x] F011 Add writing-note ordering controls
+- [x] F012 Add manual projects separate from GitHub repositories
+- [x] F013 Add manual project descriptions
+- [x] F014 Add manual project technology tags
+- [x] F015 Add manual project external links
+- [x] F016 Add manual project visibility controls
 - [ ] F017 Add project cover-image metadata
 - [ ] F018 Add project image upload flow
 - [ ] F019 Add project image alt text
@@ -327,3 +327,5 @@
 - [x] Add visible location editor control with hydration and persistence
 - [x] Add timezone persistence through profile content and editor control
 - [x] Add regression coverage proving location and timezone save and hydrate
+- [x] Add explicit manual-project URL validation with a clear error
+- [x] Add regression coverage for manual-project URL validation and valid-link persistence
