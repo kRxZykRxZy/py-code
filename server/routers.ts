@@ -7,7 +7,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { getDb } from "./db";
-import { analyticsEvents, customDomains, githubConnections, profiles, repositories, subscriptions, users } from "../drizzle/schema";
+import { analyticsEvents, contactMessages, customDomains, githubConnections, profiles, repositories, subscriptions, users } from "../drizzle/schema";
 import { generatePortfolioNarrative, generateProjectComparison, rewritePortfolioBio, suggestProjectTitle, suggestProjectTags, classifyProjectCategoryWithAI, deriveComplexityLevel, deriveRepositoryHealth, getGitHubCommitActivity, getGitHubContributionCalendar, getGitHubContributorCount, getGitHubLanguageBreakdown, getGitHubLatestRelease, summarizeCommitActivity, getGitHubOpenPullRequestCount, getGitHubOrganizationRepos, getGitHubPinnedRepositoryIds, getGitHubProfile, getGitHubRepos, getGitHubUserEvents, integrationConfig, summarizeRepository } from "./integrations";
 import { validatePortfolioCss } from "./customCss";
 import { sanitizeMarkdownSource, markdownLimits } from "../shared/markdown";
@@ -111,6 +111,7 @@ export const appRouter = router({
       const rows = await db.select().from(repositories).where(eq(repositories.profileId, result[0].id)).orderBy(repositories.sortOrder);
       return withDetailNarratives({ ...result[0], repositories: rows.filter(r => !r.isHidden) });
     }),
+    submitContact: publicProcedure.input(z.object({ slug: z.string().regex(/^[a-z0-9-]+$/), senderName: z.string().trim().min(2).max(120), senderEmail: z.string().trim().email().max(320), message: z.string().trim().min(20).max(4000), website: z.string().max(120).optional(), startedAt: z.number().int().positive().optional() })).mutation(async ({ input }) => { const elapsed = input.startedAt ? Date.now() - input.startedAt : 10_000; const spamScore = (input.website ? 100 : 0) + (elapsed < 1200 ? 60 : 0); if (spamScore >= 100) return { accepted: true } as const; const db = await getDb(); if (db) { const profile = (await db.select({ id: profiles.id }).from(profiles).where(eq(profiles.slug, input.slug)).limit(1))[0]; if (!profile) throw new TRPCError({ code: "NOT_FOUND", message: "Portfolio not found" }); await db.insert(contactMessages).values({ profileId: profile.id, senderName: sanitizePlainText(input.senderName, 120), senderEmail: input.senderEmail.toLowerCase(), message: sanitizePlainText(input.message, 4000), spamScore }); } else { const existing = localGet<any[]>(`contact:${input.slug}`, []); localSet(`contact:${input.slug}`, [{ id: `contact-${Date.now()}`, senderName: sanitizePlainText(input.senderName, 120), senderEmail: input.senderEmail.toLowerCase(), message: sanitizePlainText(input.message, 4000), spamScore, isRead: false, createdAt: Date.now() }, ...existing].slice(0, 100)); } return { accepted: true } as const; }),
     myProfile: protectedProcedure.query(async ({ ctx }) => {
       const db = await getDb();
       if (db) { const profile = (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0]; if (!profile) return null; const rows = await db.select().from(repositories).where(eq(repositories.profileId, profile.id)).orderBy(repositories.sortOrder); return { ...profile, repositories: rows }; }

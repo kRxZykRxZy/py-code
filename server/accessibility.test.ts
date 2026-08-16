@@ -109,6 +109,11 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("aiSummary: summarySuggestions[r.name]");
     expect(home).toContain("recordAiGeneration");
     expect(home).toContain("AI generation history");
+    expect(home).toContain("submitContact");
+    expect(home).toContain("Your name");
+    expect(home).toContain("Your email");
+    expect(home).toContain("Your message");
+    expect(home).toContain("Thanks — your message was sent.");
     expect(home).toContain("aiAudit.slice(0, 5)");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");

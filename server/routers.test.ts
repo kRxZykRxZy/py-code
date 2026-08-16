@@ -299,6 +299,13 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.uploadProjectImage({ slug: "image-project", projectIndex: 0, fileName: "cover.svg", mimeType: "image/png", dataUrl: "data:image/svg+xml;base64,PHN2Zz4=" })).rejects.toThrow("Upload a valid JPEG, PNG, WebP, or GIF image");
   });
 
+  it("accepts valid contact messages and silently absorbs honeypot spam", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await caller.portfolio.updatePublishing({ slug: "contact-project", isPublic: true });
+    await expect(caller.portfolio.submitContact({ slug: "contact-project", senderName: "Taylor", senderEmail: "Taylor@example.com", message: "I would like to discuss the project and collaboration details.", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
+    await expect(caller.portfolio.submitContact({ slug: "contact-project", senderName: "Bot", senderEmail: "bot@example.com", message: "This message should be absorbed by the honeypot.", website: "https://spam.example", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
+  });
+
   it("persists bounded AI generation audit records without exposing prompt content", async () => {
     localSet("githubConnection:fallback-test-user", { login: "audit-project" });
     localSet("profile:audit-project", { slug: "audit-project", isPublic: true, sectionConfig: { order: ["Hero introduction"], aiGenerationAudit: [] }, repositories: [] });

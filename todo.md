@@ -230,8 +230,8 @@
 - [x] F060 Add AI generation audit history
 
 ### Public portfolio, sharing, SEO, and engagement
-- [ ] F061 Add public contact form with spam protection
-- [ ] F062 Add contact form validation states
+- [x] F061 Add public contact form with spam protection
+- [x] F062 Add contact form validation states
 - [ ] F063 Add contact form rate limiting
 - [ ] F064 Add contact form owner notifications
 - [ ] F065 Add functional newsletter signup persistence
@@ -360,3 +360,5 @@
 - [x] Persist AI audit entries inside server-side AI generation procedures
 - [x] Record draft, approved, rejected, completed, and failed AI lifecycle statuses with bounded redacted metadata
 - [x] Cover audit lifecycle persistence and editor history rendering with regression tests
+- [x] Add per-field contact validation errors with invalid styling and aria-describedby wiring
+- [x] Verify invalid contact input feedback and valid submission success behavior with regression contracts
