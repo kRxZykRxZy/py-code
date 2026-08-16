@@ -316,6 +316,19 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.submitContact(input)).rejects.toThrow("Please wait before sending another message.");
   });
 
+  it("supports opt-in guestbook submission and moderation lifecycle", async () => {
+    const owner = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    const slug = `guestbook-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    await owner.portfolio.updatePublishing({ slug, isPublic: true });
+    await owner.portfolio.updateProfileCopy({ slug, guestbookEnabled: true });
+    await expect(publicCaller.portfolio.submitGuestbook({ slug, name: "Visitor", message: "Thoughtful work and a clear point of view." })).resolves.toEqual({ accepted: true });
+    const pending = await owner.portfolio.guestbookList();
+    expect(pending[0]).toMatchObject({ name: "Visitor", approved: false });
+    await owner.portfolio.moderateGuestbook({ id: pending[0].id, approved: true });
+    await expect(publicCaller.portfolio.bySlug({ slug })).resolves.toMatchObject({ sectionConfig: { content: { guestbookEnabled: true, guestbookEntries: [{ name: "Visitor", approved: true }] } } });
+  });
+
   it("persists sanitized endorsement links through profile copy", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     const slug = `endorsement-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;

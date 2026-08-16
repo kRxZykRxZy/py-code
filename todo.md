@@ -239,8 +239,8 @@
 - [x] F067 Add newsletter unsubscribe flow
 - [x] F068 Add public recommendation links
 - [x] F069 Add endorsement-link management
-- [ ] F070 Add public guestbook opt-in
-- [ ] F071 Add public guestbook moderation
+- [x] F070 Add public guestbook opt-in
+- [x] F071 Add public guestbook moderation
 - [ ] F072 Add project share cards
 - [ ] F073 Add copy-share-link actions
 - [ ] F074 Add QR code portfolio sharing
@@ -364,3 +364,8 @@
 - [x] Verify invalid contact input feedback and valid submission success behavior with regression contracts
 - [x] Replace in-memory contact rate limiting with durable hashed client-key counting
 - [x] Prune expired local fallback timestamps and cover repeated-submission limits
+
+- [x] Add owner-facing guestbook opt-in toggle and persistence control
+- [x] Add owner-facing guestbook moderation controls for approve/reject
+- [x] Filter pending guestbook entries from public profile API responses
+- [x] Add regression coverage for pending guestbook API privacy
