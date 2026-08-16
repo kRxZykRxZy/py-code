@@ -316,6 +316,15 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.submitContact(input)).rejects.toThrow("Please wait before sending another message.");
   });
 
+  it("persists safe public recommendation links through profile copy", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `recommendation-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, recommendations: [{ label: "Design notes", url: "https://example.com/notes" }] });
+    const profile = await caller.portfolio.myProfile();
+    expect((profile as any)?.sectionConfig?.content?.recommendations).toEqual([{ label: "Design notes", url: "https://example.com/notes" }]);
+  });
+
   it("persists duplicate-safe newsletter subscriptions and unsubscribe lifecycle", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     const slug = `newsletter-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;

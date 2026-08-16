@@ -237,7 +237,7 @@
 - [x] F065 Add functional newsletter signup persistence
 - [x] F066 Add newsletter duplicate-subscription handling
 - [x] F067 Add newsletter unsubscribe flow
-- [ ] F068 Add public recommendation links
+- [x] F068 Add public recommendation links
 - [ ] F069 Add endorsement-link management
 - [ ] F070 Add public guestbook opt-in
 - [ ] F071 Add public guestbook moderation
