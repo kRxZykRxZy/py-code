@@ -59,6 +59,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("oss-${repo.name}");
     expect(home).toContain("GitHub activity timeline");
     expect(home).toContain("Activity dates will appear after the next GitHub sync.");
+    expect(home).toContain("SSL ready");
+    expect(home).toContain("SSL pending");
+    expect(home).toContain("DNS pending");
   });
 
   it("keeps repository ordering controls draggable and accessible", async () => {

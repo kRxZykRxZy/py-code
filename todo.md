@@ -67,7 +67,7 @@
 - [ ] Add revision history and restore points
 - [ ] Add portfolio duplication and template cloning
 - [x] Add custom domain DNS verification guide
-- [ ] Add domain health and SSL status view
+- [x] Add domain health and SSL status view
 - [x] Add GitHub token scope and privacy controls
 - [ ] Add scheduled GitHub repository sync
 - [ ] Add sync failure notifications and retry controls
