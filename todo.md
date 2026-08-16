@@ -246,7 +246,7 @@
 - [x] F074 Add QR code portfolio sharing
 - [ ] F075 Add downloadable PDF resume export
 - [x] F076 Add print stylesheet customization
-- [ ] F077 Add per-project social metadata
+- [x] F077 Add per-project social metadata
 - [ ] F078 Add Open Graph image generation
 - [ ] F079 Add Twitter card metadata
 - [ ] F080 Add JSON-LD Person metadata
@@ -376,3 +376,6 @@
 - [x] Add QR sharing for the main public portfolio URL
 - [x] Render an accessible in-app portfolio QR preview/download surface
 - [x] Add regression coverage for portfolio QR target and visibility
+
+- [x] Render per-project social metadata in the initial server HTML response
+- [x] Verify project metadata delivery in the server head contract
