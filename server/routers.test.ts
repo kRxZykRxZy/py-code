@@ -208,7 +208,41 @@ describe("profile content authoring", () => {
     expect(publicProfile?.sectionConfig?.content).toMatchObject({ headline: "Designing useful systems", tagline: "Open to thoughtful collaborations", timezone: "Europe/London", availabilityStatus: "Available for select work", currentFocus: "Design systems", nowStatus: "Shipping a calm workspace", learningStatus: "Distributed systems", writingNotes: [{ title: "Building quietly", url: "https://example.com/notes/building-quietly", publishedAt: "2026-08-16", sortOrder: 0 }], manualProjects: [{ title: "Field Notes", description: "A small manual project.", tags: ["Research", "Writing"], url: "https://example.com/field-notes", visible: true, sortOrder: 0 }] });
     expect(publicProfile?.location).toBe("London");
   });
+
+  it("persists sanitized Markdown portfolio copy through the public profile", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `markdown-author-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, markdownCopy: "# Hello <script>alert(1)</script>\n\n[Safe link](https://example.com) [Bad link](javascript:alert(1))" });
+    const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
+    expect(publicProfile?.sectionConfig?.content?.markdownCopy).toContain("# Hello alert(1)");
+    expect(publicProfile?.sectionConfig?.content?.markdownCopy).not.toContain("<script>");
+    expect(publicProfile?.sectionConfig?.content?.markdownCopy).not.toContain("javascript:");
+  });
 });
+
+  it("persists CTA and ordered content blocks through the public profile", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `blocks-author-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", contentBlocks: [{ id: "principles", title: "Principles", body: "**Build calmly**", visible: true, sortOrder: 1 }, { id: "hidden", title: "Hidden", body: "Not public", visible: false, sortOrder: 0 }] });
+    const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
+    expect(publicProfile?.sectionConfig?.content).toMatchObject({ callToActionLabel: "Book a conversation", callToActionUrl: "https://example.com/contact", contentBlocks: [{ id: "principles", title: "Principles", visible: true, sortOrder: 1 }, { id: "hidden", visible: false }] });
+  });
+
+  it("rejects unsafe CTA URLs", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-cta", callToActionLabel: "Click", callToActionUrl: "javascript:alert(1)" })).rejects.toThrow("Call-to-action links must use http or https");
+  });
+
+  it("persists Hero and Contact CTAs independently", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `section-cta-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, heroCtaLabel: "Read the work", heroCtaUrl: "https://example.com/work", contactCtaLabel: "Email me", contactCtaUrl: "https://example.com/contact" });
+    const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
+    expect(publicProfile?.sectionConfig?.content).toMatchObject({ heroCtaLabel: "Read the work", heroCtaUrl: "https://example.com/work", contactCtaLabel: "Email me", contactCtaUrl: "https://example.com/contact" });
+  });
 
   it("rejects unsafe writing-note URLs", async () => {
     const caller = appRouter.createCaller(authenticatedContext());

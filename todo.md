@@ -186,13 +186,13 @@
 - [x] F018 Add project image upload flow
 - [x] F019 Add project image alt text
 - [x] F020 Add project image crop metadata
-- [ ] F021 Add Markdown portfolio copy editor
-- [ ] F022 Add Markdown preview mode
-- [ ] F023 Add Markdown sanitization tests
-- [ ] F024 Add section-specific call-to-action editing
-- [ ] F025 Add reusable content blocks
-- [ ] F026 Add content-block ordering
-- [ ] F027 Add content-block visibility controls
+- [x] F021 Add Markdown portfolio copy editor
+- [x] F022 Add Markdown preview mode
+- [x] F023 Add Markdown sanitization tests
+- [x] F024 Add section-specific call-to-action editing
+- [x] F025 Add reusable content blocks
+- [x] F026 Add content-block ordering
+- [x] F027 Add content-block visibility controls
 - [ ] F028 Add portfolio duplication workflow
 - [ ] F029 Add template cloning workflow
 - [ ] F030 Add revision history and restore points
@@ -332,3 +332,6 @@
 - [x] Add persisted cover-image metadata for GitHub repository-backed projects
 - [x] Wire image upload, alt text, and crop controls to repository-backed projects
 - [x] Add regression coverage for repository-backed project image persistence and rendering
+- [x] Add persisted per-section CTA fields for hero and contact sections
+- [x] Add editor controls and public rendering for section-specific CTAs
+- [x] Add regression coverage for section-specific CTA persistence and rendering
