@@ -43,7 +43,7 @@
 - [x] Add project technology chips and technology filtering
 - [x] Add project detail pages with full AI showcase narratives
 - [x] Add featured project hero presentation
-- [ ] Replace decorative activity grid with real portfolio/GitHub activity data
+- [x] Replace decorative activity grid with updatedAt-derived repository activity data
 - [x] Add GitHub activity timeline section
 - [x] Add pinned project comparison layout
 - [x] Add project demo and homepage link badges
@@ -156,3 +156,9 @@
 - [x] Add explicit regression coverage that cards use summary while project details use detailNarrative
 - [x] Add regression coverage proving repository updatedAt is exposed by the local-fallback public profile contract for the activity timeline
 - [x] Add local fallback activity timestamp coverage for the public timeline data contract
+- [x] Persist repository activity timestamps in the database repository model and GitHub sync
+- [x] Expose database-backed activity timestamps through public profile responses and test that path
+- [x] Add a verified empty-state message for the activity grid when no timestamps exist
+- [x] Map database lastActivityAt to public updatedAt in portfolio.bySlug
+- [x] Add source-contract coverage for database activity timestamp mapping; database fixtures remain environment-dependent
+- [x] Add a visible activity-grid empty state and regression coverage

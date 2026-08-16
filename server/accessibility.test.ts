@@ -59,6 +59,16 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("oss-${repo.name}");
     expect(home).toContain("GitHub activity timeline");
     expect(home).toContain("Activity dates will appear after the next GitHub sync.");
+    expect(home).toContain("activityCells");
+    expect(home).toContain("repository update");
+    const schema = await readFile(join(projectRoot, "drizzle/schema.ts"), "utf8");
+    const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
+    expect(schema).toContain("lastActivityAt");
+    expect(router).toContain("lastActivityAt: repo.updated_at");
+    expect(router).toContain("updatedAt: repo.updatedAt || repo.lastActivityAt || null");
+    expect(router).toContain("updatedAt: repo.updated_at || null");
+    expect(home).toContain("Repository activity heatmap");
+    expect(home).toContain("No repository activity dates are available yet. Sync GitHub to populate this rhythm.");
     expect(home).toContain("SSL ready");
     expect(home).toContain("SSL pending");
     expect(home).toContain("DNS pending");

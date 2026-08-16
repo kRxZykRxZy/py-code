@@ -36,6 +36,13 @@
       "when": 1786880144350,
       "tag": "0004_pretty_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786882361666,
+      "tag": "0005_awesome_glorian",
+      "breakpoints": true
     }
   ]
 }

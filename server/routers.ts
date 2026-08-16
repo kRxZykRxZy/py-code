@@ -18,7 +18,7 @@ const customDomainSchema = z.string().trim().toLowerCase().min(4).max(253).regex
 const planUsageLimits = { free: { aiSummaries: 3, customCssChars: 0 }, pro: { aiSummaries: 20, customCssChars: 2_000 }, proPlus: { aiSummaries: null, customCssChars: 20_000 } } as const;
 function effectivePlan(subscription: any) { return subscription?.status === "active" && subscription.plan !== "free" ? subscription.plan as "pro" | "proPlus" : "free"; }
 function createPreviewToken() { return randomBytes(24).toString("base64url"); }
-function withDetailNarratives(profile: any) { if (!profile?.repositories) return profile; return { ...profile, repositories: profile.repositories.map((repo: any) => ({ ...repo, detailNarrative: repo.detailNarrative || `${repo.aiSummary || repo.description || "This project demonstrates a considered approach to building useful software."} It combines ${repo.language || "software"} craft with the practical constraints reflected in ${repo.stars || 0} stars and ${repo.forks || 0} forks.` })) }; }
+function withDetailNarratives(profile: any) { if (!profile?.repositories) return profile; return { ...profile, repositories: profile.repositories.map((repo: any) => ({ ...repo, updatedAt: repo.updatedAt || repo.lastActivityAt || null, detailNarrative: repo.detailNarrative || `${repo.aiSummary || repo.description || "This project demonstrates a considered approach to building useful software."} It combines ${repo.language || "software"} craft with the practical constraints reflected in ${repo.stars || 0} stars and ${repo.forks || 0} forks.` })) }; }
 
 export const appRouter = router({
   system: systemRouter,
@@ -147,11 +147,11 @@ export const appRouter = router({
           for (let index = 0; index < repos.length; index++) {
             const repo = repos[index];
             const aiSummary = await summarizeRepository(repo);
-            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary } });
+            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null } });
           }
         }
       } else {
-        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: repos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary: null, isPinned: false, sortOrder: index })) });
+        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: repos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary: null, isPinned: false, sortOrder: index, updatedAt: repo.updated_at || null })) });
       }
       return { profile: { login: profile.login, name: profile.name }, repositories: repos.length };
     }),
