@@ -218,8 +218,8 @@
 - [x] F048 Add GitHub profile follower metadata
 - [x] F049 Add GitHub profile following metadata
 - [x] F050 Add GitHub pinned-repository import
-- [ ] F051 Add repository health scoring
-- [ ] F052 Add project complexity indicators
+- [x] F051 Add repository health scoring
+- [x] F052 Add project complexity indicators
 - [ ] F053 Add AI project category classification
 - [ ] F054 Add AI technology clustering persistence
 - [ ] F055 Add AI project comparison summaries
@@ -351,3 +351,6 @@
 - [x] Render language breakdown details and add regression coverage
 - [x] Persist imported GitHub pinned IDs in database-backed repository inserts and updates
 - [x] Add database and local regression coverage for pinned import public/editor exposure
+- [x] Expose and render repository health scores in public and editor surfaces
+- [x] Expose and render repository complexity indicators in public and editor surfaces
+- [x] Add regression coverage for health and complexity persistence and visible contracts

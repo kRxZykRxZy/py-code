@@ -15,6 +15,9 @@ vi.mock("./integrations", () => ({
   getGitHubCommitActivity: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? [1, 3, 2] : [0, 1])),
   getGitHubLanguageBreakdown: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? { TypeScript: 8000, CSS: 2000 } : { TypeScript: 5000 })),
   summarizeCommitActivity: vi.fn((activity: unknown) => Array.isArray(activity) && activity.length ? "6 commits across 3/3 recent weeks; peak week 3" : "No recent commit activity data"),
+  deriveRepositoryHealth: vi.fn().mockReturnValue(72),
+  deriveComplexityLevel: vi.fn().mockReturnValue("Medium"),
+  classifyProjectCategory: vi.fn().mockReturnValue("Web experience"),
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
 }));

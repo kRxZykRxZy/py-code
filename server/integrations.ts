@@ -53,6 +53,28 @@ export async function getGitHubContributorCount(token: string, repository: GitHu
     return total;
   } catch { return 0; }
 }
+export function deriveRepositoryHealth(input: { stars?: number; forks?: number; openIssues?: number; openPullRequests?: number; contributorCount?: number; latestReleaseAt?: string | null; archived?: boolean }): number {
+  const stars = Math.min(35, Math.log10(Math.max(1, Number(input.stars || 0) + 1)) * 12);
+  const community = Math.min(25, Math.log10(Math.max(1, Number(input.forks || 0) + Number(input.contributorCount || 0) + 1)) * 10);
+  const maintenance = input.latestReleaseAt ? 25 : 8;
+  const issues = Math.max(0, 15 - Math.min(15, Number(input.openIssues || 0) / 4));
+  return Math.max(0, Math.min(100, Math.round(stars + community + maintenance + issues - (input.archived ? 15 : 0))));
+}
+export function deriveComplexityLevel(input: { languageBreakdown?: unknown; topics?: unknown; commitActivity?: unknown }): "Low" | "Medium" | "High" {
+  const bytes = input.languageBreakdown && typeof input.languageBreakdown === "object" ? Object.values(input.languageBreakdown as Record<string, unknown>).reduce<number>((sum: number, value: unknown) => sum + Number(value || 0), 0) : 0;
+  const topicCount = Array.isArray(input.topics) ? input.topics.length : 0;
+  const commits = Array.isArray(input.commitActivity) ? input.commitActivity.reduce((sum, value) => sum + Number(value || 0), 0) : 0;
+  return bytes > 500_000 || topicCount >= 8 || commits >= 100 ? "High" : bytes > 50_000 || topicCount >= 3 || commits >= 20 ? "Medium" : "Low";
+}
+export function classifyProjectCategory(input: { name?: string; description?: string | null; topics?: unknown; language?: string | null }): string {
+  const text = `${input.name || ""} ${input.description || ""} ${Array.isArray(input.topics) ? input.topics.join(" ") : ""}`.toLowerCase();
+  if (/cli|command[- ]line|terminal/.test(text)) return "Developer tool";
+  if (/api|backend|server|service/.test(text)) return "Backend service";
+  if (/mobile|ios|android|react native/.test(text)) return "Mobile app";
+  if (/ui|frontend|web|site|portfolio|design/.test(text)) return "Web experience";
+  if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
+  return input.language ? `${input.language} project` : "Software project";
+}
 export function summarizeCommitActivity(activity: unknown): string {
   const weeks = Array.isArray(activity) ? activity.filter((value): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0) : [];
   if (!weeks.length) return "No recent commit activity data";

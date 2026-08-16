@@ -74,6 +74,17 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("DNS pending");
   });
 
+  it("surfaces repository intelligence on public and editor project cards", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("healthScore: repo.healthScore ?? null");
+    expect(home).toContain("complexityLevel: repo.complexityLevel ?? null");
+    expect(home).toContain("projectCategory: repo.projectCategory ?? null");
+    expect(home).toContain("Health {repo.healthScore}/100");
+    expect(home).toContain("Complexity {repo.complexityLevel}");
+    expect(home).toContain("aria-label={`${repo.name} repository health score`}");
+    expect(home).toContain("aria-label={`${repo.name} complexity level`}");
+  });
+
   it("keeps repository ordering controls draggable and accessible", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("draggable");
