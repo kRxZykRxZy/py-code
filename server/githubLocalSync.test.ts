@@ -22,6 +22,7 @@ vi.mock("./integrations", () => ({
   classifyProjectCategoryWithAI: vi.fn().mockResolvedValue("Web experience"),
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
+  rewritePortfolioBio: vi.fn().mockResolvedValue("A clearer developer bio."),
 }));
 
 import { appRouter } from "./routers";

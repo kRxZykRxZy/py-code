@@ -223,7 +223,7 @@
 - [x] F053 Add AI project category classification
 - [x] F054 Add AI technology clustering persistence
 - [x] F055 Add AI project comparison summaries
-- [ ] F056 Add AI portfolio bio rewrite suggestions
+- [x] F056 Add AI portfolio bio rewrite suggestions
 - [ ] F057 Add AI project title suggestions
 - [ ] F058 Add AI project tag suggestions
 - [ ] F059 Add AI summary edit-and-approve workflow

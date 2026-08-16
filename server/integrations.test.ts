@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("axios", () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
 import axios from "axios";
-import { classifyProjectCategoryWithAI, generateProjectComparison, generatePortfolioNarrative, getGitHubContributionCalendar, getGitHubContributorCount, getGitHubUserEvents, integrationConfig, summarizeCommitActivity, summarizeRepository } from "./integrations";
+import { classifyProjectCategoryWithAI, generateProjectComparison, generatePortfolioNarrative, rewritePortfolioBio, getGitHubContributionCalendar, getGitHubContributorCount, getGitHubUserEvents, integrationConfig, summarizeCommitActivity, summarizeRepository } from "./integrations";
 
 describe("integration fallbacks", () => {
   beforeEach(() => { vi.mocked(axios.get).mockReset(); vi.mocked(axios.post).mockReset(); });
@@ -30,6 +30,13 @@ describe("integration fallbacks", () => {
     vi.mocked(axios.get).mockResolvedValueOnce({ data: Array.from({ length: 100 }, () => ({})) }).mockResolvedValueOnce({ data: Array.from({ length: 5 }, () => ({})) });
     await expect(getGitHubContributorCount("token", { id: 1, name: "folio", description: null, language: "TypeScript", stargazers_count: 0, forks_count: 0, html_url: "https://github.com/org/folio", homepage: null, owner: { login: "org", type: "Organization" } })).resolves.toBe(105);
     expect(summarizeCommitActivity([1, 0, 3, 2])).toBe("6 commits across 3/4 recent weeks; peak week 3");
+  });
+
+  it("rewrites a portfolio bio with a bounded AI suggestion and fallback", async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: "I build calm developer tools. I care about useful interfaces." });
+    await expect(rewritePortfolioBio({ bio: "I build tools.", headline: "Builder", repositories: [{ name: "folio", language: "TypeScript" }] })).resolves.toContain("developer tools");
+    vi.mocked(axios.get).mockRejectedValueOnce(new Error("offline"));
+    await expect(rewritePortfolioBio({ bio: "I build tools." })).resolves.toBe("I build tools.");
   });
 
   it("generates a bounded AI project comparison and falls back safely", async () => {

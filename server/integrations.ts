@@ -75,6 +75,18 @@ export function classifyProjectCategory(input: { name?: string; description?: st
   if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
   return input.language ? `${input.language} project` : "Software project";
 }
+export async function rewritePortfolioBio(input: { bio?: string; headline?: string; repositories?: Array<{ name: string; language?: string | null }> }): Promise<string> {
+  const original = (input.bio || "").trim();
+  const fallback = original || "A product-minded engineer building thoughtful software and useful developer experiences.";
+  const prompt = `Rewrite this developer portfolio bio in a clear, confident first-person voice. Keep it to 2 sentences and under 420 characters. Do not invent employers, metrics, or claims. Bio: ${original}. Headline: ${input.headline || ""}. Projects: ${(input.repositories || []).slice(0, 8).map((repo) => `${repo.name} (${repo.language || "software"})`).join(", ")}`;
+  const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
+  try {
+    const response = await axios.get(`${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=103`, { timeout: 12000, headers: process.env.POLLINATIONS_API_KEY ? { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` } : undefined });
+    const raw = typeof response.data === "string" ? response.data : response.data?.text;
+    const suggestion = typeof raw === "string" ? raw.replace(/[\r\n]+/g, " ").replace(/[^a-zA-Z0-9.,'!?&()\-:; ]/g, "").trim().slice(0, 420) : "";
+    return suggestion || fallback;
+  } catch { return fallback; }
+}
 export async function generateProjectComparison(repositories: Array<{ name: string; description?: string | null; language?: string | null }>): Promise<string> {
   const selected = repositories.slice(0, 4);
   const fallback = selected.length >= 2 ? `${selected.map((repo) => repo.name).join(" and ")} show a range of ${Array.from(new Set(selected.map((repo) => repo.language).filter(Boolean))).join(" and ") || "technical"} work, balancing distinct project goals with a consistent builder perspective.` : "Select at least two projects to compare their strengths and technical focus.";
