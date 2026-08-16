@@ -10,7 +10,7 @@ import { analyticsEvents, customDomains, githubConnections, profiles, repositori
 import { generatePortfolioNarrative, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
 import { validatePortfolioCss } from "./customCss";
 import { sanitizeHttpUrl, sanitizePlainText } from "./sanitization";
-import { localGet, localSet } from "./localStore";
+import { localDelete, localDeleteByPrefix, localGet, localSet } from "./localStore";
 
 const demoProfile = { slug: "alexmorgan", displayName: "Alex Morgan", githubLogin: "alexmorgan", bio: "Product-minded engineer focused on interfaces, developer tools, and systems that help good ideas become useful things.", avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4", location: "London, UK", template: "atelier", isPublic: true, repositories: [{ name: "orbit-ui", description: "A small, intentional component system for expressive product interfaces.", language: "TypeScript", stars: 184, forks: 19, aiSummary: "A thoughtful UI foundation that balances accessible primitives with a strong visual point of view.", isPinned: true }, { name: "signal-cache", description: "Fast, typed caching for edge-first applications.", language: "Rust", stars: 92, forks: 8, aiSummary: "A compact caching layer designed for predictable performance and composable invalidation.", isPinned: true }] };
 const customDomainSchema = z.string().trim().toLowerCase().min(4).max(253).regex(/^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/, "Enter a valid hostname such as portfolio.example.com");
@@ -31,6 +31,54 @@ export const appRouter = router({
       if (db) await db.delete(githubConnections).where(eq(githubConnections.userId, ctx.user.id));
       else localSet(`githubConnection:${ctx.user.openId}`, null);
       return { disconnected: true } as const;
+    }),
+  }),
+  account: router({
+    exportData: protectedProcedure.query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) {
+        const connection = localGet<{ githubId?: string; login?: string; scope?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
+        const slug = connection?.login?.toLowerCase();
+        return { exportedAt: new Date().toISOString(), account: { name: ctx.user.name, email: ctx.user.email, loginMethod: ctx.user.loginMethod }, githubConnection: connection ? { githubId: connection.githubId || null, login: connection.login || null, scope: connection.scope || null } : null, profile: slug ? localGet(`profile:${slug}`, null) : null, domains: localGet(`domains:${ctx.user.id}`, []), notificationPreferences: localGet(`notifications:${ctx.user.id}`, null), billing: localGet(`billing:${ctx.user.id}`, null) };
+      }
+      const profile = (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0] || null;
+      const [connection, subscription] = await Promise.all([
+        db.select({ githubId: githubConnections.githubId, scope: githubConnections.scope, syncedAt: githubConnections.syncedAt, createdAt: githubConnections.createdAt, updatedAt: githubConnections.updatedAt }).from(githubConnections).where(eq(githubConnections.userId, ctx.user.id)).limit(1),
+        db.select().from(subscriptions).where(eq(subscriptions.userId, ctx.user.id)).limit(1),
+      ]);
+      const [repoRows, domainRows, eventRows] = profile ? await Promise.all([
+        db.select().from(repositories).where(eq(repositories.profileId, profile.id)),
+        db.select().from(customDomains).where(eq(customDomains.profileId, profile.id)),
+        db.select().from(analyticsEvents).where(eq(analyticsEvents.profileId, profile.id)),
+      ]) : [[], [], []];
+      return { exportedAt: new Date().toISOString(), account: { name: ctx.user.name, email: ctx.user.email, loginMethod: ctx.user.loginMethod }, githubConnection: connection[0] || null, profile, repositories: repoRows, domains: domainRows, analyticsEvents: eventRows, subscription: subscription[0] || null };
+    }),
+    deleteAccount: protectedProcedure.input(z.object({ confirmation: z.literal("DELETE MY ACCOUNT") })).mutation(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) {
+        const connection = localGet<{ login?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
+        const slug = connection?.login?.toLowerCase();
+        localDelete(`githubConnection:${ctx.user.openId}`);
+        localDelete(`billing:${ctx.user.id}`);
+        localDelete(`domains:${ctx.user.id}`);
+        localDelete(`notifications:${ctx.user.id}`);
+        if (slug) { localDelete(`profile:${slug}`); localDeleteByPrefix(`analytics:${slug}`); }
+        localDeleteByPrefix(`repo:${ctx.user.openId}:`);
+      } else {
+        const profile = (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0];
+        if (profile) {
+          await db.delete(analyticsEvents).where(eq(analyticsEvents.profileId, profile.id));
+          await db.delete(repositories).where(eq(repositories.profileId, profile.id));
+          await db.delete(customDomains).where(eq(customDomains.profileId, profile.id));
+          await db.delete(profiles).where(eq(profiles.id, profile.id));
+        }
+        await db.delete(githubConnections).where(eq(githubConnections.userId, ctx.user.id));
+        await db.delete(subscriptions).where(eq(subscriptions.userId, ctx.user.id));
+        await db.delete(users).where(eq(users.id, ctx.user.id));
+      }
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      return { deleted: true } as const;
     }),
   }),
   portfolio: router({
@@ -66,7 +114,7 @@ export const appRouter = router({
       return values;
     }),
     generateNarrative: protectedProcedure.input(z.object({ bio: z.string().max(4000).optional(), repositories: z.array(z.object({ name: z.string().max(120), description: z.string().max(2000).nullable().optional(), language: z.string().max(80).nullable().optional() })).max(20) })).mutation(async ({ input }) => generatePortfolioNarrative(input)),
-    updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().max(360).optional(), displayDescription: z.string().max(4_000).optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => { const db = await getDb(); const values = { ...input, ...(input.displayName !== undefined ? { displayName: sanitizePlainText(input.displayName, 180) } : {}), ...(input.displayDescription !== undefined ? { displayDescription: sanitizePlainText(input.displayDescription, 2_000) } : {}) }; if (db) await db.update(repositories).set(values).where(eq(repositories.id, input.id)); else localSet(`repo:${input.id}`, values); return { success: true }; }),
+    updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().max(360).optional(), displayDescription: z.string().max(4_000).optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ ctx, input }) => { const db = await getDb(); const values = { ...input, ...(input.displayName !== undefined ? { displayName: sanitizePlainText(input.displayName, 180) } : {}), ...(input.displayDescription !== undefined ? { displayDescription: sanitizePlainText(input.displayDescription, 2_000) } : {}) }; if (db) await db.update(repositories).set(values).where(eq(repositories.id, input.id)); else localSet(`repo:${ctx.user.openId}:${input.id}`, values); return { success: true }; }),
     syncGitHub: protectedProcedure.input(z.object({ accessToken: z.string().min(1).optional() }).optional()).mutation(async ({ ctx, input }) => {
       const db = await getDb();
       const connection = db ? (await db.select().from(githubConnections).where(eq(githubConnections.userId, ctx.user.id)).limit(1))[0] : localGet<{ accessToken?: string } | null>(`githubConnection:${ctx.user.openId}`, null);

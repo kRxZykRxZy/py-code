@@ -85,7 +85,8 @@
 - [ ] Add Paddle customer portal link
 - [ ] Add usage limits and plan usage indicators
 - [ ] Add public/private preview links
-- [ ] Add account data export and deletion flow
+- [x] Add account data export and deletion flow
+- [x] Scope local fallback account deletion to the active user’s repository records and prove cross-account isolation
 - [ ] Add keyboard shortcuts and command palette
 - [x] Add accessibility audit and reduced-motion support
 - [x] Document a cross-surface accessibility audit and add regression checks for keyboard, focus, motion, and ARIA behavior

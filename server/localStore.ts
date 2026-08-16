@@ -29,3 +29,11 @@ export function localGet<T>(key: string, fallback: T): T {
 export function localSet<T>(key: string, value: T) {
   getLocalStore().prepare("INSERT INTO app_state (key, value, updated_at) VALUES (?, ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at").run(key, JSON.stringify(value));
 }
+
+export function localDelete(key: string) {
+  getLocalStore().prepare("DELETE FROM app_state WHERE key = ?").run(key);
+}
+
+export function localDeleteByPrefix(prefix: string) {
+  getLocalStore().prepare("DELETE FROM app_state WHERE key LIKE ?").run(`${prefix}%`);
+}
