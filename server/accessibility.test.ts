@@ -114,6 +114,8 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Your email");
     expect(home).toContain("Your message");
     expect(home).toContain("Thanks — your message was sent.");
+    expect(home).toContain("contactWebsite");
+    expect(home).toContain("contactStartedAt");
     expect(home).toContain("aiAudit.slice(0, 5)");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");
@@ -149,6 +151,14 @@ describe("accessibility regression contract", () => {
     expect(router).toContain("previewToken");
     expect(router).toContain("previewLink:");
     expect(router).toContain("createPreviewToken");
+  });
+
+  it("keeps durable contact abuse controls and owner alerts wired", async () => {
+    const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
+    expect(router).toContain("clientKey");
+    expect(router).toContain("TOO_MANY_REQUESTS");
+    expect(router).toContain("notifyOwner");
+    expect(router).toContain("contactMessages");
   });
 
   it("keeps all plan usage indicators visible in Settings", async () => {

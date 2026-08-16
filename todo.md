@@ -232,8 +232,8 @@
 ### Public portfolio, sharing, SEO, and engagement
 - [x] F061 Add public contact form with spam protection
 - [x] F062 Add contact form validation states
-- [ ] F063 Add contact form rate limiting
-- [ ] F064 Add contact form owner notifications
+- [x] F063 Add contact form rate limiting
+- [x] F064 Add contact form owner notifications
 - [ ] F065 Add functional newsletter signup persistence
 - [ ] F066 Add newsletter duplicate-subscription handling
 - [ ] F067 Add newsletter unsubscribe flow
@@ -362,3 +362,5 @@
 - [x] Cover audit lifecycle persistence and editor history rendering with regression tests
 - [x] Add per-field contact validation errors with invalid styling and aria-describedby wiring
 - [x] Verify invalid contact input feedback and valid submission success behavior with regression contracts
+- [x] Replace in-memory contact rate limiting with durable hashed client-key counting
+- [x] Prune expired local fallback timestamps and cover repeated-submission limits

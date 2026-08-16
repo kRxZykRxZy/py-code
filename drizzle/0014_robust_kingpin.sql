@@ -1,0 +1,1 @@
+ALTER TABLE `contactMessages` ADD `clientKey` varchar(128) NOT NULL;

@@ -306,6 +306,15 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.submitContact({ slug: "contact-project", senderName: "Bot", senderEmail: "bot@example.com", message: "This message should be absorbed by the honeypot.", website: "https://spam.example", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
   });
 
+  it("rate limits repeated contact submissions per profile and client", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `rate-project-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    const input = { slug, senderName: "Taylor", senderEmail: "taylor@example.com", message: "This is a sufficiently long contact message for testing." };
+    for (let index = 0; index < 5; index += 1) await expect(caller.portfolio.submitContact(input)).resolves.toEqual({ accepted: true });
+    await expect(caller.portfolio.submitContact(input)).rejects.toThrow("Please wait before sending another message.");
+  });
+
   it("persists bounded AI generation audit records without exposing prompt content", async () => {
     localSet("githubConnection:fallback-test-user", { login: "audit-project" });
     localSet("profile:audit-project", { slug: "audit-project", isPublic: true, sectionConfig: { order: ["Hero introduction"], aiGenerationAudit: [] }, repositories: [] });
