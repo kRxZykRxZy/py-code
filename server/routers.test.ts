@@ -299,6 +299,19 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.uploadProjectImage({ slug: "image-project", projectIndex: 0, fileName: "cover.svg", mimeType: "image/png", dataUrl: "data:image/svg+xml;base64,PHN2Zz4=" })).rejects.toThrow("Upload a valid JPEG, PNG, WebP, or GIF image");
   });
 
+  it("persists bounded AI generation audit records without exposing prompt content", async () => {
+    localSet("githubConnection:fallback-test-user", { login: "audit-project" });
+    localSet("profile:audit-project", { slug: "audit-project", isPublic: true, sectionConfig: { order: ["Hero introduction"], aiGenerationAudit: [] }, repositories: [] });
+    const caller = appRouter.createCaller(authenticatedContext());
+    await caller.portfolio.updatePublishing({ slug: "audit-project", isPublic: true });
+    await caller.portfolio.recordAiGeneration({ slug: "audit-project", action: "summary", status: "draft", repositoryName: "<b>repo</b>" });
+    await caller.portfolio.recordAiGeneration({ slug: "audit-project", action: "summary", status: "approved", repositoryName: "repo" });
+    await caller.portfolio.recordAiGeneration({ slug: "audit-project", action: "summary", status: "rejected", repositoryName: "repo" });
+    const profile = await caller.portfolio.bySlug({ slug: "audit-project" });
+    expect((profile?.sectionConfig as any).aiGenerationAudit).toMatchObject([{ action: "summary", status: "rejected" }, { action: "summary", status: "approved" }, { action: "summary", status: "draft", repositoryName: "brepo/b" }]);
+    expect(JSON.stringify(profile?.sectionConfig)).not.toContain("prompt");
+  });
+
   it("persists repository-backed project image metadata through the public profile", async () => {
     localSet("githubConnection:fallback-test-user", { login: "repo-image-project" });
     localSet("profile:repo-image-project", { slug: "repo-image-project", isPublic: true, repositories: [{ id: 42, name: "repo-image", description: "Repository project", imageUrl: null }] });

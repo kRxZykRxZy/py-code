@@ -227,7 +227,7 @@
 - [x] F057 Add AI project title suggestions
 - [x] F058 Add AI project tag suggestions
 - [x] F059 Add AI summary edit-and-approve workflow
-- [ ] F060 Add AI generation audit history
+- [x] F060 Add AI generation audit history
 
 ### Public portfolio, sharing, SEO, and engagement
 - [ ] F061 Add public contact form with spam protection
@@ -357,3 +357,6 @@
 - [x] Fetch real GitHub contribution-calendar data through authenticated GraphQL
 - [x] Persist normalized contribution-day counts in profile activity configuration
 - [x] Prove contribution-calendar fetch, persistence, and heatmap preference with regression coverage
+- [x] Persist AI audit entries inside server-side AI generation procedures
+- [x] Record draft, approved, rejected, completed, and failed AI lifecycle statuses with bounded redacted metadata
+- [x] Cover audit lifecycle persistence and editor history rendering with regression tests
