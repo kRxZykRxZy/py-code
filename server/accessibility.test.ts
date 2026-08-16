@@ -60,6 +60,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("quickchart.io/qr");
     expect(home).toContain("og:type");
     expect(home).toContain("twitter:card");
+    expect(home).toContain("og:image");
+    expect(home).toContain("twitter:image");
+    expect(home).toContain("quickchart.io/og");
     expect(home).toContain("projectSlug");
     expect(home).toContain("Pinned project comparison");
     expect(home).toContain("compare-${repo.name}");

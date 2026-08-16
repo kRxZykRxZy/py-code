@@ -247,8 +247,8 @@
 - [ ] F075 Add downloadable PDF resume export
 - [x] F076 Add print stylesheet customization
 - [x] F077 Add per-project social metadata
-- [ ] F078 Add Open Graph image generation
-- [ ] F079 Add Twitter card metadata
+- [x] F078 Add Open Graph image generation
+- [x] F079 Add Twitter card metadata
 - [ ] F080 Add JSON-LD Person metadata
 - [ ] F081 Add JSON-LD SoftwareSourceCode metadata
 - [ ] F082 Add sitemap generation
