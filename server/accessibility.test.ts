@@ -116,6 +116,12 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Thanks — your message was sent.");
     expect(home).toContain("contactWebsite");
     expect(home).toContain("contactStartedAt");
+    expect(home).toContain("subscribeNewsletter");
+    expect(home).toContain("Newsletter email");
+    expect(home).toContain("unsubscribeNewsletter");
+    expect(home).toContain("unsubscribe");
+    expect(home).toContain("newsletterUnsubscribeUrl");
+    expect(home).toContain("Unsubscribe");
     expect(home).toContain("aiAudit.slice(0, 5)");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");

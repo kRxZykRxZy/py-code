@@ -301,9 +301,10 @@ describe("profile content authoring", () => {
 
   it("accepts valid contact messages and silently absorbs honeypot spam", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
-    await caller.portfolio.updatePublishing({ slug: "contact-project", isPublic: true });
-    await expect(caller.portfolio.submitContact({ slug: "contact-project", senderName: "Taylor", senderEmail: "Taylor@example.com", message: "I would like to discuss the project and collaboration details.", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
-    await expect(caller.portfolio.submitContact({ slug: "contact-project", senderName: "Bot", senderEmail: "bot@example.com", message: "This message should be absorbed by the honeypot.", website: "https://spam.example", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
+    const slug = `contact-project-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await expect(caller.portfolio.submitContact({ slug, senderName: "Taylor", senderEmail: "Taylor@example.com", message: "I would like to discuss the project and collaboration details.", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
+    await expect(caller.portfolio.submitContact({ slug, senderName: "Bot", senderEmail: "bot@example.com", message: "This message should be absorbed by the honeypot.", website: "https://spam.example", startedAt: Date.now() - 5000 })).resolves.toEqual({ accepted: true });
   });
 
   it("rate limits repeated contact submissions per profile and client", async () => {
@@ -313,6 +314,20 @@ describe("profile content authoring", () => {
     const input = { slug, senderName: "Taylor", senderEmail: "taylor@example.com", message: "This is a sufficiently long contact message for testing." };
     for (let index = 0; index < 5; index += 1) await expect(caller.portfolio.submitContact(input)).resolves.toEqual({ accepted: true });
     await expect(caller.portfolio.submitContact(input)).rejects.toThrow("Please wait before sending another message.");
+  });
+
+  it("persists duplicate-safe newsletter subscriptions and unsubscribe lifecycle", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `newsletter-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const email = `reader-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    const first = await caller.portfolio.subscribeNewsletter({ slug, email });
+    expect(first.status).toBe("subscribed");
+    const duplicate = await caller.portfolio.subscribeNewsletter({ slug, email: email.toUpperCase() });
+    expect(duplicate.status).toBe("already-subscribed");
+    await expect(caller.portfolio.unsubscribeNewsletter({ token: first.unsubscribeToken! })).resolves.toEqual({ status: "unsubscribed" });
+    const reactivated = await caller.portfolio.subscribeNewsletter({ slug, email });
+    expect(reactivated.status).toBe("already-subscribed");
   });
 
   it("persists bounded AI generation audit records without exposing prompt content", async () => {

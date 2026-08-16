@@ -234,9 +234,9 @@
 - [x] F062 Add contact form validation states
 - [x] F063 Add contact form rate limiting
 - [x] F064 Add contact form owner notifications
-- [ ] F065 Add functional newsletter signup persistence
-- [ ] F066 Add newsletter duplicate-subscription handling
-- [ ] F067 Add newsletter unsubscribe flow
+- [x] F065 Add functional newsletter signup persistence
+- [x] F066 Add newsletter duplicate-subscription handling
+- [x] F067 Add newsletter unsubscribe flow
 - [ ] F068 Add public recommendation links
 - [ ] F069 Add endorsement-link management
 - [ ] F070 Add public guestbook opt-in
