@@ -244,6 +244,23 @@ describe("profile content authoring", () => {
     expect(publicProfile?.sectionConfig?.content).toMatchObject({ heroCtaLabel: "Read the work", heroCtaUrl: "https://example.com/work", contactCtaLabel: "Email me", contactCtaUrl: "https://example.com/contact" });
   });
 
+  it("creates, lists, restores, duplicates, and clones portfolio revisions", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `revision-author-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, headline: "Before revision" });
+    const saved = await caller.portfolio.saveRevision({ slug, label: "Before snapshot" });
+    await caller.portfolio.updateProfileCopy({ slug, headline: "After revision" });
+    const duplicate = await caller.portfolio.duplicatePortfolio({ slug, label: "Duplicate draft" });
+    expect(duplicate.label).toBe("Duplicate draft");
+    expect((await caller.portfolio.listRevisions({ slug })).length).toBeGreaterThanOrEqual(2);
+    await caller.portfolio.cloneTemplate({ slug, template: "terminal" });
+    expect((await caller.portfolio.myProfile())?.template).toBe("terminal");
+    await caller.portfolio.restoreRevision({ slug, revisionId: saved.id });
+    const restored = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug });
+    expect(restored?.sectionConfig?.content?.headline).toBe("Before revision");
+  });
+
   it("rejects unsafe writing-note URLs", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-note", writingNotes: [{ title: "Unsafe", url: "javascript:alert(1)", sortOrder: 0 }] })).rejects.toThrow("Writing note links must use http or https");

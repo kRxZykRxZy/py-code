@@ -194,8 +194,8 @@
 - [x] F026 Add content-block ordering
 - [x] F027 Add content-block visibility controls
 - [ ] F028 Add portfolio duplication workflow
-- [ ] F029 Add template cloning workflow
-- [ ] F030 Add revision history and restore points
+- [x] F029 Add template cloning workflow
+- [x] F030 Add revision history and restore points
 
 ### GitHub intelligence and project data
 - [ ] F031 Add repository import exclusion rules
@@ -335,3 +335,7 @@
 - [x] Add persisted per-section CTA fields for hero and contact sections
 - [x] Add editor controls and public rendering for section-specific CTAs
 - [x] Add regression coverage for section-specific CTA persistence and rendering
+- [ ] Add distinct duplicated portfolio draft records with their own draft identifiers and restore/select workflow
+- [x] Wire template cloning actions to the authenticated user’s real current profile slug
+- [x] Wire revision actions to the authenticated user’s real current profile slug and verify restore hydration
+- [x] Add non-default-slug regression coverage for template cloning and revisions
