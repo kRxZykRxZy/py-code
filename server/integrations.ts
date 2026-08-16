@@ -75,6 +75,17 @@ export function classifyProjectCategory(input: { name?: string; description?: st
   if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
   return input.language ? `${input.language} project` : "Software project";
 }
+export async function classifyProjectCategoryWithAI(input: { name?: string; description?: string | null; topics?: unknown; language?: string | null }): Promise<string> {
+  const fallback = classifyProjectCategory(input);
+  const prompt = `Classify this GitHub project into exactly one concise category label of 2 to 4 words. Return plain text only. Prefer categories such as Developer tool, Backend service, Mobile app, Web experience, Data and AI, or Software project. Name: ${input.name || ""}. Description: ${input.description || ""}. Language: ${input.language || ""}. Topics: ${Array.isArray(input.topics) ? input.topics.slice(0, 12).join(", ") : ""}.`;
+  const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
+  try {
+    const response = await axios.get(`${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=91`, { timeout: 12000, headers: process.env.POLLINATIONS_API_KEY ? { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` } : undefined });
+    const raw = typeof response.data === "string" ? response.data : response.data?.text;
+    const label = typeof raw === "string" ? raw.replace(/[\r\n]+/g, " ").replace(/[^a-zA-Z0-9& -]/g, "").trim().slice(0, 80) : "";
+    return label || fallback;
+  } catch { return fallback; }
+}
 export function summarizeCommitActivity(activity: unknown): string {
   const weeks = Array.isArray(activity) ? activity.filter((value): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0) : [];
   if (!weeks.length) return "No recent commit activity data";

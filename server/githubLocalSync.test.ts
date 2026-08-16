@@ -19,7 +19,7 @@ vi.mock("./integrations", () => ({
   summarizeCommitActivity: vi.fn((activity: unknown) => Array.isArray(activity) && activity.length ? "6 commits across 3/3 recent weeks; peak week 3" : "No recent commit activity data"),
   deriveRepositoryHealth: vi.fn().mockReturnValue(72),
   deriveComplexityLevel: vi.fn().mockReturnValue("Medium"),
-  classifyProjectCategory: vi.fn().mockReturnValue("Web experience"),
+  classifyProjectCategoryWithAI: vi.fn().mockResolvedValue("Web experience"),
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
 }));
