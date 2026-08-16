@@ -213,8 +213,8 @@
 - [x] F043 Add repository release metadata
 - [x] F044 Add repository commit-activity summaries
 - [x] F045 Add repository language breakdowns
-- [ ] F046 Add GitHub contribution heatmap from contribution data
-- [ ] F047 Add GitHub activity timeline from synced events
+- [x] F046 Add GitHub contribution heatmap from contribution data
+- [x] F047 Add GitHub activity timeline from synced events
 - [x] F048 Add GitHub profile follower metadata
 - [x] F049 Add GitHub profile following metadata
 - [x] F050 Add GitHub pinned-repository import
@@ -354,3 +354,6 @@
 - [x] Expose and render repository health scores in public and editor surfaces
 - [x] Expose and render repository complexity indicators in public and editor surfaces
 - [x] Add regression coverage for health and complexity persistence and visible contracts
+- [x] Fetch real GitHub contribution-calendar data through authenticated GraphQL
+- [x] Persist normalized contribution-day counts in profile activity configuration
+- [x] Prove contribution-calendar fetch, persistence, and heatmap preference with regression coverage

@@ -61,8 +61,17 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Activity dates will appear after the next GitHub sync.");
     expect(home).toContain("activityCells");
     expect(home).toContain("repository update");
+    expect(home).toContain("githubActivity");
+    expect(home).toContain("profileActivityEvents");
+    expect(home).toContain("eventActivityCells");
+    expect(home).toContain("profileContributionDays");
+    expect(home).toContain("contributionCalendarCells");
+    expect(home).toContain("contributionCalendarCells.some(Boolean)");
     const schema = await readFile(join(projectRoot, "drizzle/schema.ts"), "utf8");
     const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
+    const integrations = await readFile(join(projectRoot, "server/integrations.ts"), "utf8");
+    expect(integrations).toContain("pushed commits");
+    expect(router).toContain("getGitHubUserEvents");
     expect(schema).toContain("lastActivityAt");
     expect(router).toContain("lastActivityAt: repo.updated_at");
     expect(router).toContain("updatedAt: repo.updatedAt || repo.lastActivityAt || null");

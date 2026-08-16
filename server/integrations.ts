@@ -91,6 +91,30 @@ export async function getGitHubLatestRelease(token: string, repository: GitHubRe
     return { tag: typeof data?.tag_name === "string" ? data.tag_name.slice(0, 180) : null, publishedAt: typeof data?.published_at === "string" ? data.published_at : null };
   } catch { return { tag: null, publishedAt: null }; }
 }
+export type GitHubContributionDay = { date: string; count: number; level: number };
+export async function getGitHubContributionCalendar(token: string): Promise<GitHubContributionDay[]> {
+  try {
+    const { data } = await axios.post("https://api.github.com/graphql", { query: "query { viewer { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount contributionLevel } } } } } }" }, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    const days = data?.data?.viewer?.contributionsCollection?.contributionCalendar?.weeks?.flatMap((week: any) => Array.isArray(week?.contributionDays) ? week.contributionDays : []);
+    if (!Array.isArray(days)) return [];
+    return days.map((day: any) => ({ date: typeof day?.date === "string" ? day.date : "", count: Math.max(0, Number(day?.contributionCount || 0)), level: Math.max(0, Math.min(4, Number(day?.contributionLevel?.replace?.("NONE", "0").replace?.("FIRST_QUARTILE", "1").replace?.("SECOND_QUARTILE", "2").replace?.("THIRD_QUARTILE", "3").replace?.("FOURTH_QUARTILE", "4") || 0))) })).filter((day: GitHubContributionDay) => Boolean(day.date)).slice(-371);
+  } catch { return []; }
+}
+export type GitHubActivityEvent = { id: string; type: "push" | "pull_request" | "issue" | "release" | "repository"; repoName: string; action: string; occurredAt: string; url: string | null };
+export async function getGitHubUserEvents(token: string, username: string): Promise<GitHubActivityEvent[]> {
+  try {
+    const { data } = await axios.get(`${GITHUB_API}/users/${encodeURIComponent(username)}/events/public?per_page=100`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    if (!Array.isArray(data)) return [];
+    return data.map((event: any) => {
+      const type = event?.type === "PushEvent" ? "push" : event?.type === "PullRequestEvent" ? "pull_request" : event?.type === "IssuesEvent" ? "issue" : event?.type === "ReleaseEvent" ? "release" : event?.type === "CreateEvent" ? "repository" : null;
+      if (!type || typeof event?.id !== "string" || typeof event?.created_at !== "string") return null;
+      const repoName = typeof event?.repo?.name === "string" ? event.repo.name : "";
+      const action = typeof event?.payload?.action === "string" ? event.payload.action : type === "push" ? "pushed commits" : type === "repository" ? "created a repository" : `updated a ${type.replace("_", " ")}`;
+      const url = typeof event?.payload?.pull_request?.html_url === "string" ? event.payload.pull_request.html_url : typeof event?.payload?.issue?.html_url === "string" ? event.payload.issue.html_url : repoName ? `https://github.com/${repoName}` : null;
+      return { id: event.id.slice(0, 120), type, repoName: repoName.slice(0, 180), action: action.slice(0, 120), occurredAt: event.created_at, url } satisfies GitHubActivityEvent;
+    }).filter((event): event is GitHubActivityEvent => Boolean(event)).slice(0, 60);
+  } catch { return []; }
+}
 export async function getGitHubCommitActivity(token: string, repository: GitHubRepo): Promise<number[]> {
   const owner = repository.owner?.login;
   if (!owner) return [];
