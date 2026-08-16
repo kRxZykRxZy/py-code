@@ -89,7 +89,9 @@
 - [ ] Add keyboard shortcuts and command palette
 - [x] Add accessibility audit and reduced-motion support
 - [x] Document a cross-surface accessibility audit and add regression checks for keyboard, focus, motion, and ARIA behavior
-- [ ] Add rate limiting, input sanitization, and security headers
+- [x] Add rate limiting, input sanitization, and security headers
+- [x] Normalize and sanitize profile and repository display text across persisted authoring procedures
+- [x] Add a sanitized profile copy mutation with persistence and regression coverage
 - [x] Add onboarding checklist and empty-state guidance
 
 ## Continued improvement batch
