@@ -43,15 +43,15 @@
 - [x] Add project technology chips and technology filtering
 - [x] Add project detail pages with full AI showcase narratives
 - [x] Add featured project hero presentation
-- [ ] Add GitHub contribution heatmap section
+- [ ] Replace decorative activity grid with real portfolio/GitHub activity data
 - [x] Add GitHub activity timeline section
 - [x] Add pinned project comparison layout
 - [x] Add project demo and homepage link badges
 - [x] Add open-source project highlights from repository metadata
 - [ ] Add public contact form with spam protection
-- [ ] Add public newsletter signup section
-- [ ] Add writing/blog link section
-- [ ] Add now/learning status section
+- [ ] Implement functional public newsletter signup with validation and persistence
+- [ ] Model writing/notes links or entries and render persisted content
+- [ ] Persist now and currently-learning content through profile settings
 - [ ] Add testimonial-free recommendation or endorsement links section
 - [x] Add theme presets with typography controls
 - [x] Add visual color palette editor
