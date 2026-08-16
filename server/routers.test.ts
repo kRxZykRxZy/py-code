@@ -304,9 +304,9 @@ describe("profile content authoring", () => {
     localSet("profile:repo-image-project", { slug: "repo-image-project", isPublic: true, repositories: [{ id: 42, name: "repo-image", description: "Repository project", imageUrl: null }] });
     const caller = appRouter.createCaller(authenticatedContext());
     const publicCaller = appRouter.createCaller(publicContext());
-    await caller.portfolio.updateRepository({ id: 42, displayName: "Repository Image Showcase", imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
+    await caller.portfolio.updateRepository({ id: 42, displayName: "Repository Image Showcase", topics: ["TypeScript", "developer-tools", "TypeScript"], imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
     const profile = await publicCaller.portfolio.bySlug({ slug: "repo-image-project" });
-    expect(profile?.repositories?.[0]).toMatchObject({ displayName: "Repository Image Showcase", imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
+    expect(profile?.repositories?.[0]).toMatchObject({ displayName: "Repository Image Showcase", topics: ["typescript", "developer-tools"], imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
   });
 
   it("persists project image metadata with alt text and crop values", async () => {

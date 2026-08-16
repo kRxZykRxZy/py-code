@@ -75,6 +75,17 @@ export function classifyProjectCategory(input: { name?: string; description?: st
   if (/data|machine learning|ml|ai|model/.test(text)) return "Data and AI";
   return input.language ? `${input.language} project` : "Software project";
 }
+export async function suggestProjectTags(input: { name?: string; description?: string | null; language?: string | null; topics?: unknown }): Promise<string[]> {
+  const fallback = Array.from(new Set((Array.isArray(input.topics) ? input.topics : []).map((tag) => String(tag).toLowerCase().replace(/[^a-z0-9+.#-]/g, "").slice(0, 32)).filter(Boolean))).slice(0, 6);
+  const prompt = `Suggest up to 6 concise lowercase tags for this GitHub project. Return comma-separated tags only. Use technologies, patterns, or domain terms supported by the description. Do not invent claims. Name: ${input.name || ""}. Description: ${input.description || ""}. Language: ${input.language || ""}. Existing topics: ${fallback.join(", ")}`;
+  const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
+  try {
+    const response = await axios.get(`${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=113`, { timeout: 12000, headers: process.env.POLLINATIONS_API_KEY ? { Authorization: `Bearer ${process.env.POLLINATIONS_API_KEY}` } : undefined });
+    const raw = typeof response.data === "string" ? response.data : response.data?.text;
+    const tags = typeof raw === "string" ? raw.split(/[,\n]/).map((tag) => tag.trim().toLowerCase().replace(/[^a-z0-9+.#-]/g, "").slice(0, 32)).filter(Boolean) : [];
+    return Array.from(new Set(tags)).slice(0, 6).length ? Array.from(new Set(tags)).slice(0, 6) : fallback;
+  } catch { return fallback; }
+}
 export async function suggestProjectTitle(input: { name?: string; description?: string | null; language?: string | null; topics?: unknown }): Promise<string> {
   const fallback = (input.name || "Project").replace(/[-_]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()).slice(0, 80);
   const prompt = `Suggest one memorable but accurate portfolio title for this GitHub project. Return title case plain text only, 2 to 6 words, no punctuation. Do not invent claims. Name: ${input.name || ""}. Description: ${input.description || ""}. Language: ${input.language || ""}. Topics: ${Array.isArray(input.topics) ? input.topics.slice(0, 8).join(", ") : ""}`;

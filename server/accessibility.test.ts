@@ -99,9 +99,13 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Rewrite bio");
     expect(home).toContain("suggestTitle");
     expect(home).toContain("Suggest title for");
+    expect(home).toContain("suggestTags");
+    expect(home).toContain("Suggest tags for");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");
     expect(home).toContain("r.displayName || r.name");
+    expect(home).toContain("topics: Array.isArray(repo.topics) ? repo.topics : []");
+    expect(home).toContain("(repo.topics || []).slice(0,3)");
   });
 
   it("keeps repository ordering controls draggable and accessible", async () => {
