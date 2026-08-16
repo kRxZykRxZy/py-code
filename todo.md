@@ -212,7 +212,7 @@
 - [x] F042 Add repository contributor-count metadata
 - [x] F043 Add repository release metadata
 - [x] F044 Add repository commit-activity summaries
-- [ ] F045 Add repository language breakdowns
+- [x] F045 Add repository language breakdowns
 - [ ] F046 Add GitHub contribution heatmap from contribution data
 - [ ] F047 Add GitHub activity timeline from synced events
 - [ ] F048 Add GitHub profile follower metadata
@@ -346,3 +346,6 @@
 - [x] Compute contributor counts across GitHub pagination and cover repositories over 100 contributors
 - [x] Derive and render a human-readable commit-activity summary from weekly activity data
 - [x] Add regression coverage for contributor pagination and commit-activity summary rendering
+- [x] Fetch real per-repository language breakdowns from GitHub during sync
+- [x] Persist and expose per-repository language breakdown data in database and local fallback models
+- [x] Render language breakdown details and add regression coverage

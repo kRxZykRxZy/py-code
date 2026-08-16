@@ -21,6 +21,15 @@ export async function getGitHubOpenPullRequestCount(token: string, repository: G
     return Number.isFinite(data?.total_count) ? Math.max(0, Number(data.total_count)) : 0;
   } catch { return 0; }
 }
+export async function getGitHubLanguageBreakdown(token: string, repository: GitHubRepo): Promise<Record<string, number>> {
+  const owner = repository.owner?.login;
+  if (!owner) return {};
+  try {
+    const { data } = await axios.get(`${GITHUB_API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository.name)}/languages`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    if (!data || typeof data !== "object") return {};
+    return Object.fromEntries(Object.entries(data).filter((entry): entry is [string, unknown] => typeof entry[0] === "string" && typeof entry[1] === "number").slice(0, 20).map(([language, bytes]) => [language, Math.max(0, Number(bytes))]));
+  } catch { return {}; }
+}
 export async function getGitHubContributorCount(token: string, repository: GitHubRepo): Promise<number> {
   const owner = repository.owner?.login;
   if (!owner) return 0;

@@ -12,6 +12,7 @@ vi.mock("./integrations", () => ({
   getGitHubContributorCount: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? 8 : 3)),
   getGitHubLatestRelease: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? { tag: "v2.0.0", publishedAt: "2026-08-01T00:00:00.000Z" } : { tag: null, publishedAt: null })),
   getGitHubCommitActivity: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? [1, 3, 2] : [0, 1])),
+  getGitHubLanguageBreakdown: vi.fn((_token: string, repository: { name: string }) => Promise.resolve(repository.name === "folio" ? { TypeScript: 8000, CSS: 2000 } : { TypeScript: 5000 })),
   summarizeCommitActivity: vi.fn((activity: unknown) => Array.isArray(activity) && activity.length ? "6 commits across 3/3 recent weeks; peak week 3" : "No recent commit activity data"),
   summarizeRepository: vi.fn().mockResolvedValue("A portfolio app."),
   generatePortfolioNarrative: vi.fn().mockResolvedValue({ headline: "Builder", skills: ["TypeScript"] }),
@@ -30,7 +31,7 @@ describe("GitHub local fallback sync", () => {
     localSet("githubConnection:github:42", { githubId: "42", accessToken: "stored-oauth-token", scope: "read:user" });
     const result = await appRouter.createCaller(githubContext()).portfolio.syncGitHub();
     expect(result).toEqual({ profile: { login: "octo-dev", name: "Octo Dev" }, repositories: 2 });
-    expect(localGet<any>("profile:octo-dev", null)?.repositories).toEqual(expect.arrayContaining([expect.objectContaining({ name: "folio", organizationName: "octo-labs", topics: ["portfolio", "typescript"], isArchived: true, isFork: true, licenseName: "MIT", defaultBranch: "main", openIssues: 4, openPullRequests: 2, contributorCount: 8, latestReleaseTag: "v2.0.0", commitActivity: [1, 3, 2] }), expect.objectContaining({ name: "org-folio", organizationName: "octo-labs", topics: ["organization"], isArchived: false, isFork: false, licenseName: "Apache-2.0", defaultBranch: "trunk", openIssues: 2, openPullRequests: 1, contributorCount: 3, latestReleaseTag: null, commitActivity: [0, 1] })]));
+    expect(localGet<any>("profile:octo-dev", null)?.repositories).toEqual(expect.arrayContaining([expect.objectContaining({ name: "folio", organizationName: "octo-labs", topics: ["portfolio", "typescript"], isArchived: true, isFork: true, licenseName: "MIT", defaultBranch: "main", openIssues: 4, openPullRequests: 2, contributorCount: 8, latestReleaseTag: "v2.0.0", commitActivity: [1, 3, 2], languageBreakdown: { TypeScript: 8000, CSS: 2000 } }), expect.objectContaining({ name: "org-folio", organizationName: "octo-labs", topics: ["organization"], isArchived: false, isFork: false, licenseName: "Apache-2.0", defaultBranch: "trunk", openIssues: 2, openPullRequests: 1, contributorCount: 3, latestReleaseTag: null, commitActivity: [0, 1], languageBreakdown: { TypeScript: 5000 } })]));
   });
 
   it("regenerates stored project summaries without requiring a manual GitHub token", async () => {
