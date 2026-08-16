@@ -182,10 +182,10 @@
 - [x] F014 Add manual project technology tags
 - [x] F015 Add manual project external links
 - [x] F016 Add manual project visibility controls
-- [ ] F017 Add project cover-image metadata
-- [ ] F018 Add project image upload flow
-- [ ] F019 Add project image alt text
-- [ ] F020 Add project image crop metadata
+- [x] F017 Add project cover-image metadata
+- [x] F018 Add project image upload flow
+- [x] F019 Add project image alt text
+- [x] F020 Add project image crop metadata
 - [ ] F021 Add Markdown portfolio copy editor
 - [ ] F022 Add Markdown preview mode
 - [ ] F023 Add Markdown sanitization tests
@@ -329,3 +329,6 @@
 - [x] Add regression coverage proving location and timezone save and hydrate
 - [x] Add explicit manual-project URL validation with a clear error
 - [x] Add regression coverage for manual-project URL validation and valid-link persistence
+- [x] Add persisted cover-image metadata for GitHub repository-backed projects
+- [x] Wire image upload, alt text, and crop controls to repository-backed projects
+- [x] Add regression coverage for repository-backed project image persistence and rendering

@@ -219,3 +219,28 @@ describe("profile content authoring", () => {
     const caller = appRouter.createCaller(authenticatedContext());
     await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-manual-project", manualProjects: [{ title: "Unsafe", description: "Bad link", tags: [], url: "javascript:alert(1)", visible: true, sortOrder: 0 }] })).rejects.toThrow("Manual project links must use http or https");
   });
+
+  it("rejects invalid project image payloads before storage", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    await expect(caller.portfolio.uploadProjectImage({ slug: "image-project", projectIndex: 0, fileName: "cover.svg", mimeType: "image/png", dataUrl: "data:image/svg+xml;base64,PHN2Zz4=" })).rejects.toThrow("Upload a valid JPEG, PNG, WebP, or GIF image");
+  });
+
+  it("persists repository-backed project image metadata through the public profile", async () => {
+    localSet("githubConnection:fallback-test-user", { login: "repo-image-project" });
+    localSet("profile:repo-image-project", { slug: "repo-image-project", isPublic: true, repositories: [{ id: 42, name: "repo-image", description: "Repository project", imageUrl: null }] });
+    const caller = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    await caller.portfolio.updateRepository({ id: 42, imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
+    const profile = await publicCaller.portfolio.bySlug({ slug: "repo-image-project" });
+    expect(profile?.repositories?.[0]).toMatchObject({ imageUrl: "/manus-storage/project-images/repo-cover.png", imageKey: "project-images/repo-cover.png", imageAlt: "A repository cover", imageCrop: { x: 25, y: 70, scale: 1.4 } });
+  });
+
+  it("persists project image metadata with alt text and crop values", async () => {
+    localSet("githubConnection:fallback-test-user", { login: "image-metadata-project" });
+    const caller = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    await caller.portfolio.updatePublishing({ slug: "image-metadata-project", isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug: "image-metadata-project", manualProjects: [{ title: "Image project", description: "A project with a cover.", tags: ["Design"], imageUrl: "/manus-storage/project-images/image-project/cover.png", imageKey: "project-images/image-project/cover.png", imageAlt: "A blue interface", imageCrop: { x: 35, y: 65, scale: 1.2 }, visible: true, sortOrder: 0 }] });
+    const profile = await publicCaller.portfolio.bySlug({ slug: "image-metadata-project" });
+    expect(profile?.sectionConfig?.content?.manualProjects?.[0]).toMatchObject({ imageUrl: "/manus-storage/project-images/image-project/cover.png", imageAlt: "A blue interface", imageCrop: { x: 35, y: 65, scale: 1.2 } });
+  });
