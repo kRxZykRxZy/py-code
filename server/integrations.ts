@@ -3,7 +3,7 @@ import axios from "axios";
 const GITHUB_API = "https://api.github.com";
 
 export type GitHubProfile = { id: number; login: string; name: string | null; bio: string | null; avatar_url: string; location: string | null; blog: string | null };
-export type GitHubRepo = { id: number; name: string; description: string | null; language: string | null; stargazers_count: number; forks_count: number; html_url: string; homepage: string | null; updated_at?: string | null; topics?: string[]; archived?: boolean; fork?: boolean; owner?: { login?: string; type?: string } };
+export type GitHubRepo = { id: number; name: string; description: string | null; language: string | null; stargazers_count: number; forks_count: number; html_url: string; homepage: string | null; updated_at?: string | null; topics?: string[]; archived?: boolean; fork?: boolean; owner?: { login?: string; type?: string }; license?: { name?: string | null; spdx_id?: string | null }; default_branch?: string; open_issues_count?: number };
 
 export async function getGitHubProfile(token: string): Promise<GitHubProfile> {
   const { data } = await axios.get(`${GITHUB_API}/user`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
@@ -12,6 +12,14 @@ export async function getGitHubProfile(token: string): Promise<GitHubProfile> {
 export async function getGitHubRepos(token: string): Promise<GitHubRepo[]> {
   const { data } = await axios.get(`${GITHUB_API}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
   return data;
+}
+export async function getGitHubOpenPullRequestCount(token: string, repository: GitHubRepo): Promise<number> {
+  const owner = repository.owner?.login;
+  if (!owner) return 0;
+  try {
+    const { data } = await axios.get(`${GITHUB_API}/search/issues`, { params: { q: `repo:${owner}/${repository.name} is:pr is:open`, per_page: 1 }, headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    return Number.isFinite(data?.total_count) ? Math.max(0, Number(data.total_count)) : 0;
+  } catch { return 0; }
 }
 export async function getGitHubOrganizationRepos(token: string): Promise<GitHubRepo[]> {
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };

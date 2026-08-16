@@ -205,10 +205,10 @@
 - [x] F035 Add GitHub topic filtering
 - [x] F036 Add repository archived-state badges
 - [x] F037 Add repository fork-state badges
-- [ ] F038 Add repository license metadata
-- [ ] F039 Add repository default-branch metadata
-- [ ] F040 Add repository issue-count metadata
-- [ ] F041 Add repository pull-request metadata
+- [x] F038 Add repository license metadata
+- [x] F039 Add repository default-branch metadata
+- [x] F040 Add repository issue-count metadata
+- [x] F041 Add repository pull-request metadata
 - [ ] F042 Add repository contributor-count metadata
 - [ ] F043 Add repository release metadata
 - [ ] F044 Add repository commit-activity summaries
@@ -341,3 +341,5 @@
 - [x] Add non-default-slug regression coverage for template cloning and revisions
 - [x] Implement actual GitHub organization repository syncing through the GitHub organizations API
 - [x] Add regression coverage proving organization-owned repositories are fetched, persisted, and rendered/filterable
+- [x] Compute true open issue counts separately from open pull-request counts
+- [x] Add regression coverage proving issue and pull-request counts are distinct

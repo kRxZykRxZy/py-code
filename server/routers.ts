@@ -8,7 +8,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { getDb } from "./db";
 import { analyticsEvents, customDomains, githubConnections, profiles, repositories, subscriptions, users } from "../drizzle/schema";
-import { generatePortfolioNarrative, getGitHubOrganizationRepos, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
+import { generatePortfolioNarrative, getGitHubOpenPullRequestCount, getGitHubOrganizationRepos, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
 import { validatePortfolioCss } from "./customCss";
 import { sanitizeMarkdownSource, markdownLimits } from "../shared/markdown";
 import { sanitizeHttpUrl, sanitizePlainText } from "./sanitization";
@@ -157,6 +157,7 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
       const fallbackProfile = connectionForExclusions?.login ? localGet<any>(`profile:${connectionForExclusions.login.toLowerCase()}`, null) : null;
       const excludedNames = new Set<string>(((existingProfile?.sectionConfig as any)?.exclusions || fallbackProfile?.sectionConfig?.exclusions || []) as string[]);
       const visibleRepos = repos.filter((repo) => !excludedNames.has(repo.name));
+      const enrichedRepos = await Promise.all(visibleRepos.map(async (repo) => ({ repo, openPullRequests: typeof getGitHubOpenPullRequestCount === "function" ? await getGitHubOpenPullRequestCount(accessToken, repo) : 0 })));
       if (db) {
         const existing = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1);
         let profileId = existing[0]?.id;
@@ -167,14 +168,14 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
           profileId = Number(inserted[0].insertId);
         }
         if (profileId) {
-          for (let index = 0; index < visibleRepos.length; index++) {
-            const repo = visibleRepos[index];
+          for (let index = 0; index < enrichedRepos.length; index++) {
+            const { repo, openPullRequests } = enrichedRepos[index];
             const aiSummary = await summarizeRepository(repo);
-            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), aiSummary, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null } });
+            await db.insert(repositories).values({ profileId, githubRepoId: String(repo.id), name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), licenseName: repo.license?.spdx_id || repo.license?.name || null, defaultBranch: repo.default_branch || null, openIssues: Math.max(0, Number(repo.open_issues_count || 0) - openPullRequests), openPullRequests, url: repo.html_url, homepage: repo.homepage, aiSummary, sortOrder: index, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null }).onDuplicateKeyUpdate({ set: { description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), licenseName: repo.license?.spdx_id || repo.license?.name || null, defaultBranch: repo.default_branch || null, openIssues: Math.max(0, Number(repo.open_issues_count || 0) - openPullRequests), openPullRequests, aiSummary, lastActivityAt: repo.updated_at ? new Date(repo.updated_at) : null } });
           }
         }
       } else {
-        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, ...(fallbackProfile || {}), slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: visibleRepos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), aiSummary: null, isPinned: false, sortOrder: index, updatedAt: repo.updated_at || null })) });
+        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, ...(fallbackProfile || {}), slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: visibleRepos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, organizationName: repo.owner?.type === "Organization" ? repo.owner.login || null : null, topics: Array.isArray(repo.topics) ? repo.topics.slice(0, 30) : [], isArchived: Boolean(repo.archived), isFork: Boolean(repo.fork), licenseName: repo.license?.spdx_id || repo.license?.name || null, defaultBranch: repo.default_branch || null, openIssues: Math.max(0, Number(repo.open_issues_count || 0) - (enrichedRepos.find((entry) => entry.repo.id === repo.id)?.openPullRequests || 0)), openPullRequests: enrichedRepos.find((entry) => entry.repo.id === repo.id)?.openPullRequests || 0, aiSummary: null, isPinned: false, sortOrder: index, updatedAt: repo.updated_at || null })) });
       }
       return repos.length === visibleRepos.length ? { profile: { login: profile.login, name: profile.name }, repositories: visibleRepos.length } : { profile: { login: profile.login, name: profile.name }, repositories: visibleRepos.length, excluded: repos.length - visibleRepos.length };
     }),
