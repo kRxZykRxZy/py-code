@@ -226,7 +226,7 @@
 - [x] F056 Add AI portfolio bio rewrite suggestions
 - [x] F057 Add AI project title suggestions
 - [x] F058 Add AI project tag suggestions
-- [ ] F059 Add AI summary edit-and-approve workflow
+- [x] F059 Add AI summary edit-and-approve workflow
 - [ ] F060 Add AI generation audit history
 
 ### Public portfolio, sharing, SEO, and engagement

@@ -101,6 +101,12 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Suggest title for");
     expect(home).toContain("suggestTags");
     expect(home).toContain("Suggest tags for");
+    expect(home).toContain("suggestSummary");
+    expect(home).toContain("Approve summary for");
+    expect(home).toContain("Edit summary draft for");
+    expect(home).toContain("setSummarySuggestions(current=>({ ...current, [r.name]: event.target.value }))");
+    expect(home).toContain("Reject summary for");
+    expect(home).toContain("aiSummary: summarySuggestions[r.name]");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");
     expect(home).toContain("r.displayName || r.name");
