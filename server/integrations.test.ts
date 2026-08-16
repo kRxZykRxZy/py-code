@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("axios", () => ({ default: { get: vi.fn() } }));
 
 import axios from "axios";
-import { generatePortfolioNarrative, integrationConfig, summarizeRepository } from "./integrations";
+import { generatePortfolioNarrative, getGitHubContributorCount, integrationConfig, summarizeCommitActivity, summarizeRepository } from "./integrations";
 
 describe("integration fallbacks", () => {
   beforeEach(() => vi.mocked(axios.get).mockReset());
@@ -24,6 +24,12 @@ describe("integration fallbacks", () => {
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
       expect(integrationConfig.storageMode).toBe("local-sqlite");
     }
+  });
+
+  it("counts contributors across pagination and summarizes commit activity", async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: Array.from({ length: 100 }, () => ({})) }).mockResolvedValueOnce({ data: Array.from({ length: 5 }, () => ({})) });
+    await expect(getGitHubContributorCount("token", { id: 1, name: "folio", description: null, language: "TypeScript", stargazers_count: 0, forks_count: 0, html_url: "https://github.com/org/folio", homepage: null, owner: { login: "org", type: "Organization" } })).resolves.toBe(105);
+    expect(summarizeCommitActivity([1, 0, 3, 2])).toBe("6 commits across 3/4 recent weeks; peak week 3");
   });
 
   it("parses an AI portfolio headline and skill clusters", async () => {

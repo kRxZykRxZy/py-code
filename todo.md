@@ -209,9 +209,9 @@
 - [x] F039 Add repository default-branch metadata
 - [x] F040 Add repository issue-count metadata
 - [x] F041 Add repository pull-request metadata
-- [ ] F042 Add repository contributor-count metadata
-- [ ] F043 Add repository release metadata
-- [ ] F044 Add repository commit-activity summaries
+- [x] F042 Add repository contributor-count metadata
+- [x] F043 Add repository release metadata
+- [x] F044 Add repository commit-activity summaries
 - [ ] F045 Add repository language breakdowns
 - [ ] F046 Add GitHub contribution heatmap from contribution data
 - [ ] F047 Add GitHub activity timeline from synced events
@@ -343,3 +343,6 @@
 - [x] Add regression coverage proving organization-owned repositories are fetched, persisted, and rendered/filterable
 - [x] Compute true open issue counts separately from open pull-request counts
 - [x] Add regression coverage proving issue and pull-request counts are distinct
+- [x] Compute contributor counts across GitHub pagination and cover repositories over 100 contributors
+- [x] Derive and render a human-readable commit-activity summary from weekly activity data
+- [x] Add regression coverage for contributor pagination and commit-activity summary rendering

@@ -21,6 +21,45 @@ export async function getGitHubOpenPullRequestCount(token: string, repository: G
     return Number.isFinite(data?.total_count) ? Math.max(0, Number(data.total_count)) : 0;
   } catch { return 0; }
 }
+export async function getGitHubContributorCount(token: string, repository: GitHubRepo): Promise<number> {
+  const owner = repository.owner?.login;
+  if (!owner) return 0;
+  try {
+    const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
+    let total = 0;
+    for (let page = 1; page <= 10; page++) {
+      const { data } = await axios.get(`${GITHUB_API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository.name)}/contributors?anon=true&per_page=100&page=${page}`, { headers });
+      if (!Array.isArray(data)) break;
+      total += data.length;
+      if (data.length < 100) break;
+    }
+    return total;
+  } catch { return 0; }
+}
+export function summarizeCommitActivity(activity: unknown): string {
+  const weeks = Array.isArray(activity) ? activity.filter((value): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0) : [];
+  if (!weeks.length) return "No recent commit activity data";
+  const total = weeks.reduce((sum, value) => sum + value, 0);
+  const activeWeeks = weeks.filter((value) => value > 0).length;
+  const peak = Math.max(...weeks);
+  return `${total} commits across ${activeWeeks}/${weeks.length} recent weeks; peak week ${peak}`;
+}
+export async function getGitHubLatestRelease(token: string, repository: GitHubRepo): Promise<{ tag: string | null; publishedAt: string | null }> {
+  const owner = repository.owner?.login;
+  if (!owner) return { tag: null, publishedAt: null };
+  try {
+    const { data } = await axios.get(`${GITHUB_API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository.name)}/releases/latest`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    return { tag: typeof data?.tag_name === "string" ? data.tag_name.slice(0, 180) : null, publishedAt: typeof data?.published_at === "string" ? data.published_at : null };
+  } catch { return { tag: null, publishedAt: null }; }
+}
+export async function getGitHubCommitActivity(token: string, repository: GitHubRepo): Promise<number[]> {
+  const owner = repository.owner?.login;
+  if (!owner) return [];
+  try {
+    const { data } = await axios.get(`${GITHUB_API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository.name)}/stats/commit_activity`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    return Array.isArray(data) ? data.slice(-12).map((week: { total?: number }) => Math.max(0, Number(week.total || 0))) : [];
+  } catch { return []; }
+}
 export async function getGitHubOrganizationRepos(token: string): Promise<GitHubRepo[]> {
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
   const { data: organizations } = await axios.get(`${GITHUB_API}/user/orgs?per_page=100`, { headers });

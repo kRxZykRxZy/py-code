@@ -64,6 +64,13 @@
       "when": 1786888131974,
       "tag": "0008_soft_living_mummy",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1786888404313,
+      "tag": "0009_brief_la_nuit",
+      "breakpoints": true
     }
   ]
 }
