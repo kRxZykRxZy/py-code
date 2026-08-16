@@ -289,6 +289,20 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
+    // GitHub-only sessions carry a verified GitHub identity created by the
+    // callback. If database persistence is unavailable, keep that session
+    // usable without attempting to rehydrate identity from Manus services.
+    if (!user && sessionUserId.startsWith("github:")) {
+      const githubUser = buildGitHubSessionUser(sessionUserId, session.name, signedInAt);
+      try {
+        await db.upsertUser({ openId: githubUser.openId, name: githubUser.name, email: null, loginMethod: "github", lastSignedIn: signedInAt });
+        user = await db.getUserByOpenId(sessionUserId);
+      } catch (error) {
+        console.warn("[Auth] GitHub session is running without database persistence", String(error));
+      }
+      if (!user) return githubUser;
+    }
+
     // If user not in DB, sync from OAuth server automatically
     if (!user) {
       try {
@@ -345,6 +359,21 @@ function buildCronUser(
     taskUid: userInfo.taskUid ?? undefined,
     isCron: true,
   } as AuthenticatedUser;
+}
+
+function buildGitHubSessionUser(openId: string, name: string, now: Date): AuthenticatedUser {
+  const numericId = Number(openId.slice("github:".length));
+  return {
+    id: Number.isFinite(numericId) ? -Math.abs(numericId) : -1,
+    openId,
+    name: name || "GitHub user",
+    email: null,
+    loginMethod: "github",
+    role: "user",
+    createdAt: now,
+    updatedAt: now,
+    lastSignedIn: now,
+  };
 }
 
 export const sdk = new SDKServer();

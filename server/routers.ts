@@ -6,7 +6,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { getDb } from "./db";
-import { analyticsEvents, customDomains, profiles, repositories, subscriptions, users } from "../drizzle/schema";
+import { analyticsEvents, customDomains, githubConnections, profiles, repositories, subscriptions, users } from "../drizzle/schema";
 import { generatePortfolioNarrative, getGitHubProfile, getGitHubRepos, integrationConfig, summarizeRepository } from "./integrations";
 import { validatePortfolioCss } from "./customCss";
 import { localGet, localSet } from "./localStore";
@@ -30,10 +30,13 @@ export const appRouter = router({
     updatePublishing: protectedProcedure.input(z.object({ slug: z.string().regex(/^[a-z0-9-]+$/), isPublic: z.boolean() })).mutation(async ({ ctx, input }) => { const db = await getDb(); if (!db) { localSet(`profile:${input.slug}`, { ...demoProfile, ...input, slug: input.slug }); return input; } const existing = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1); if (existing[0]) await db.update(profiles).set(input).where(eq(profiles.userId, ctx.user.id)); else await db.insert(profiles).values({ userId: ctx.user.id, slug: input.slug, githubLogin: input.slug, displayName: ctx.user.name || input.slug, isPublic: input.isPublic }); return input; }),
     generateNarrative: protectedProcedure.input(z.object({ bio: z.string().max(4000).optional(), repositories: z.array(z.object({ name: z.string().max(120), description: z.string().max(2000).nullable().optional(), language: z.string().max(80).nullable().optional() })).max(20) })).mutation(async ({ input }) => generatePortfolioNarrative(input)),
     updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().optional(), displayDescription: z.string().optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ input }) => { const db = await getDb(); if (db) await db.update(repositories).set(input).where(eq(repositories.id, input.id)); else localSet(`repo:${input.id}`, input); return { success: true }; }),
-    syncGitHub: protectedProcedure.input(z.object({ accessToken: z.string().min(1) })).mutation(async ({ ctx, input }) => {
-      const profile = await getGitHubProfile(input.accessToken);
-      const repos = await getGitHubRepos(input.accessToken);
+    syncGitHub: protectedProcedure.input(z.object({ accessToken: z.string().min(1).optional() }).optional()).mutation(async ({ ctx, input }) => {
       const db = await getDb();
+      const connection = db ? (await db.select().from(githubConnections).where(eq(githubConnections.userId, ctx.user.id)).limit(1))[0] : localGet<{ accessToken?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
+      const accessToken = input?.accessToken || connection?.accessToken;
+      if (!accessToken) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Sign in with GitHub before syncing your portfolio" });
+      const profile = await getGitHubProfile(accessToken);
+      const repos = await getGitHubRepos(accessToken);
       if (db) {
         const existing = await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1);
         let profileId = existing[0]?.id;

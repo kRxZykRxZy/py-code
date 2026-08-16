@@ -1,6 +1,11 @@
 # Project TODO
 
 - [ ] Configure GitHub OAuth integration and environment variables
+- [x] Verify GitHub OAuth documentation and correct credential-validation behavior
+- [x] Replace Manus login with GitHub-only OAuth across client and server authentication paths
+- [x] Resolve GitHub-issued sessions without Manus fallback when database persistence is unavailable
+- [x] Persist GitHub OAuth connections for the local fallback and handle callback denial responses
+- [ ] Replace the contents of the py-code GitHub repository with the validated GitHubFolio project
 - [ ] Configure Supabase authentication/database integration and environment variables
 - [ ] Configure text.pollinations.ai repository summary integration and environment variables
 - [ ] Add database schema for profiles, GitHub connections, repositories, portfolio settings, templates, custom domains, analytics, and AI summaries

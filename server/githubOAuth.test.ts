@@ -1,0 +1,17 @@
+import axios from "axios";
+import { describe, expect, it, vi } from "vitest";
+import { exchangeGitHubOAuthCode } from "./_core/oauth";
+
+describe("GitHub OAuth credentials", () => {
+  it("sends configured credentials only to GitHub’s documented token-exchange endpoint", async () => {
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    expect(clientId).toBeTruthy();
+    expect(clientSecret).toBeTruthy();
+
+    const post = vi.spyOn(axios, "post").mockResolvedValueOnce({ data: { access_token: "token", scope: "read:user,user:email", token_type: "bearer" } });
+    await expect(exchangeGitHubOAuthCode({ clientId: clientId!, clientSecret: clientSecret!, code: "one-time-code", redirectUri: "https://example.test/api/oauth/github/callback", verifier: "pkce-verifier" })).resolves.toMatchObject({ access_token: "token" });
+    expect(post).toHaveBeenCalledWith("https://github.com/login/oauth/access_token", expect.objectContaining({ client_id: clientId, client_secret: clientSecret, code: "one-time-code", code_verifier: "pkce-verifier" }), expect.objectContaining({ headers: { Accept: "application/json" } }));
+    post.mockRestore();
+  }, 20_000);
+});
