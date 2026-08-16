@@ -243,7 +243,7 @@
 - [x] F071 Add public guestbook moderation
 - [x] F072 Add project share cards
 - [x] F073 Add copy-share-link actions
-- [ ] F074 Add QR code portfolio sharing
+- [x] F074 Add QR code portfolio sharing
 - [ ] F075 Add downloadable PDF resume export
 - [ ] F076 Add print stylesheet customization
 - [ ] F077 Add per-project social metadata
@@ -372,3 +372,7 @@
 
 - [x] Add robust clipboard copy handling with fallback and failure feedback
 - [x] Add regression coverage for successful and failed project-link copy behavior
+
+- [x] Add QR sharing for the main public portfolio URL
+- [x] Render an accessible in-app portfolio QR preview/download surface
+- [x] Add regression coverage for portfolio QR target and visibility

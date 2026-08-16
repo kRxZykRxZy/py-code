@@ -56,6 +56,8 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Project share card");
     expect(home).toContain("Copy project link");
     expect(home).toContain("navigator.clipboard");
+    expect(home).toContain("Open QR code");
+    expect(home).toContain("quickchart.io/qr");
     expect(home).toContain("Pinned project comparison");
     expect(home).toContain("compare-${repo.name}");
     expect(home).toContain("Open-source contribution highlights");
