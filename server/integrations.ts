@@ -2,12 +2,20 @@ import axios from "axios";
 
 const GITHUB_API = "https://api.github.com";
 
-export type GitHubProfile = { id: number; login: string; name: string | null; bio: string | null; avatar_url: string; location: string | null; blog: string | null };
+export type GitHubProfile = { id: number; login: string; name: string | null; bio: string | null; avatar_url: string; location: string | null; blog: string | null; followers?: number; following?: number };
 export type GitHubRepo = { id: number; name: string; description: string | null; language: string | null; stargazers_count: number; forks_count: number; html_url: string; homepage: string | null; updated_at?: string | null; topics?: string[]; archived?: boolean; fork?: boolean; owner?: { login?: string; type?: string }; license?: { name?: string | null; spdx_id?: string | null }; default_branch?: string; open_issues_count?: number };
 
 export async function getGitHubProfile(token: string): Promise<GitHubProfile> {
   const { data } = await axios.get(`${GITHUB_API}/user`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
   return data;
+}
+export async function getGitHubPinnedRepositoryIds(token: string): Promise<number[] | null> {
+  try {
+    const { data } = await axios.post("https://api.github.com/graphql", { query: "query { viewer { pinnedItems(first: 100, types: REPOSITORY) { nodes { ... on Repository { databaseId } } } } }" }, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    const nodes = data?.data?.viewer?.pinnedItems?.nodes;
+    if (!Array.isArray(nodes)) return null;
+    return nodes.map((node: { databaseId?: number | null }) => Number(node.databaseId)).filter((id: number) => Number.isInteger(id) && id > 0);
+  } catch { return null; }
 }
 export async function getGitHubRepos(token: string): Promise<GitHubRepo[]> {
   const { data } = await axios.get(`${GITHUB_API}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });

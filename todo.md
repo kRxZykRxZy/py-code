@@ -215,9 +215,9 @@
 - [x] F045 Add repository language breakdowns
 - [ ] F046 Add GitHub contribution heatmap from contribution data
 - [ ] F047 Add GitHub activity timeline from synced events
-- [ ] F048 Add GitHub profile follower metadata
-- [ ] F049 Add GitHub profile following metadata
-- [ ] F050 Add GitHub pinned-repository import
+- [x] F048 Add GitHub profile follower metadata
+- [x] F049 Add GitHub profile following metadata
+- [x] F050 Add GitHub pinned-repository import
 - [ ] F051 Add repository health scoring
 - [ ] F052 Add project complexity indicators
 - [ ] F053 Add AI project category classification
@@ -349,3 +349,5 @@
 - [x] Fetch real per-repository language breakdowns from GitHub during sync
 - [x] Persist and expose per-repository language breakdown data in database and local fallback models
 - [x] Render language breakdown details and add regression coverage
+- [x] Persist imported GitHub pinned IDs in database-backed repository inserts and updates
+- [x] Add database and local regression coverage for pinned import public/editor exposure
