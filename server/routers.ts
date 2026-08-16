@@ -92,12 +92,12 @@ export const appRouter = router({
       const result = await db.select().from(profiles).where(eq(profiles.slug, input.slug)).limit(1);
       if (!result[0]) { const fallback = localGet<any>(`profile:${input.slug}`, input.slug === demoProfile.slug ? demoProfile : null); return fallback && (fallback.isPublic === true || Boolean(input.previewToken) && fallback.previewToken === input.previewToken) ? fallback : null; }
       if (!result[0].isPublic && result[0].previewToken !== input.previewToken) return input.slug === demoProfile.slug ? demoProfile : null;
-      const rows = await db.select().from(repositories).where(eq(repositories.profileId, result[0].id)).orderBy(desc(repositories.sortOrder));
+      const rows = await db.select().from(repositories).where(eq(repositories.profileId, result[0].id)).orderBy(repositories.sortOrder);
       return { ...result[0], repositories: rows.filter(r => !r.isHidden) };
     }),
     myProfile: protectedProcedure.query(async ({ ctx }) => {
       const db = await getDb();
-      if (db) return (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0] || null;
+      if (db) { const profile = (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0]; if (!profile) return null; const rows = await db.select().from(repositories).where(eq(repositories.profileId, profile.id)).orderBy(repositories.sortOrder); return { ...profile, repositories: rows }; }
       const connection = localGet<{ login?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
       return connection?.login ? localGet(`profile:${connection.login.toLowerCase()}`, null) : null;
     }),
@@ -124,7 +124,7 @@ export const appRouter = router({
       return values;
     }),
     generateNarrative: protectedProcedure.input(z.object({ bio: z.string().max(4000).optional(), repositories: z.array(z.object({ name: z.string().max(120), description: z.string().max(2000).nullable().optional(), language: z.string().max(80).nullable().optional() })).max(20) })).mutation(async ({ input }) => generatePortfolioNarrative(input)),
-    updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().max(360).optional(), displayDescription: z.string().max(4_000).optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ ctx, input }) => { const db = await getDb(); const values = { ...input, ...(input.displayName !== undefined ? { displayName: sanitizePlainText(input.displayName, 180) } : {}), ...(input.displayDescription !== undefined ? { displayDescription: sanitizePlainText(input.displayDescription, 2_000) } : {}) }; if (db) await db.update(repositories).set(values).where(eq(repositories.id, input.id)); else localSet(`repo:${ctx.user.openId}:${input.id}`, values); return { success: true }; }),
+    updateRepository: protectedProcedure.input(z.object({ id: z.number(), displayName: z.string().max(360).optional(), displayDescription: z.string().max(4_000).optional(), isPinned: z.boolean().optional(), isHidden: z.boolean().optional(), sortOrder: z.number().optional() })).mutation(async ({ ctx, input }) => { const db = await getDb(); const values = { ...input, ...(input.displayName !== undefined ? { displayName: sanitizePlainText(input.displayName, 180) } : {}), ...(input.displayDescription !== undefined ? { displayDescription: sanitizePlainText(input.displayDescription, 2_000) } : {}) }; if (db) await db.update(repositories).set(values).where(eq(repositories.id, input.id)); else { localSet(`repo:${ctx.user.openId}:${input.id}`, values); const connection = localGet<{ login?: string } | null>(`githubConnection:${ctx.user.openId}`, null); const slug = connection?.login?.toLowerCase(); const profile = slug ? localGet<any>(`profile:${slug}`, null) : null; if (profile?.repositories) { const index = profile.repositories.findIndex((repo: any) => Number(repo.id) === input.id); if (index >= 0) { profile.repositories[index] = { ...profile.repositories[index], ...values }; profile.repositories.sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)); localSet(`profile:${slug}`, profile); } } } return { success: true }; }),
     syncGitHub: protectedProcedure.input(z.object({ accessToken: z.string().min(1).optional() }).optional()).mutation(async ({ ctx, input }) => {
       const db = await getDb();
       const connection = db ? (await db.select().from(githubConnections).where(eq(githubConnections.userId, ctx.user.id)).limit(1))[0] : localGet<{ accessToken?: string } | null>(`githubConnection:${ctx.user.openId}`, null);
@@ -149,7 +149,7 @@ export const appRouter = router({
           }
         }
       } else {
-        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: repos.map((repo) => ({ name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary: null, isPinned: false })) });
+        localSet(`profile:${profile.login.toLowerCase()}`, { ...demoProfile, slug: profile.login.toLowerCase(), githubLogin: profile.login, displayName: profile.name || profile.login, bio: profile.bio, avatarUrl: profile.avatar_url, location: profile.location, websiteUrl: profile.blog, repositories: repos.map((repo, index) => ({ id: repo.id, name: repo.name, description: repo.description, language: repo.language, stars: repo.stargazers_count, forks: repo.forks_count, aiSummary: null, isPinned: false, sortOrder: index })) });
       }
       return { profile: { login: profile.login, name: profile.name }, repositories: repos.length };
     }),

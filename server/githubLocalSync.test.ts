@@ -17,6 +17,7 @@ function githubContext(): TrpcContext {
   const now = new Date();
   return { user: { id: -42, openId: "github:42", email: null, name: "Octo Dev", loginMethod: "github", role: "user", createdAt: now, updatedAt: now, lastSignedIn: now }, req: { protocol: "https", headers: {} } as TrpcContext["req"], res: { clearCookie: vi.fn() } as unknown as TrpcContext["res"] };
 }
+function publicContext(): TrpcContext { return { user: null, req: { protocol: "https", headers: {} } as TrpcContext["req"], res: { clearCookie: vi.fn() } as unknown as TrpcContext["res"] }; }
 
 describe("GitHub local fallback sync", () => {
   it("syncs using the authorization token persisted at GitHub-only sign-in", async () => {
@@ -33,8 +34,20 @@ describe("GitHub local fallback sync", () => {
   });
 
   it("normalizes repository display text before local persistence", async () => {
-    await expect(appRouter.createCaller(githubContext()).portfolio.updateRepository({ id: 77, displayName: "  <b>Folio</b>\u0000  ", displayDescription: "  A\nthoughtful <script> project  " })).resolves.toEqual({ success: true });
-    expect(localGet<any>("repo:github:42:77", null)).toMatchObject({ displayName: "bFolio/b", displayDescription: "A thoughtful script project" });
+    await expect(appRouter.createCaller(githubContext()).portfolio.updateRepository({ id: 77, displayName: "  <b>Folio</b>\u0000  ", displayDescription: "  A\nthoughtful <script> project  ", sortOrder: 3 })).resolves.toEqual({ success: true });
+    expect(localGet<any>("repo:github:42:77", null)).toMatchObject({ displayName: "bFolio/b", displayDescription: "A thoughtful script project", sortOrder: 3 });
+  });
+
+  it("persists repository ordering into the local profile and public route", async () => {
+    localSet("githubConnection:github:42", { login: "octo-dev" });
+    localSet("profile:octo-dev", { slug: "octo-dev", isPublic: true, repositories: [{ id: 1, name: "first", sortOrder: 0 }, { id: 2, name: "second", sortOrder: 1 }] });
+    const caller = appRouter.createCaller(githubContext());
+    await caller.portfolio.updateRepository({ id: 2, sortOrder: 0 });
+    await caller.portfolio.updateRepository({ id: 1, sortOrder: 1 });
+    const reloaded = await caller.portfolio.myProfile();
+    expect(reloaded?.repositories?.map((repo: any) => repo.name)).toEqual(["second", "first"]);
+    const publicProfile = await appRouter.createCaller(publicContext()).portfolio.bySlug({ slug: "octo-dev" });
+    expect(publicProfile?.repositories?.map((repo: any) => repo.name)).toEqual(["second", "first"]);
   });
 
   it("normalizes profile copy and rejects unsafe website protocols before fallback persistence", async () => {

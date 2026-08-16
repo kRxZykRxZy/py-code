@@ -21,6 +21,14 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label="Portfolio sections"');
   });
 
+  it("keeps repository ordering controls draggable and accessible", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("draggable");
+    expect(home).toContain("onDragStart");
+    expect(home).toContain("onDrop");
+    expect(home).toContain("aria-label={`Reorder ${r.name}`}");
+  });
+
   it("keeps editable notification preferences visible in Settings", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("Anonymous analytics");

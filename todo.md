@@ -57,7 +57,7 @@
 - [x] Add visual color palette editor
 - [x] Add layout density and spacing controls
 - [ ] Add drag-and-drop section ordering
-- [ ] Add drag-and-drop repository ordering
+- [x] Add drag-and-drop repository ordering
 - [x] Add repository search and bulk selection
 - [ ] Add repository import exclusions
 - [ ] Add manual projects separate from GitHub repositories
@@ -124,7 +124,7 @@
 - [x] Preserve previewToken across local fallback profile settings writes
 - [x] Add explicit public live-link handling alongside private preview links
 - [x] Add behavioral tests for preview-link access and token persistence
-- [ ] Add regression coverage for repository ordering and section toggles, or narrow the editor tracker wording
+- [ ] Add regression coverage for section toggles, or narrow the editor tracker wording
 - [ ] Implement request-time custom-domain host resolution, or narrow the mapping tracker wording
 - [ ] Add concrete responsive verification coverage for key surfaces, or narrow the design tracker wording
 - [ ] Add a true downloadable resume export, or narrow the tracker wording to printable resume view
@@ -132,3 +132,10 @@
 - [x] Add regression coverage for notification preference controls and persistence
 - [x] Add regression coverage that persists both analytics and digest notification values
 - [x] Add source-contract coverage that Settings notification controls render persisted values
+- [x] Persist drag-and-drop repository ordering through backend sortOrder and hydrate the editor from portfolio data
+- [x] Add behavioral regression coverage for repository ordering persistence and public ordering
+- [x] Add loading and error handling for repository ordering saves
+- [x] Persist local-fallback repository reordering into the profile repository list
+- [x] Align ascending sort semantics between editor writes and public database reads
+- [x] Add reload and public-order regression coverage for repository reordering
+- [x] Invalidate or settle repository data after successful reorder saves
