@@ -18,6 +18,7 @@ const customDomainSchema = z.string().trim().toLowerCase().min(4).max(253).regex
 const planUsageLimits = { free: { aiSummaries: 3, customCssChars: 0 }, pro: { aiSummaries: 20, customCssChars: 2_000 }, proPlus: { aiSummaries: null, customCssChars: 20_000 } } as const;
 function effectivePlan(subscription: any) { return subscription?.status === "active" && subscription.plan !== "free" ? subscription.plan as "pro" | "proPlus" : "free"; }
 function createPreviewToken() { return randomBytes(24).toString("base64url"); }
+function withDetailNarratives(profile: any) { if (!profile?.repositories) return profile; return { ...profile, repositories: profile.repositories.map((repo: any) => ({ ...repo, detailNarrative: repo.detailNarrative || `${repo.aiSummary || repo.description || "This project demonstrates a considered approach to building useful software."} It combines ${repo.language || "software"} craft with the practical constraints reflected in ${repo.stars || 0} stars and ${repo.forks || 0} forks.` })) }; }
 
 export const appRouter = router({
   system: systemRouter,
@@ -88,12 +89,12 @@ export const appRouter = router({
   portfolio: router({
     bySlug: publicProcedure.input(z.object({ slug: z.string().min(1).max(80), previewToken: z.string().max(120).optional() })).query(async ({ input }) => {
       const db = await getDb();
-      if (!db) { const profile = localGet<any>(`profile:${input.slug}`, input.slug === demoProfile.slug ? demoProfile : null); return profile && (profile.isPublic === true || Boolean(input.previewToken) && profile.previewToken === input.previewToken) ? profile : null; }
+      if (!db) { const profile = localGet<any>(`profile:${input.slug}`, input.slug === demoProfile.slug ? demoProfile : null); return profile && (profile.isPublic === true || Boolean(input.previewToken) && profile.previewToken === input.previewToken) ? withDetailNarratives(profile) : null; }
       const result = await db.select().from(profiles).where(eq(profiles.slug, input.slug)).limit(1);
-      if (!result[0]) { const fallback = localGet<any>(`profile:${input.slug}`, input.slug === demoProfile.slug ? demoProfile : null); return fallback && (fallback.isPublic === true || Boolean(input.previewToken) && fallback.previewToken === input.previewToken) ? fallback : null; }
+      if (!result[0]) { const fallback = localGet<any>(`profile:${input.slug}`, input.slug === demoProfile.slug ? demoProfile : null); return fallback && (fallback.isPublic === true || Boolean(input.previewToken) && fallback.previewToken === input.previewToken) ? withDetailNarratives(fallback) : null; }
       if (!result[0].isPublic && result[0].previewToken !== input.previewToken) return input.slug === demoProfile.slug ? demoProfile : null;
       const rows = await db.select().from(repositories).where(eq(repositories.profileId, result[0].id)).orderBy(repositories.sortOrder);
-      return { ...result[0], repositories: rows.filter(r => !r.isHidden) };
+      return withDetailNarratives({ ...result[0], repositories: rows.filter(r => !r.isHidden) });
     }),
     myProfile: protectedProcedure.query(async ({ ctx }) => {
       const db = await getDb();

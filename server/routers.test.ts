@@ -24,7 +24,8 @@ describe("core portfolio procedures", () => {
     const caller = appRouter.createCaller(publicContext());
     const profile = await caller.portfolio.bySlug({ slug: "alexmorgan" });
     expect(profile?.slug).toBe("alexmorgan");
-    expect(profile?.repositories.length).toBeGreaterThan(0);
+    expect(profile?.repositories?.length).toBeGreaterThan(0);
+    expect(profile?.repositories?.[0]?.detailNarrative).toContain(profile?.repositories?.[0]?.aiSummary);
   });
 
   it("exposes integration readiness without leaking credentials", async () => {

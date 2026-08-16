@@ -40,6 +40,21 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("id=\"contact\"");
   });
 
+  it("keeps public project detail routing and narrative content wired", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("pathParts[1] === \"projects\"");
+    expect(home).toContain("focusedProject");
+    expect(home).toContain("AI showcase narrative");
+    expect(home).toContain("showcaseNarrative");
+    expect(home).toContain("focusedProject.detailNarrative || focusedProject.summary");
+    expect(home).toContain("{repo.summary}");
+    expect(home).toContain("Project not found.");
+    expect(home).toContain("Back to portfolio");
+    expect(home).toContain("Read project →");
+    expect(home).toContain("/featured");
+    expect(home).toContain("Read showcase →");
+  });
+
   it("keeps repository ordering controls draggable and accessible", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("draggable");

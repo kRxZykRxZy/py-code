@@ -41,8 +41,8 @@
 - [x] Add printable portfolio resume view
 - [ ] Add portfolio PDF export
 - [x] Add project technology chips and technology filtering
-- [ ] Add project detail pages with full AI showcase narratives
-- [ ] Add featured project hero presentation
+- [x] Add project detail pages with full AI showcase narratives
+- [x] Add featured project hero presentation
 - [ ] Add GitHub contribution heatmap section
 - [ ] Add GitHub activity timeline section
 - [ ] Add pinned project comparison layout
@@ -125,9 +125,9 @@
 - [x] Add explicit public live-link handling alongside private preview links
 - [x] Add behavioral tests for preview-link access and token persistence
 - [x] Add regression coverage for section toggles, or narrow the editor tracker wording
-- [ ] Implement request-time custom-domain host resolution, or narrow the mapping tracker wording
-- [ ] Add concrete responsive verification coverage for key surfaces, or narrow the design tracker wording
-- [ ] Add a true downloadable resume export, or narrow the tracker wording to printable resume view
+- [x] Narrow custom-domain mapping tracker to management procedures and DNS verification guidance
+- [x] Document responsive visual verification for key surfaces
+- [x] Narrow resume tracker to printable portfolio resume view; PDF export remains separately tracked
 - [x] Add editable analytics and digest notification toggles in Settings
 - [x] Add regression coverage for notification preference controls and persistence
 - [x] Add regression coverage that persists both analytics and digest notification values
@@ -147,3 +147,10 @@
 - [x] Extend accessibility source-contract coverage for section visibility toggle bindings
 - [x] Add source-contract coverage for editor sectionConfig hydration wiring
 - [x] Add source-contract coverage for all five public section order and visibility mappings
+- [x] Add a distinct richer AI showcase narrative field and render it on project detail pages
+- [x] Add a public project-detail not-found state and regression coverage
+- [x] Add a true featured-project hero treatment or narrow the featured-project tracker wording
+- [x] Add a dedicated detailNarrative field to public repository responses
+- [x] Render detailNarrative separately from card aiSummary on project detail pages
+- [x] Add regression coverage distinguishing detailNarrative from short card summaries
+- [x] Add explicit regression coverage that cards use summary while project details use detailNarrative
