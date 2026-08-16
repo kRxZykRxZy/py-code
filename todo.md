@@ -198,9 +198,9 @@
 - [x] F030 Add revision history and restore points
 
 ### GitHub intelligence and project data
-- [ ] F031 Add repository import exclusion rules
-- [ ] F032 Add repository exclusion search
-- [ ] F033 Add repository exclusion persistence
+- [x] F031 Add repository import exclusion rules
+- [x] F032 Add repository exclusion search
+- [x] F033 Add repository exclusion persistence
 - [ ] F034 Add GitHub organization repository support
 - [ ] F035 Add GitHub topic filtering
 - [ ] F036 Add repository archived-state badges

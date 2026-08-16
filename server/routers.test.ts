@@ -275,6 +275,15 @@ describe("profile content authoring", () => {
     expect(restored?.sectionConfig?.content?.headline).toBe("Draft source");
   });
 
+  it("persists sanitized repository exclusion rules for the active profile", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `exclude-author-${Date.now()}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    const names = await caller.portfolio.updateExclusions({ slug, names: ["alpha", "alpha", "<script>beta</script>", ""] });
+    expect(names).toEqual(["alpha", "scriptbeta/script"]);
+    expect(await caller.portfolio.getExclusions()).toEqual(["alpha", "scriptbeta/script"]);
+  });
+
   it("rejects unsafe writing-note URLs", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     await expect(caller.portfolio.updateProfileCopy({ slug: "unsafe-note", writingNotes: [{ title: "Unsafe", url: "javascript:alert(1)", sortOrder: 0 }] })).rejects.toThrow("Writing note links must use http or https");
