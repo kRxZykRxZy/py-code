@@ -28,9 +28,13 @@ html { background: var(--background); }
 body { margin: 0; min-width: 320px; background: var(--background); color: var(--foreground); font-family: 'Manrope', sans-serif; }
 button, a { transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease; }
 button:active, a:active { transform: scale(.975); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+.skip-link { position: fixed; left: 1rem; top: 1rem; z-index: 100; transform: translateY(-200%); border-radius: 999px; background: #ffffff; color: #123a32; padding: .6rem 1rem; font-size: .8rem; font-weight: 800; box-shadow: 0 10px 24px rgba(20, 55, 45, .18); }
+.skip-link:focus { transform: translateY(0); }
+section[id] { scroll-margin-top: 1.5rem; }
 .font-mono { font-family: 'DM Mono', monospace; }
 ::selection { background: #b9f5dc; color: #12332a; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

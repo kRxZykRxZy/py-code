@@ -87,7 +87,8 @@
 - [ ] Add public/private preview links
 - [ ] Add account data export and deletion flow
 - [ ] Add keyboard shortcuts and command palette
-- [ ] Add accessibility audit and reduced-motion support
+- [x] Add accessibility audit and reduced-motion support
+- [x] Document a cross-surface accessibility audit and add regression checks for keyboard, focus, motion, and ARIA behavior
 - [ ] Add rate limiting, input sanitization, and security headers
 - [x] Add onboarding checklist and empty-state guidance
 
