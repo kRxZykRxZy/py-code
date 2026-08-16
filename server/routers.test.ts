@@ -188,3 +188,11 @@ describe("section configuration", () => {
     await expect(publicCaller.portfolio.bySlug({ slug: "sections-user" })).resolves.toMatchObject({ sectionConfig });
   });
 });
+
+describe("public activity timeline data", () => {
+  it("exposes synced repository updatedAt values in local fallback profiles", async () => {
+    localSet("profile:activity-user", { slug: "activity-user", isPublic: true, repositories: [{ name: "timeline-project", description: "A project", language: "TypeScript", aiSummary: "A summary", updatedAt: "2026-08-15T10:00:00.000Z" }] });
+    const publicCaller = appRouter.createCaller(publicContext());
+    await expect(publicCaller.portfolio.bySlug({ slug: "activity-user" })).resolves.toMatchObject({ repositories: [{ name: "timeline-project", updatedAt: "2026-08-15T10:00:00.000Z" }] });
+  });
+});

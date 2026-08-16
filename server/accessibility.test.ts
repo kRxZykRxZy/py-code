@@ -53,6 +53,12 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Read project →");
     expect(home).toContain("/featured");
     expect(home).toContain("Read showcase →");
+    expect(home).toContain("Pinned project comparison");
+    expect(home).toContain("compare-${repo.name}");
+    expect(home).toContain("Open-source contribution highlights");
+    expect(home).toContain("oss-${repo.name}");
+    expect(home).toContain("GitHub activity timeline");
+    expect(home).toContain("Activity dates will appear after the next GitHub sync.");
   });
 
   it("keeps repository ordering controls draggable and accessible", async () => {

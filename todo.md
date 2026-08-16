@@ -44,10 +44,10 @@
 - [x] Add project detail pages with full AI showcase narratives
 - [x] Add featured project hero presentation
 - [ ] Add GitHub contribution heatmap section
-- [ ] Add GitHub activity timeline section
-- [ ] Add pinned project comparison layout
+- [x] Add GitHub activity timeline section
+- [x] Add pinned project comparison layout
 - [x] Add project demo and homepage link badges
-- [ ] Add open-source contribution highlights
+- [x] Add open-source project highlights from repository metadata
 - [ ] Add public contact form with spam protection
 - [ ] Add public newsletter signup section
 - [ ] Add writing/blog link section
@@ -154,3 +154,5 @@
 - [x] Render detailNarrative separately from card aiSummary on project detail pages
 - [x] Add regression coverage distinguishing detailNarrative from short card summaries
 - [x] Add explicit regression coverage that cards use summary while project details use detailNarrative
+- [x] Add regression coverage proving repository updatedAt is exposed by the local-fallback public profile contract for the activity timeline
+- [x] Add local fallback activity timestamp coverage for the public timeline data contract
