@@ -174,3 +174,16 @@ describe("billing customer portal", () => {
     expect(portal).toEqual({ configured: false, url: null });
   });
 });
+
+describe("section configuration", () => {
+  it("persists ordered sections and visibility to the local profile and public route", async () => {
+    localSet("githubConnection:fallback-test-user", { login: "sections-user" });
+    localSet("profile:sections-user", { slug: "sections-user", isPublic: true, repositories: [] });
+    const caller = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    await caller.portfolio.updatePublishing({ slug: "sections-user", isPublic: true });
+    const sectionConfig = { order: ["Selected work", "Hero introduction", "Writing"], visibility: { "Hero introduction": true, "Selected work": false, Writing: true } };
+    await expect(caller.portfolio.updateSectionConfig({ slug: "sections-user", sectionConfig })).resolves.toEqual(sectionConfig);
+    await expect(publicCaller.portfolio.bySlug({ slug: "sections-user" })).resolves.toMatchObject({ sectionConfig });
+  });
+});

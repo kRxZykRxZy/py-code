@@ -21,6 +21,25 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label="Portfolio sections"');
   });
 
+  it("keeps section ordering controls draggable and persisted", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("githubfolio.section-order");
+    expect(home).toContain("draggingSection");
+    expect(home).toContain("sectionVisibility");
+    expect(home).toContain("aria-label={`Reorder ${x}`}");
+    expect(home).toContain("aria-label={`Toggle visibility for ${x}`}");
+    expect(home).toContain("updateSectionConfig");
+  });
+
+  it("covers section-config hydration and all five public section mappings", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("remoteSectionConfig");
+    for (const section of ["Hero introduction", "Selected work", "Writing", "Currently learning", "Contact link"]) expect(home).toContain(`sectionPosition(\"${section}\")`);
+    expect(home).toContain("publicSectionVisibility");
+    expect(home).toContain("id=\"learning\"");
+    expect(home).toContain("id=\"contact\"");
+  });
+
   it("keeps repository ordering controls draggable and accessible", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     expect(home).toContain("draggable");

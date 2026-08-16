@@ -56,7 +56,7 @@
 - [x] Add theme presets with typography controls
 - [x] Add visual color palette editor
 - [x] Add layout density and spacing controls
-- [ ] Add drag-and-drop section ordering
+- [x] Add drag-and-drop section ordering
 - [x] Add drag-and-drop repository ordering
 - [x] Add repository search and bulk selection
 - [ ] Add repository import exclusions
@@ -124,7 +124,7 @@
 - [x] Preserve previewToken across local fallback profile settings writes
 - [x] Add explicit public live-link handling alongside private preview links
 - [x] Add behavioral tests for preview-link access and token persistence
-- [ ] Add regression coverage for section toggles, or narrow the editor tracker wording
+- [x] Add regression coverage for section toggles, or narrow the editor tracker wording
 - [ ] Implement request-time custom-domain host resolution, or narrow the mapping tracker wording
 - [ ] Add concrete responsive verification coverage for key surfaces, or narrow the design tracker wording
 - [ ] Add a true downloadable resume export, or narrow the tracker wording to printable resume view
@@ -139,3 +139,11 @@
 - [x] Align ascending sort semantics between editor writes and public database reads
 - [x] Add reload and public-order regression coverage for repository reordering
 - [x] Invalidate or settle repository data after successful reorder saves
+- [x] Persist section order in real portfolio settings and apply it to public rendering
+- [x] Add source-contract coverage for section order and public rendering wiring
+- [x] Add source-contract coverage for section toggle and reorder controls
+- [x] Map Currently learning and Contact link to distinct public sections and apply their order/visibility
+- [x] Add source-contract coverage for editor hydration and rendered section visibility/order wiring
+- [x] Extend accessibility source-contract coverage for section visibility toggle bindings
+- [x] Add source-contract coverage for editor sectionConfig hydration wiring
+- [x] Add source-contract coverage for all five public section order and visibility mappings
