@@ -72,15 +72,16 @@ export const appRouter = router({
       }
       return { profile: { login: profile.login, name: profile.name }, repositories: repos.length };
     }),
-    regenerateSummaries: protectedProcedure.input(z.object({ repositoryIds: z.array(z.number().int().positive()).max(50).optional() }).optional()).mutation(async ({ ctx, input }) => {
+    regenerateSummaries: protectedProcedure.input(z.object({ repositoryIds: z.array(z.number().int().positive()).max(50).optional(), tone: z.enum(["thoughtful", "technical", "playful"]).default("thoughtful"), length: z.enum(["short", "standard", "detailed"]).default("standard") }).optional()).mutation(async ({ ctx, input }) => {
       const db = await getDb();
+      const settings = { tone: input?.tone ?? "thoughtful", length: input?.length ?? "standard" } as const;
       if (db) {
         const profile = (await db.select().from(profiles).where(eq(profiles.userId, ctx.user.id)).limit(1))[0];
         if (!profile) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Sync GitHub before regenerating project summaries" });
         const rows = await db.select().from(repositories).where(eq(repositories.profileId, profile.id));
         const targets = input?.repositoryIds?.length ? rows.filter((row) => input.repositoryIds!.includes(row.id)) : rows;
         for (const repo of targets) {
-          const aiSummary = await summarizeRepository(repo);
+          const aiSummary = await summarizeRepository(repo, settings);
           await db.update(repositories).set({ aiSummary, syncedAt: new Date() }).where(eq(repositories.id, repo.id));
         }
         return { regenerated: targets.length };
@@ -90,7 +91,7 @@ export const appRouter = router({
       const localProfile = slug ? localGet<any>(`profile:${slug}`, null) : null;
       if (!localProfile?.repositories?.length) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Sync GitHub before regenerating project summaries" });
       const refreshedRepositories = [];
-      for (const repo of localProfile.repositories) refreshedRepositories.push({ ...repo, aiSummary: await summarizeRepository(repo) });
+      for (const repo of localProfile.repositories) refreshedRepositories.push({ ...repo, aiSummary: await summarizeRepository(repo, settings) });
       localSet(`profile:${slug}`, { ...localProfile, repositories: refreshedRepositories });
       return { regenerated: refreshedRepositories.length };
     }),

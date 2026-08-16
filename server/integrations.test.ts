@@ -3,9 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("axios", () => ({ default: { get: vi.fn() } }));
 
 import axios from "axios";
-import { generatePortfolioNarrative, integrationConfig } from "./integrations";
+import { generatePortfolioNarrative, integrationConfig, summarizeRepository } from "./integrations";
 
 describe("integration fallbacks", () => {
+  beforeEach(() => vi.mocked(axios.get).mockReset());
   it("uses the free Pollinations endpoint when no API key is present", () => {
     if (!process.env.POLLINATIONS_API_URL && !process.env.POLLINATIONS_API_KEY) {
       expect(integrationConfig.pollinationsEndpoint).toBe("https://text.pollinations.ai");
@@ -35,5 +36,13 @@ describe("integration fallbacks", () => {
     const narrative = await generatePortfolioNarrative({ bio: "Builder", repositories: [{ name: "orbit-ui", language: "TypeScript" }, { name: "cache", language: "Rust" }] });
     expect(narrative.headline).toMatch(/TypeScript and Rust/);
     expect(narrative.skills).toEqual(["TypeScript", "Rust"]);
+  });
+
+  it("includes selected tone and length guidance in a repository summary prompt", async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: "A detailed technical summary." });
+    await expect(summarizeRepository({ name: "orbit-ui", language: "TypeScript" }, { tone: "technical", length: "detailed" })).resolves.toBe("A detailed technical summary.");
+    const url = String(vi.mocked(axios.get).mock.calls[0]?.[0] || "");
+    expect(decodeURIComponent(url)).toContain("three sentences");
+    expect(decodeURIComponent(url)).toContain("technical voice");
   });
 });

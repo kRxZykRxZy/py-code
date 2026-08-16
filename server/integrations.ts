@@ -13,8 +13,15 @@ export async function getGitHubRepos(token: string): Promise<GitHubRepo[]> {
   const { data } = await axios.get(`${GITHUB_API}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
   return data;
 }
-export async function summarizeRepository(repo: { name: string; description?: string | null; language?: string | null }) {
-  const prompt = `Write a concise, specific 2-sentence portfolio summary for the GitHub repository ${repo.name}. Description: ${repo.description || "No description"}. Primary language: ${repo.language || "Not specified"}. Focus on what it does and the engineering intent. Do not use hype or markdown.`;
+export type SummaryTone = "thoughtful" | "technical" | "playful";
+export type SummaryLength = "short" | "standard" | "detailed";
+export type SummaryOptions = { tone?: SummaryTone; length?: SummaryLength };
+
+export async function summarizeRepository(repo: { name: string; description?: string | null; language?: string | null }, options: SummaryOptions = {}) {
+  const tone = options.tone ?? "thoughtful";
+  const length = options.length ?? "standard";
+  const sentenceTarget = length === "short" ? "one sentence" : length === "detailed" ? "three sentences" : "two sentences";
+  const prompt = `Write a concise, specific ${sentenceTarget} portfolio summary for the GitHub repository ${repo.name}. Description: ${repo.description || "No description"}. Primary language: ${repo.language || "Not specified"}. Use a ${tone} voice. Focus on what it does and the engineering intent. Do not use hype or markdown.`;
   const base = process.env.POLLINATIONS_API_URL || (process.env.POLLINATIONS_API_KEY ? "https://gen.pollinations.ai" : "https://text.pollinations.ai");
   try {
     const url = `${base.replace(/\/$/, "")}/text/${encodeURIComponent(prompt)}?model=openai&seed=42`;

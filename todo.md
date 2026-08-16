@@ -72,7 +72,7 @@
 - [ ] Add scheduled GitHub repository sync
 - [ ] Add sync failure notifications and retry controls
 - [x] Add AI summary regeneration controls
-- [ ] Add AI tone and length settings
+- [x] Add AI tone and length settings
 - [x] Add AI-generated skills and technology clustering
 - [x] Add AI-generated portfolio headline suggestions
 - [ ] Add analytics date range filters
