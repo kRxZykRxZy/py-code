@@ -82,7 +82,7 @@
 - [ ] Add browser notification preference center
 - [ ] Add portfolio update notification digest
 - [ ] Add Paddle Pro and Pro+ entitlement enforcement
-- [ ] Add Paddle customer portal link
+- [x] Add Paddle customer portal link
 - [x] Add usage limits and plan usage indicators
 - [ ] Add public/private preview links
 - [x] Add account data export and deletion flow

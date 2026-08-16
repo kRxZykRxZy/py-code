@@ -149,3 +149,12 @@ describe("billing usage procedures", () => {
   });
 });
 
+
+
+describe("billing customer portal", () => {
+  it("does not expose a portal URL when Paddle portal configuration is absent", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const portal = await caller.billing.customerPortal();
+    expect(portal).toEqual({ configured: false, url: null });
+  });
+});
