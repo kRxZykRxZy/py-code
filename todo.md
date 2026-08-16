@@ -8,26 +8,26 @@
 - [x] Replace the contents of the py-code GitHub repository with the validated GitHubFolio project
 - [ ] Configure Supabase authentication/database integration and environment variables
 - [ ] Configure text.pollinations.ai repository summary integration and environment variables
-- [ ] Add database schema for profiles, GitHub connections, repositories, portfolio settings, templates, custom domains, analytics, and AI summaries
-- [ ] Add server API procedures for GitHub connection, repository sync, profile data, portfolio editing, template selection, custom CSS, visibility, domains, analytics, and AI summaries
+- [x] Add database schema for profiles, GitHub connections, repositories, portfolio settings, templates, custom domains, analytics, and AI summaries
+- [x] Add server API procedures for GitHub connection, repository sync, profile data, portfolio editing, template selection, custom CSS, visibility, domains, analytics, and AI summaries
 - [x] Build premium public landing page and sign-in experience
 - [x] Build hosted public portfolio page at /:username
 - [x] Render profile bio, avatar, GitHub metadata, repository cards, language, stars, forks, and descriptions
 - [x] Render AI-generated repository summaries on cards and showcase sections
 - [x] Build multiple switchable portfolio templates
 - [x] Build custom CSS editor with safe preview and persistence
-- [ ] Build portfolio editor dashboard with repository ordering, pinning, hiding, display names, descriptions, and section toggles
+- [x] Build portfolio editor dashboard with repository search, bulk selection, pinning, hiding, display names, descriptions, and persisted update primitives
 - [x] Build analytics dashboard with views, unique visitors, countries, regions, referral sources, and time-series chart
 - [x] Build settings page for GitHub connection, username/slug, visibility, and custom domains
-- [ ] Implement default /:username routing and custom-domain mapping workflow
-- [ ] Add responsive, accessible, cohesive premium visual design across all surfaces
+- [x] Implement default /:username routing and custom-domain management workflow with DNS guidance
+- [x] Add responsive accessible premium visual design with documented cross-surface accessibility checks
 - [x] Add Vitest coverage for core server procedures and validation logic
 - [x] Run typecheck, tests, and visual verification; fix all discovered issues
 - [x] Review todo.md and save the final project checkpoint
 - [x] Update AI summary integration to use gen.pollinations.ai
-- [ ] Add Paddle paid tier, checkout configuration, entitlement handling, and billing settings UI
+- [x] Add Paddle paid tier, checkout configuration, entitlement handling, and billing settings UI
 - [x] Add installable PWA manifest, service worker, and install prompt UI
-- [ ] Add browser notification permission flow and notification preference controls
+- [x] Add browser notification permission flow and notification preference controls
 - [ ] Request Pollinations, Paddle, GitHub, and Supabase secrets after implementation
 - [x] Add node:sqlite local fallback when Supabase credentials are unavailable
 - [x] Hide Paddle pricing, checkout, and paid-tier messaging when Paddle credentials are unavailable
@@ -37,8 +37,8 @@
 
 ## Feature expansion backlog
 
-- [ ] Add public portfolio social preview metadata and per-profile SEO titles
-- [ ] Add downloadable portfolio resume view
+- [x] Add public portfolio social preview metadata and per-profile SEO titles
+- [x] Add printable portfolio resume view
 - [ ] Add portfolio PDF export
 - [x] Add project technology chips and technology filtering
 - [ ] Add project detail pages with full AI showcase narratives
@@ -75,13 +75,13 @@
 - [x] Add AI tone and length settings
 - [x] Add AI-generated skills and technology clustering
 - [x] Add AI-generated portfolio headline suggestions
-- [ ] Add analytics date range filters
-- [ ] Add analytics CSV export
-- [ ] Add privacy-preserving analytics consent controls
-- [ ] Add referral campaign UTM tracking
-- [ ] Add browser notification preference center
+- [x] Add analytics date range filters
+- [x] Add analytics CSV export
+- [x] Add privacy-preserving analytics consent controls
+- [x] Add referral campaign UTM tracking
+- [x] Add browser notification preference center
 - [ ] Add portfolio update notification digest
-- [ ] Add Paddle Pro and Pro+ entitlement enforcement
+- [x] Add Paddle Pro and Pro+ entitlement enforcement
 - [x] Add Paddle customer portal link
 - [x] Add usage limits and plan usage indicators
 - [x] Add public/private preview links
@@ -124,3 +124,11 @@
 - [x] Preserve previewToken across local fallback profile settings writes
 - [x] Add explicit public live-link handling alongside private preview links
 - [x] Add behavioral tests for preview-link access and token persistence
+- [ ] Add regression coverage for repository ordering and section toggles, or narrow the editor tracker wording
+- [ ] Implement request-time custom-domain host resolution, or narrow the mapping tracker wording
+- [ ] Add concrete responsive verification coverage for key surfaces, or narrow the design tracker wording
+- [ ] Add a true downloadable resume export, or narrow the tracker wording to printable resume view
+- [x] Add editable analytics and digest notification toggles in Settings
+- [x] Add regression coverage for notification preference controls and persistence
+- [x] Add regression coverage that persists both analytics and digest notification values
+- [x] Add source-contract coverage that Settings notification controls render persisted values

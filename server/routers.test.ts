@@ -83,10 +83,11 @@ describe("core portfolio procedures", () => {
 
   it("persists notification preferences through the local store", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
-    const saved = await caller.notifications.update({ browser: "granted", digest: false });
+    const saved = await caller.notifications.update({ browser: "granted", analytics: false, digest: false });
     expect(saved.browser).toBe("granted");
+    expect(saved.analytics).toBe(false);
     expect(saved.digest).toBe(false);
-    await expect(caller.notifications.get()).resolves.toMatchObject({ browser: "granted", digest: false });
+    await expect(caller.notifications.get()).resolves.toMatchObject({ browser: "granted", analytics: false, digest: false });
   });
 
   it("blocks non-admin users from customer plan management", async () => {

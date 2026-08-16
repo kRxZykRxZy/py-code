@@ -21,6 +21,16 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label="Portfolio sections"');
   });
 
+  it("keeps editable notification preferences visible in Settings", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("Anonymous analytics");
+    expect(home).toContain("Weekly digest");
+    expect(home).toContain("notificationUpdate.mutate({ analytics:");
+    expect(home).toContain("notificationUpdate.mutate({ digest:");
+    expect(home).toContain("checked={notificationPrefs?.analytics !== false}");
+    expect(home).toContain("checked={notificationPrefs?.digest !== false}");
+  });
+
   it("keeps secure preview-link wiring visible across route and Settings", async () => {
     const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
     const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
