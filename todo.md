@@ -238,7 +238,7 @@
 - [x] F066 Add newsletter duplicate-subscription handling
 - [x] F067 Add newsletter unsubscribe flow
 - [x] F068 Add public recommendation links
-- [ ] F069 Add endorsement-link management
+- [x] F069 Add endorsement-link management
 - [ ] F070 Add public guestbook opt-in
 - [ ] F071 Add public guestbook moderation
 - [ ] F072 Add project share cards

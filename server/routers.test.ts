@@ -316,6 +316,15 @@ describe("profile content authoring", () => {
     await expect(caller.portfolio.submitContact(input)).rejects.toThrow("Please wait before sending another message.");
   });
 
+  it("persists sanitized endorsement links through profile copy", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const slug = `endorsement-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, endorsements: [{ name: "Taylor", quote: "A careful builder who communicates clearly.", url: "https://example.com/taylor" }] });
+    const profile = await caller.portfolio.myProfile();
+    expect((profile as any)?.sectionConfig?.content?.endorsements).toEqual([{ name: "Taylor", quote: "A careful builder who communicates clearly.", url: "https://example.com/taylor" }]);
+  });
+
   it("persists safe public recommendation links through profile copy", async () => {
     const caller = appRouter.createCaller(authenticatedContext());
     const slug = `recommendation-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;

@@ -126,6 +126,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("Add link");
     expect(home).toContain("Recommendation URL");
     expect(home).toContain("Recommended next");
+    expect(home).toContain("Endorsements");
+    expect(home).toContain("Add endorsement");
+    expect(home).toContain("Endorsement URL");
     expect(home).toContain("aiAudit.slice(0, 5)");
     expect(home).toContain("displayName: repo.displayName || repo.name");
     expect(home).toContain("repo.displayName || repo.name");
