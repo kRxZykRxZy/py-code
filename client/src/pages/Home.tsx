@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandShortcut } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BarChart3,   Bell, Download, Check, ChevronRight, Code2, ExternalLink, Github, Globe2, LayoutTemplate, LogOut, Palette, Pencil, Pin, Plus, Search, Settings2, Sparkles, Star, Terminal, TrendingUp, Users, Wand2, X } from "lucide-react";
 import { startLogin } from "@/const";
@@ -57,6 +58,30 @@ function Sidebar({ active, setActive, isAdmin }: { active: string; setActive: (s
   return <aside className="hidden w-64 shrink-0 border-r border-[#dce5df] bg-[#fbfcfa] p-5 lg:block"><div className="flex items-center gap-2.5 px-3 py-3"><div className="grid h-8 w-8 place-items-center rounded-xl bg-[#123a32] text-[#d9f99d]"><Terminal className="h-4 w-4" /></div><span className="font-bold tracking-[-.03em]">GitHubFolio</span></div><div className="mt-10 space-y-1">{items.map(([label, Icon]) => <button key={label} onClick={() => setActive(label)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium ${active === label ? "bg-[#e3f0e8] text-[#123a32]" : "text-[#788981] hover:bg-[#f0f4f0] hover:text-[#123a32]"}`}><Icon className="h-4 w-4" />{label}</button>)}</div><div className="mt-auto pt-36"><div className="rounded-2xl bg-[#edf7d8] p-4"><p className="text-xs font-bold text-[#365b1e]">Make it yours</p><p className="mt-1 text-xs leading-5 text-[#67814a]">Upgrade for custom domains and advanced analytics.</p><button className="mt-3 text-xs font-bold text-[#365b1e]" onClick={() => setActive("Settings")}>View plans →</button></div><button className="mt-6 flex items-center gap-3 px-3 text-sm text-[#81918b]"><LogOut className="h-4 w-4" /> Sign out</button></div></aside>
 }
 
+function WorkspaceCommandPalette({ open, onOpenChange, navigate, isAdmin }: { open: boolean; onOpenChange: (open: boolean) => void; navigate: (destination: string) => void; isAdmin: boolean }) {
+  const navigationChordRef = useRef<number | null>(null);
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); onOpenChange(!open); }
+      if (event.key === "/" && !open && target?.tagName !== "INPUT" && target?.tagName !== "TEXTAREA" && target?.tagName !== "SELECT") { event.preventDefault(); onOpenChange(true); }
+      const isEditable = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.tagName === "SELECT" || target?.isContentEditable;
+      if (open || isEditable || event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key === "g") { navigationChordRef.current = Date.now(); event.preventDefault(); return; }
+      if (navigationChordRef.current && Date.now() - navigationChordRef.current < 900) {
+        const destinations: Record<string, string> = { o: "Overview", e: "Portfolio editor", a: "Analytics", t: "Templates", s: "Settings" };
+        const destination = destinations[key];
+        navigationChordRef.current = null;
+        if (destination) { event.preventDefault(); navigate(destination); onOpenChange(false); }
+      } else navigationChordRef.current = null;
+    };
+    window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onOpenChange, navigate]);
+  const run = (destination: string) => { navigate(destination); onOpenChange(false); };
+  return <CommandDialog open={open} onOpenChange={onOpenChange} title="GitHubFolio command palette" description="Navigate your workspace or run a quick action."><CommandInput placeholder="Search workspace actions…"/><CommandList><CommandEmpty>No matching action.</CommandEmpty><CommandGroup heading="Navigate"><CommandItem onSelect={()=>run("Overview")}><Sparkles/>Overview<CommandShortcut>G O</CommandShortcut></CommandItem><CommandItem onSelect={()=>run("Portfolio editor")}><Pencil/>Portfolio editor<CommandShortcut>G E</CommandShortcut></CommandItem><CommandItem onSelect={()=>run("Analytics")}><BarChart3/>Analytics<CommandShortcut>G A</CommandShortcut></CommandItem><CommandItem onSelect={()=>run("Templates")}><LayoutTemplate/>Templates<CommandShortcut>G T</CommandShortcut></CommandItem><CommandItem onSelect={()=>run("Settings")}><Settings2/>Settings<CommandShortcut>G S</CommandShortcut></CommandItem>{isAdmin && <CommandItem onSelect={()=>run("Owner admin")}><Users/>Owner admin</CommandItem>}</CommandGroup><CommandGroup heading="Quick actions"><CommandItem onSelect={()=>{ window.open("/alexmorgan", "_blank", "noopener,noreferrer"); onOpenChange(false); }}><ExternalLink/>Open public portfolio<CommandShortcut>↗</CommandShortcut></CommandItem></CommandGroup></CommandList></CommandDialog>;
+}
+
 function Dashboard() {
   const [active, setActive] = useState("Overview");
   const { user } = useAuth();
@@ -64,6 +89,7 @@ function Dashboard() {
   const { data: integrationConfig } = trpc.integrations.useQuery();
   const [template, setTemplate] = useState("Atelier");
   const [showInstall, setShowInstall] = useState(true);
+  const [commandOpen, setCommandOpen] = useState(false);
   const content = useMemo(() => {
     if (active === "Portfolio editor") return <Editor />;
     if (active === "Analytics") return <Analytics />;
@@ -72,7 +98,7 @@ function Dashboard() {
     if (active === "Owner admin" && isAdmin) return <AdminConsole />;
     return <Overview setActive={setActive} />;
   }, [active, template, isAdmin, integrationConfig?.paddleConfigured]);
-  return <div className="flex min-h-screen bg-[#f5f6f2] text-[#14221f]"><Sidebar active={active} setActive={setActive} isAdmin={isAdmin} /><main className="min-w-0 flex-1"><header className="flex h-20 items-center justify-between border-b border-[#dce5df] bg-[#fbfcfa]/80 px-5 backdrop-blur lg:px-10"><div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-[#91a29a]">Workspace / {active}</p><h1 className="mt-1 text-lg font-bold tracking-[-.03em]">Good morning, {user?.name || "Alex"}</h1></div><div className="flex items-center gap-3"><button aria-label="Open notifications" className="relative rounded-full p-2 text-[#7f9289] hover:bg-[#e9efea]"><Bell className="h-4 w-4" /><span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#e67b54]" /></button><Avatar className="h-9 w-9 border-2 border-white shadow-sm"><AvatarImage alt="User avatar" src="https://avatars.githubusercontent.com/u/583231?v=4" /><AvatarFallback>AM</AvatarFallback></Avatar></div></header><div className="p-5 lg:p-10">{content}</div></main>{showInstall && <div className="fixed bottom-5 right-5 z-20 w-[min(360px,calc(100vw-40px))] rounded-2xl border border-[#cde2d7] bg-[#123a32] p-4 text-white shadow-2xl"><button aria-label="Dismiss install prompt" onClick={() => setShowInstall(false)} className="absolute right-3 top-3 text-white/50"><X className="h-4 w-4" /></button><div className="flex gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#d9f99d] text-[#234011]"><Bell className="h-4 w-4" /></div><div><p className="text-sm font-bold">Install GitHubFolio</p><p className="mt-1 text-xs leading-5 text-white/65">Add it to your home screen for quick access and portfolio updates.</p><button onClick={() => { void installPwa(); void requestNotifications(); }} className="mt-3 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#123a32]">Install web app</button></div></div></div>}</div>
+  return <div className="flex min-h-screen bg-[#f5f6f2] text-[#14221f]"><Sidebar active={active} setActive={setActive} isAdmin={isAdmin} /><main className="min-w-0 flex-1"><header className="flex h-20 items-center justify-between border-b border-[#dce5df] bg-[#fbfcfa]/80 px-5 backdrop-blur lg:px-10"><div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-[#91a29a]">Workspace / {active}</p><h1 className="mt-1 text-lg font-bold tracking-[-.03em]">Good morning, {user?.name || "Alex"}</h1></div><div className="flex items-center gap-3"><button aria-label="Open notifications" className="relative rounded-full p-2 text-[#7f9289] hover:bg-[#e9efea]"><Bell className="h-4 w-4" /><span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#e67b54]" /></button><Avatar className="h-9 w-9 border-2 border-white shadow-sm"><AvatarImage alt="User avatar" src="https://avatars.githubusercontent.com/u/583231?v=4" /><AvatarFallback>AM</AvatarFallback></Avatar></div></header><div className="p-5 lg:p-10">{content}</div></main>{showInstall && <div className="fixed bottom-5 right-5 z-20 w-[min(360px,calc(100vw-40px))] rounded-2xl border border-[#cde2d7] bg-[#123a32] p-4 text-white shadow-2xl"><button aria-label="Dismiss install prompt" onClick={() => setShowInstall(false)} className="absolute right-3 top-3 text-white/50"><X className="h-4 w-4" /></button><div className="flex gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#d9f99d] text-[#234011]"><Bell className="h-4 w-4" /></div><div><p className="text-sm font-bold">Install GitHubFolio</p><p className="mt-1 text-xs leading-5 text-white/65">Add it to your home screen for quick access and portfolio updates.</p><button onClick={() => { void installPwa(); void requestNotifications(); }} className="mt-3 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#123a32]">Install web app</button></div></div></div>}<WorkspaceCommandPalette open={commandOpen} onOpenChange={setCommandOpen} navigate={setActive} isAdmin={isAdmin} /></div>
 }
 
 function AdminConsole() {

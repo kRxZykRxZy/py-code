@@ -20,4 +20,16 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('aria-label={`Open ${repo.name} source`}');
     expect(home).toContain('aria-label="Portfolio sections"');
   });
+
+  it("keeps the keyboard-accessible workspace command palette", async () => {
+    const home = await readFile(join(projectRoot, "client/src/pages/Home.tsx"), "utf8");
+    expect(home).toContain("WorkspaceCommandPalette");
+    expect(home).toContain("CommandDialog");
+    expect(home).toContain('event.metaKey || event.ctrlKey');
+    expect(home).toContain('event.key === "/"');
+    expect(home).toContain("navigationChordRef");
+    expect(home).toContain('o: "Overview"');
+    expect(home).toContain('e: "Portfolio editor"');
+    expect(home).toContain('placeholder="Search workspace actions…"');
+  });
 });
