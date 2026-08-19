@@ -269,6 +269,15 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
       const rows = await db.select({ id: users.id, name: users.name, email: users.email, plan: subscriptions.plan, status: subscriptions.status, managedDomainAddOn: subscriptions.managedDomainAddOn, managedDomainName: subscriptions.managedDomainName, managedDomainStatus: subscriptions.managedDomainStatus }).from(users).leftJoin(subscriptions, eq(users.id, subscriptions.userId));
       return rows.map((row) => ({ ...row, plan: row.plan || "free", status: row.status || "inactive", managedDomainAddOn: row.managedDomainAddOn || false, managedDomainStatus: row.managedDomainStatus || "none" }));
     }),
+    searchCustomers: protectedProcedure.input(z.object({ query: z.string().trim().max(120).default("") })).query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      const query = input.query.toLowerCase();
+      const matches = (customer: { name?: string | null; email?: string | null }) => !query || `${customer.name || ""} ${customer.email || ""}`.toLowerCase().includes(query);
+      const db = await getDb();
+      if (!db) return localGet<any[]>("admin:customers", [{ id: ctx.user.id, name: ctx.user.name || "Owner", email: ctx.user.email || "", plan: "proPlus", status: "active", managedDomainAddOn: false, managedDomainName: null, managedDomainStatus: "none" }]).filter(matches).slice(0, 50);
+      const rows = await db.select({ id: users.id, name: users.name, email: users.email, plan: subscriptions.plan, status: subscriptions.status, managedDomainAddOn: subscriptions.managedDomainAddOn, managedDomainName: subscriptions.managedDomainName, managedDomainStatus: subscriptions.managedDomainStatus }).from(users).leftJoin(subscriptions, eq(users.id, subscriptions.userId));
+      return rows.filter(matches).slice(0, 50).map((row) => ({ ...row, plan: row.plan || "free", status: row.status || "inactive", managedDomainAddOn: row.managedDomainAddOn || false, managedDomainStatus: row.managedDomainStatus || "none" }));
+    }),
     updateCustomer: protectedProcedure.input(z.object({ userId: z.number().int().positive(), plan: z.enum(["free", "pro", "proPlus"]), managedDomainAddOn: z.boolean(), managedDomainName: z.string().max(255).nullable().optional(), managedDomainStatus: z.enum(["none", "requested", "provisioning", "active", "failed"]).default("none") })).mutation(async ({ ctx, input }) => {
       if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
       const db = await getDb();

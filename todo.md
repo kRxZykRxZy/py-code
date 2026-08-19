@@ -313,7 +313,7 @@
 - [x] F115 Add managed-domain order timeline
 - [ ] F116 Add managed-domain renewal reminders
 - [ ] F117 Add usage-limit warning notifications
-- [ ] F118 Add admin customer search
+- [x] F118 Add admin customer search
 - [ ] F119 Add admin customer export
 - [ ] F120 Add admin audit log
 
