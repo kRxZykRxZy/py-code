@@ -63,6 +63,10 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("og:image");
     expect(home).toContain("twitter:image");
     expect(home).toContain("quickchart.io/og");
+    const vite = await readFile(join(projectRoot, "server/_core/vite.ts"), "utf8");
+    expect(vite).toContain("application/ld+json");
+    expect(vite).toContain("SoftwareSourceCode");
+    expect(vite).toContain('"@type": "Person"');
     expect(home).toContain("projectSlug");
     expect(home).toContain("Pinned project comparison");
     expect(home).toContain("compare-${repo.name}");
@@ -195,6 +199,14 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("AI summaries");
     expect(home).toContain("Custom CSS");
     expect(home).toContain("trpc.billing.usage.useQuery");
+  });
+
+  it("keeps public robots and sitemap SEO endpoints wired", async () => {
+    const index = await readFile(join(projectRoot, "server/_core/index.ts"), "utf8");
+    expect(index).toContain('app.get("/robots.txt"');
+    expect(index).toContain('app.get("/sitemap.xml"');
+    expect(index).toContain("Sitemap:");
+    expect(index).toContain("urlset");
   });
 
   it("keeps the keyboard-accessible workspace command palette", async () => {

@@ -251,8 +251,8 @@
 - [x] F079 Add Twitter card metadata
 - [ ] F080 Add JSON-LD Person metadata
 - [ ] F081 Add JSON-LD SoftwareSourceCode metadata
-- [ ] F082 Add sitemap generation
-- [ ] F083 Add robots.txt controls
+- [x] F082 Add sitemap generation
+- [x] F083 Add robots.txt controls
 - [ ] F084 Add canonical URL controls
 - [ ] F085 Add locale metadata
 - [ ] F086 Add language alternate links
@@ -379,3 +379,8 @@
 
 - [x] Render per-project social metadata in the initial server HTML response
 - [x] Verify project metadata delivery in the server head contract
+
+- [x] Generate sitemap.xml from real public portfolio and project routes
+- [x] Add regression coverage for dynamic sitemap route enumeration
+- [x] Implement robots.txt behavior tied to visibility and SEO settings
+- [x] Add regression coverage for configurable robots directives

@@ -9,6 +9,9 @@ import { applySecurityHeaders } from "./security";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { getDb } from "../db";
+import { profiles, repositories } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -38,6 +41,29 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "2mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  app.get("/robots.txt", (_req, res) => {
+    const origin = process.env.CANONICAL_ORIGIN || "";
+    const disallow = process.env.ROBOTS_DISALLOW_ALL === "true" || process.env.PUBLIC_PORTFOLIOS_NOINDEX === "true";
+    res.type("text/plain").send(`User-agent: *\n${disallow ? "Disallow: /" : "Allow: /"}\nSitemap: ${origin}/sitemap.xml\n`);
+  });
+  app.get("/sitemap.xml", async (_req, res, next) => {
+    try {
+      const origin = process.env.CANONICAL_ORIGIN || "";
+      const db = await getDb();
+      const publicProfiles = db ? await db.select({ id: profiles.id, slug: profiles.slug }).from(profiles).where(eq(profiles.isPublic, true)) : [];
+      const visibleRepos = db ? await db.select({ profileId: repositories.profileId, name: repositories.name, isHidden: repositories.isHidden }).from(repositories) : [];
+      const fallbackSlug = process.env.OWNER_NAME || "alexmorgan";
+      const profileRows = publicProfiles.length ? publicProfiles : [{ id: -1, slug: fallbackSlug }];
+      const urls = profileRows.flatMap((profile) => [
+        `${origin}/${encodeURIComponent(profile.slug)}`,
+        ...visibleRepos.filter((repo) => repo.profileId === profile.id && !repo.isHidden).map((repo) => `${origin}/${encodeURIComponent(profile.slug)}/projects/${encodeURIComponent(repo.name.toLowerCase())}`),
+      ]);
+      const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${url}</loc></url>`).join("")}</urlset>`;
+      res.type("application/xml").send(xml);
+    } catch (error) {
+      next(error);
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",
