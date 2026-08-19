@@ -266,8 +266,8 @@
 - [x] F092 Add analytics export date filters
 - [x] F093 Add analytics event sampling controls
 - [x] F094 Add live visitor presence metrics
-- [ ] F095 Add project-level view analytics
-- [ ] F096 Add outbound-link click analytics
+- [x] F095 Add project-level view analytics
+- [x] F096 Add outbound-link click analytics
 - [ ] F097 Add contact conversion analytics
 - [ ] F098 Add newsletter conversion analytics
 - [ ] F099 Add dashboard cohort comparisons
@@ -417,3 +417,6 @@
 - [x] Add sampling-path source coverage and validate 100/50/10 percent controls
 
 - [x] Narrow F094 wording to consent-aware recent-activity presence estimation; dedicated heartbeat/realtime presence remains a future infrastructure feature
+
+- [x] Add consent-aware outbound-link click attribution for external project and profile links
+- [x] Add accessible analytics coverage for outbound click recording and aggregation

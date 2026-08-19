@@ -102,6 +102,15 @@ describe("accessibility regression contract", () => {
     expect(routers).toContain("liveVisitors");
     expect(home).toContain('label="Live now"');
     expect(home).toContain("last 5 min");
+    expect(routers).toContain("projectSlug");
+    expect(routers).toContain("projectViews");
+    expect(home).toContain("projectSlug: projectSlug || undefined");
+    expect(home).toContain("[slug, compact, projectSlug]");
+    expect(home).toContain("Top viewed projects");
+    expect(home).toContain("summary?.projectViews");
+    expect(routers).toContain('"outbound_click"');
+    expect(home).toContain('eventType: "outbound_click"');
+    expect(home).toContain("targetUrl");
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');
