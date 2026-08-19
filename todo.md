@@ -276,12 +276,17 @@
 - [x] F102 Add digest frequency controls
 - [x] F103 Add notification delivery history
 - [x] F104 Add failed notification retry controls
-- [ ] F105 Add browser push subscription persistence
-- [ ] F106 Add email notification preferences
-- [ ] F107 Add Paddle customer portal deep links
-- [ ] F108 Add Paddle webhook signature validation
-- [ ] F109 Add Paddle subscription lifecycle sync
-- [ ] F110 Add Paddle cancellation state handling
+- [x] F105 Add browser push subscription persistence
+- [x] F106 Add email notification preferences
+- [x] F107 Add Paddle customer portal deep links
+- [x] F108 Add Paddle webhook signature validation
+- [x] F109 Add Paddle subscription lifecycle sync
+- [x] F110 Add Paddle cancellation state handling
+- [x] Add signed, idempotent Paddle webhook intake for subscription and transaction events
+- [x] Persist Paddle webhook event IDs and delivery outcomes for replay protection
+- [x] Prepare a fail-closed GitHub webhook endpoint for repository push, repository, and installation events
+- [x] Document the separately configured GitHub webhook secret, delivery deduplication, and safe sync-queue handoff
+- [x] Add provider webhook regression coverage, endpoint documentation, and configuration checks
 - [ ] F111 Add Paddle invoice history view
 - [ ] F112 Add Paddle tax and billing address fields
 - [ ] F113 Add plan upgrade proration messaging
@@ -420,3 +425,9 @@
 
 - [x] Add consent-aware outbound-link click attribution for external project and profile links
 - [x] Add accessible analytics coverage for outbound click recording and aggregation
+
+- [x] Persist browser push subscription metadata with endpoint validation
+- [x] Add accessible Settings control and regression coverage for push subscription state
+
+- [x] Add persisted email notification preference with explicit unavailable-provider state
+- [x] Add accessible Settings control and regression coverage for email notifications

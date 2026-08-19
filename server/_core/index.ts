@@ -12,6 +12,7 @@ import { serveStatic, setupVite } from "./vite";
 import { getDb } from "../db";
 import { customDomains, profiles, repositories } from "../../drizzle/schema";
 import { and, eq } from "drizzle-orm";
+import { githubWebhookHandler, paddleWebhookHandler } from "../webhooks";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -37,6 +38,8 @@ async function startServer() {
   const server = createServer(app);
   app.disable("x-powered-by");
   app.use(applySecurityHeaders);
+  app.post("/api/paddle/webhook", express.raw({ type: "application/json", limit: "1mb" }), paddleWebhookHandler);
+  app.post("/api/github/webhook", express.raw({ type: "application/json", limit: "1mb" }), githubWebhookHandler);
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ limit: "2mb", extended: true }));
   registerStorageProxy(app);

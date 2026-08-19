@@ -126,6 +126,11 @@ describe("accessibility regression contract", () => {
     expect(routers).toContain("deliveryHistory");
     expect(routers).toContain("retryDelivery");
     expect(home).toContain("Delivery history");
+    expect(routers).toContain("savePushSubscription");
+    expect(routers).toContain("getPushSubscription");
+    expect(home).toContain('Push subscription saved');
+    expect(routers).toContain("emailNotifications");
+    expect(home).toContain("provider unavailable");
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');
