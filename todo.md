@@ -336,7 +336,7 @@
 - [ ] F136 Add account recovery safeguards
 - [ ] F137 Add export encryption option
 - [ ] F138 Add data retention deletion jobs
-- [ ] F139 Add CSP violation reporting
+- [x] F139 Add CSP violation reporting
 - [ ] F140 Add accessibility automated browser checks
 - [ ] F141 Add keyboard navigation end-to-end tests
 - [ ] F142 Add screen-reader landmark checks

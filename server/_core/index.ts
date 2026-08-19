@@ -51,6 +51,11 @@ async function startServer() {
   app.post("/api/github/webhook", express.raw({ type: "application/json", limit: "1mb" }), githubWebhookHandler);
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ limit: "2mb", extended: true }));
+  app.post("/api/csp-report", (req, res) => {
+    const directive = String(req.body?.["csp-report"]?.["violated-directive"] || "unknown").slice(0, 120).replace(/[^A-Za-z0-9_ -]/g, "");
+    console.info(JSON.stringify({ level: "warn", event: "csp_violation", directive: directive || "unknown" }));
+    res.status(204).end();
+  });
   app.get("/api/healthz", (_req, res) => res.status(200).json({ status: "ok", service: "gitfolio", timestamp: new Date().toISOString() }));
   app.get("/api/readyz", async (_req, res) => {
     const database = await getDb();
