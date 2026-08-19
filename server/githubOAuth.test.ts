@@ -2,7 +2,7 @@ import axios from "axios";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { exchangeGitHubOAuthCode } from "./_core/oauth";
+import { exchangeGitHubOAuthCode, hasRequiredGitHubScopes } from "./_core/oauth";
 
 describe("GitHub OAuth credentials", () => {
   it("uses the GitHub OAuth start route as the only client login entry point", async () => {
@@ -29,4 +29,10 @@ describe("GitHub OAuth credentials", () => {
     expect(post).toHaveBeenCalledWith("https://github.com/login/oauth/access_token", expect.objectContaining({ client_id: clientId, client_secret: clientSecret, code: "one-time-code", code_verifier: "pkce-verifier" }), expect.objectContaining({ headers: { Accept: "application/json" } }));
     post.mockRestore();
   }, 20_000);
+
+  it("requires the profile scopes GitFolio needs after GitHub authorization", () => {
+    expect(hasRequiredGitHubScopes("read:user user:email")).toBe(true);
+    expect(hasRequiredGitHubScopes("read:user")).toBe(false);
+    expect(hasRequiredGitHubScopes(undefined)).toBe(false);
+  });
 });

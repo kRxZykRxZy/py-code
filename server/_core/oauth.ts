@@ -21,6 +21,13 @@ export async function exchangeGitHubOAuthCode(input: { clientId: string; clientS
   return response.data as { access_token?: string; scope?: string; token_type?: string; error?: string };
 }
 
+const REQUIRED_GITHUB_SCOPES = ["read:user", "user:email"] as const;
+
+export function hasRequiredGitHubScopes(scope: string | undefined) {
+  const granted = new Set((scope || "").split(/[\s,]+/).map((item) => item.trim()).filter(Boolean));
+  return REQUIRED_GITHUB_SCOPES.every((required) => granted.has(required));
+}
+
 export function registerOAuthRoutes(app: Express) {
   const githubCredentials = () => ({ clientId: process.env.GITHUB_CLIENT_ID, clientSecret: process.env.GITHUB_CLIENT_SECRET });
   const callbackUrl = (req: Request) => {
@@ -96,6 +103,11 @@ export function registerOAuthRoutes(app: Express) {
       const accessToken = tokenResponse.access_token;
       if (!accessToken) {
         res.status(401).json({ error: "GitHub authorization was not accepted" });
+        return;
+      }
+      if (!hasRequiredGitHubScopes(tokenResponse.scope)) {
+        recordSecurityAudit("oauth_scope_downgraded", "rejected");
+        res.redirect(302, "/?github_oauth_error=insufficient_scope");
         return;
       }
       const profileResponse = await axios.get("https://api.github.com/user", { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/vnd.github+json" }, timeout: 15_000 });
