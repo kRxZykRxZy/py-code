@@ -278,6 +278,14 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
       const rows = await db.select({ id: users.id, name: users.name, email: users.email, plan: subscriptions.plan, status: subscriptions.status, managedDomainAddOn: subscriptions.managedDomainAddOn, managedDomainName: subscriptions.managedDomainName, managedDomainStatus: subscriptions.managedDomainStatus }).from(users).leftJoin(subscriptions, eq(users.id, subscriptions.userId));
       return rows.filter(matches).slice(0, 50).map((row) => ({ ...row, plan: row.plan || "free", status: row.status || "inactive", managedDomainAddOn: row.managedDomainAddOn || false, managedDomainStatus: row.managedDomainStatus || "none" }));
     }),
+    exportCustomers: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      const db = await getDb();
+      const rows = db ? await db.select({ id: users.id, name: users.name, email: users.email, plan: subscriptions.plan, status: subscriptions.status, managedDomainAddOn: subscriptions.managedDomainAddOn, managedDomainName: subscriptions.managedDomainName, managedDomainStatus: subscriptions.managedDomainStatus }).from(users).leftJoin(subscriptions, eq(users.id, subscriptions.userId)) : localGet<any[]>("admin:customers", [{ id: ctx.user.id, name: ctx.user.name || "Owner", email: ctx.user.email || "", plan: "proPlus", status: "active", managedDomainAddOn: false, managedDomainName: null, managedDomainStatus: "none" }]);
+      const quote = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+      const csv = ["id,name,email,plan,status,managed_domain_add_on,managed_domain_name,managed_domain_status", ...rows.slice(0, 5_000).map((row) => [row.id, row.name, row.email, row.plan || "free", row.status || "inactive", Boolean(row.managedDomainAddOn), row.managedDomainName, row.managedDomainStatus || "none"].map(quote).join(","))].join("\n");
+      return { filename: `gitfolio-customers-${new Date().toISOString().slice(0, 10)}.csv`, csv };
+    }),
     updateCustomer: protectedProcedure.input(z.object({ userId: z.number().int().positive(), plan: z.enum(["free", "pro", "proPlus"]), managedDomainAddOn: z.boolean(), managedDomainName: z.string().max(255).nullable().optional(), managedDomainStatus: z.enum(["none", "requested", "provisioning", "active", "failed"]).default("none") })).mutation(async ({ ctx, input }) => {
       if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
       const db = await getDb();

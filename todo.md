@@ -314,7 +314,7 @@
 - [ ] F116 Add managed-domain renewal reminders
 - [ ] F117 Add usage-limit warning notifications
 - [x] F118 Add admin customer search
-- [ ] F119 Add admin customer export
+- [x] F119 Add admin customer export
 - [ ] F120 Add admin audit log
 
 ### Reliability, security, accessibility, integrations, and administration

@@ -19,4 +19,10 @@ describe("owner-admin customer search", () => {
   it("does not expose customer search to ordinary users", async () => {
     await expect(appRouter.createCaller(context("user")).admin.searchCustomers({ query: "ada" })).rejects.toThrow("Admin access required");
   });
+
+  it("exports bounded CSV records only to an administrator", async () => {
+    localSet("admin:customers", [{ id: 3, name: "Ada \"Countess\"", email: "ada@example.test", plan: "pro", status: "active", managedDomainAddOn: false, managedDomainName: null, managedDomainStatus: "none" }]);
+    await expect(appRouter.createCaller(context("admin")).admin.exportCustomers()).resolves.toMatchObject({ filename: expect.stringMatching(/^gitfolio-customers-/), csv: expect.stringContaining('"Ada ""Countess"""') });
+    await expect(appRouter.createCaller(context("user")).admin.exportCustomers()).rejects.toThrow("Admin access required");
+  });
 });
