@@ -315,7 +315,7 @@
 - [ ] F117 Add usage-limit warning notifications
 - [x] F118 Add admin customer search
 - [x] F119 Add admin customer export
-- [ ] F120 Add admin audit log
+- [x] F120 Add admin audit log
 
 ### Reliability, security, accessibility, integrations, and administration
 - [ ] F121 Add scheduled GitHub repository sync

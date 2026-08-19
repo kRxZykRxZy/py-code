@@ -25,4 +25,11 @@ describe("owner-admin customer search", () => {
     await expect(appRouter.createCaller(context("admin")).admin.exportCustomers()).resolves.toMatchObject({ filename: expect.stringMatching(/^gitfolio-customers-/), csv: expect.stringContaining('"Ada ""Countess"""') });
     await expect(appRouter.createCaller(context("user")).admin.exportCustomers()).rejects.toThrow("Admin access required");
   });
+
+  it("records customer-management actions in the protected owner audit log", async () => {
+    const admin = appRouter.createCaller(context("admin"));
+    await admin.admin.updateCustomer({ userId: 1, plan: "proPlus", managedDomainAddOn: true, managedDomainName: "example.dev", managedDomainStatus: "requested" });
+    await expect(admin.admin.auditLog({ limit: 1 })).resolves.toMatchObject([{ actorUserId: 7_001, targetUserId: 1, action: "customer_updated", plan: "proPlus", managedDomainStatus: "requested" }]);
+    await expect(appRouter.createCaller(context("user")).admin.auditLog()).rejects.toThrow("Admin access required");
+  });
 });

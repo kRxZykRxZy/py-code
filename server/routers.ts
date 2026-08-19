@@ -17,6 +17,7 @@ import { revokeGitHubSessions } from "./_core/githubSession";
 import { getPaddleInvoiceUrl, listPaddleInvoiceHistory, PaddleBillingError } from "./paddle";
 import { getPlanChangePreview } from "./billingPlanPolicy";
 import { buildManagedDomainTimeline } from "./managedDomainTimeline";
+import { appendAdminAudit, listAdminAudit } from "./adminAudit";
 
 async function appendAiGenerationAudit(ctx: any, slug: string, action: "narrative" | "comparison" | "bio-rewrite" | "title" | "tags" | "summary", status: "draft" | "approved" | "rejected" | "completed" | "failed", repositoryName?: string) {
   const db = await getDb();
@@ -286,10 +287,15 @@ writingNotes: z.array(z.object({ title: z.string().max(160), url: z.string().max
       const csv = ["id,name,email,plan,status,managed_domain_add_on,managed_domain_name,managed_domain_status", ...rows.slice(0, 5_000).map((row) => [row.id, row.name, row.email, row.plan || "free", row.status || "inactive", Boolean(row.managedDomainAddOn), row.managedDomainName, row.managedDomainStatus || "none"].map(quote).join(","))].join("\n");
       return { filename: `gitfolio-customers-${new Date().toISOString().slice(0, 10)}.csv`, csv };
     }),
+    auditLog: protectedProcedure.input(z.object({ limit: z.number().int().min(1).max(500).default(100) }).optional()).query(({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      return listAdminAudit(input?.limit ?? 100);
+    }),
     updateCustomer: protectedProcedure.input(z.object({ userId: z.number().int().positive(), plan: z.enum(["free", "pro", "proPlus"]), managedDomainAddOn: z.boolean(), managedDomainName: z.string().max(255).nullable().optional(), managedDomainStatus: z.enum(["none", "requested", "provisioning", "active", "failed"]).default("none") })).mutation(async ({ ctx, input }) => {
       if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
       const db = await getDb();
       const values = { plan: input.plan, status: input.plan === "free" ? "inactive" : "active", managedDomainAddOn: input.managedDomainAddOn, managedDomainName: input.managedDomainName ?? null, managedDomainStatus: input.managedDomainAddOn ? input.managedDomainStatus : "none" } as const;
+      appendAdminAudit({ actorUserId: ctx.user.id, targetUserId: input.userId, action: "customer_updated", plan: values.plan, managedDomainAddOn: values.managedDomainAddOn, managedDomainStatus: values.managedDomainStatus });
       if (!db) { const customers = localGet<any[]>("admin:customers", []); localSet("admin:customers", customers.map((customer) => customer.id === input.userId ? { ...customer, ...values } : customer)); return { userId: input.userId, ...values }; }
       const existing = await db.select().from(subscriptions).where(eq(subscriptions.userId, input.userId)).limit(1);
       if (existing[0]) await db.update(subscriptions).set(values).where(eq(subscriptions.userId, input.userId)); else await db.insert(subscriptions).values({ userId: input.userId, ...values });
