@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomUUID } from "node:crypto";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -37,6 +38,14 @@ async function startServer() {
   const server = createServer(app);
   app.disable("x-powered-by");
   app.use(applySecurityHeaders);
+  app.use((req, res, next) => {
+    const suppliedId = String(req.headers["x-request-id"] || "");
+    const requestId = /^[A-Za-z0-9_-]{8,120}$/.test(suppliedId) ? suppliedId : randomUUID();
+    const startedAt = Date.now();
+    res.setHeader("X-Request-Id", requestId);
+    res.on("finish", () => console.info(JSON.stringify({ level: "info", event: "http_request", requestId, method: req.method, path: req.path, status: res.statusCode, durationMs: Date.now() - startedAt })));
+    next();
+  });
   app.post("/api/paddle/webhook", express.raw({ type: "application/json", limit: "1mb" }), paddleWebhookHandler);
   app.post("/api/github/webhook", express.raw({ type: "application/json", limit: "1mb" }), githubWebhookHandler);
   app.use(express.json({ limit: "2mb" }));
