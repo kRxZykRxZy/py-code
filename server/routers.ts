@@ -18,6 +18,7 @@ import { getPaddleInvoiceUrl, listPaddleInvoiceHistory, PaddleBillingError } fro
 import { getPlanChangePreview } from "./billingPlanPolicy";
 import { buildManagedDomainTimeline } from "./managedDomainTimeline";
 import { appendAdminAudit, listAdminAudit } from "./adminAudit";
+import { createApiToken, listApiTokens, revokeApiToken } from "./apiTokens";
 
 async function appendAiGenerationAudit(ctx: any, slug: string, action: "narrative" | "comparison" | "bio-rewrite" | "title" | "tags" | "summary", status: "draft" | "approved" | "rejected" | "completed" | "failed", repositoryName?: string) {
   const db = await getDb();
@@ -67,9 +68,16 @@ const analyticsConnectorRouter = router({
   }),
 });
 
+const apiTokenRouter = router({
+  list: protectedProcedure.query(({ ctx }) => listApiTokens(ctx.user.id)),
+  create: protectedProcedure.input(z.object({ label: z.string().trim().min(1).max(80) })).mutation(({ ctx, input }) => createApiToken(ctx.user.id, input.label)),
+  revoke: protectedProcedure.input(z.object({ id: z.string().uuid() })).mutation(({ ctx, input }) => ({ revoked: revokeApiToken(ctx.user.id, input.id) })),
+});
+
 export const appRouter = router({
   session: sessionRouter,
   analyticsConnector: analyticsConnectorRouter,
+  apiTokens: apiTokenRouter,
   auth: router({ me: publicProcedure.query(opts => opts.ctx.user), logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }) }),
   integrations: publicProcedure.query(() => integrationConfig),
   github: router({

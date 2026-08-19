@@ -350,7 +350,7 @@
 - [x] F146 Add Plausible analytics connector option
 - [ ] F147 Add Sentry error connector option
 - [ ] F148 Add GitHub App authentication option
-- [ ] F149 Add REST API tokens for portfolio management
+- [x] F149 Add REST API tokens for portfolio management
 - [ ] F150 Add public API documentation and versioning
 - [x] Add visible location editor control with hydration and persistence
 - [x] Add timezone persistence through profile content and editor control
