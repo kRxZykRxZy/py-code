@@ -1,6 +1,6 @@
 {
-  "name": "GitHubFolio",
-  "short_name": "GitHubFolio",
+  "name": "GitFolio",
+  "short_name": "GitFolio",
   "description": "A considered home for your GitHub work.",
   "start_url": "/",
   "display": "standalone",

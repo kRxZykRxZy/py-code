@@ -1,4 +1,4 @@
-# GitHubFolio webhook configuration
+# GitFolio webhook configuration
 
 ## Paddle billing webhook
 

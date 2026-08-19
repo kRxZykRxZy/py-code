@@ -46,7 +46,11 @@ async function startServer() {
     const database = await getDb();
     res.status(200).json({ status: "ready", service: "gitfolio", persistence: database ? "connected" : "fallback" });
   });
-  app.get("/api/version", (_req, res) => res.status(200).json({ service: "gitfolio", version: process.env.APP_VERSION || "development" }));
+  app.get("/api/status", async (_req, res) => {
+    const database = await getDb();
+    res.status(200).json({ service: "gitfolio", status: "operational", components: { api: "operational", persistence: database ? "connected" : "fallback" } });
+  });
+  app.get("/api/version", (_req, res) => res.status(200).json({ service: "gitfolio", version: process.env.APP_VERSION || "development", revision: process.env.GIT_SHA || "local" }));
   registerOAuthRoutes(app);
   app.get("/robots.txt", (_req, res) => {
     const origin = process.env.CANONICAL_ORIGIN || "";

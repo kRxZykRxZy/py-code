@@ -8,6 +8,8 @@
 - [x] F001 Add public health endpoint for deployment probes
 - [x] F002 Add public readiness endpoint with persistence mode diagnostics
 - [x] F003 Add public application version endpoint
+- [x] F004 Add non-secret build revision metadata to version diagnostics
+- [x] F130 Add public application status endpoint with persistence state
 - [ ] Migrate application data to Supabase Postgres and all uploaded files to Supabase Storage
 - [ ] Remove legacy platform-specific application runtime paths, assets, types, routes, development hooks, and references while retaining GitHub OAuth-only authentication and Pollinations AI
 - [ ] Remove the remaining legacy internal image-path acceptance and require supported production URLs

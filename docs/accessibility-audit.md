@@ -1,4 +1,4 @@
-# Accessibility audit — GitHubFolio
+# Accessibility audit — GitFolio
 
 **Scope:** landing, authenticated workspace, portfolio editor, analytics, settings, and the public `/:username` portfolio. The audit was performed as a focused source, interaction-contract, and responsive visual review on 16 August 2026.
 

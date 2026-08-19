@@ -1,6 +1,6 @@
 # GitHub OAuth implementation reference
 
-GitHubFolio uses GitHub's OAuth web application authorization-code flow. The `/api/oauth/github/start` route creates a CSRF `state` value and PKCE verifier, then redirects to GitHub. The callback exchanges the one-time authorization code at GitHub's token endpoint and uses the returned token to retrieve the authenticated user.
+GitFolio uses GitHub's OAuth web application authorization-code flow. The `/api/oauth/github/start` route creates a CSRF `state` value and PKCE verifier, then redirects to GitHub. The callback exchanges the one-time authorization code at GitHub's token endpoint and uses the returned token to retrieve the authenticated user.
 
 The application requests `read:user user:email`. Production deployments must register the exact callback URL:
 

@@ -15,5 +15,13 @@ describe("health endpoint", () => {
     expect(source).toContain('app.get("/api/readyz"');
     expect(source).toContain('persistence: database ? "connected" : "fallback"');
     expect(source).toContain('app.get("/api/version"');
+    expect(source).toContain('revision: process.env.GIT_SHA || "local"');
+  });
+
+  it("reports safe operational status without returning runtime secrets", async () => {
+    const source = await readFile(join(process.cwd(), "server/_core/index.ts"), "utf8");
+    expect(source).toContain('app.get("/api/status"');
+    expect(source).toContain('status: "operational"');
+    expect(source).toContain('components: { api: "operational"');
   });
 });
