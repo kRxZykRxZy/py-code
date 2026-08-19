@@ -66,7 +66,7 @@ describe("accessibility regression contract", () => {
     const vite = await readFile(join(projectRoot, "server/_core/vite.ts"), "utf8");
     const html = await readFile(join(projectRoot, "client/index.html"), "utf8");
     expect(html).toContain('rel="icon"');
-    expect(html).toContain("VITE_APP_LOGO");
+    expect(html).toContain("/favicon.svg");
     expect(vite).toContain("application/ld+json");
     expect(vite).toContain('rel="canonical"');
     expect(vite).toContain("CANONICAL_ORIGIN");
@@ -252,11 +252,10 @@ describe("accessibility regression contract", () => {
     expect(router).toContain("createPreviewToken");
   });
 
-  it("keeps durable contact abuse controls and owner alerts wired", async () => {
+  it("keeps durable contact abuse controls and persistence wired", async () => {
     const router = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
     expect(router).toContain("clientKey");
     expect(router).toContain("TOO_MANY_REQUESTS");
-    expect(router).toContain("notifyOwner");
     expect(router).toContain("contactMessages");
   });
 

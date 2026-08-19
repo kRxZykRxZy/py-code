@@ -4,7 +4,6 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
-import { registerStorageProxy } from "./storageProxy";
 import { applySecurityHeaders } from "./security";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
@@ -42,7 +41,6 @@ async function startServer() {
   app.post("/api/github/webhook", express.raw({ type: "application/json", limit: "1mb" }), githubWebhookHandler);
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ limit: "2mb", extended: true }));
-  registerStorageProxy(app);
   registerOAuthRoutes(app);
   app.get("/robots.txt", (_req, res) => {
     const origin = process.env.CANONICAL_ORIGIN || "";
@@ -68,7 +66,7 @@ async function startServer() {
     }
   });
   app.use(async (req, _res, next) => {
-    if (!req.path.startsWith("/api") && !req.path.startsWith("/manus-storage") && !req.path.includes(".") && !["localhost", "127.0.0.1"].includes(req.hostname)) {
+    if (!req.path.startsWith("/api") && !req.path.includes(".") && !["localhost", "127.0.0.1"].includes(req.hostname)) {
       const db = await getDb();
       if (db) {
         const match = await db.select({ slug: profiles.slug }).from(customDomains).innerJoin(profiles, eq(customDomains.profileId, profiles.id)).where(and(eq(customDomains.domain, req.hostname), eq(customDomains.status, "active"))).limit(1);

@@ -1,9 +1,14 @@
 # Project TODO
 
+- [ ] Rename all GitHubFolio product branding and user-facing metadata to GitFolio
+- [ ] Migrate application data to Supabase Postgres and all uploaded files to Supabase Storage
+- [ ] Remove legacy platform-specific application runtime paths, assets, types, routes, development hooks, and references while retaining GitHub OAuth-only authentication and Pollinations AI
+- [ ] Remove the remaining legacy internal image-path acceptance and require supported production URLs
+- [ ] Replace the disabled direct image-upload flow with a provider-neutral production implementation or remove the editor flow
 - [ ] Configure GitHub OAuth integration and environment variables
 - [x] Verify GitHub OAuth documentation and correct credential-validation behavior
-- [x] Replace Manus login with GitHub-only OAuth across client and server authentication paths
-- [x] Resolve GitHub-issued sessions without Manus fallback when database persistence is unavailable
+- [x] Replace platform login with GitHub-only OAuth across client and server authentication paths
+- [x] Resolve GitHub-issued sessions without an external identity fallback when database persistence is unavailable
 - [x] Persist GitHub OAuth connections for the local fallback and handle callback denial responses
 - [x] Replace the contents of the py-code GitHub repository with the validated GitHubFolio project
 - [ ] Configure Supabase authentication/database integration and environment variables

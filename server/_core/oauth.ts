@@ -8,7 +8,7 @@ import { githubConnections } from "../../drizzle/schema";
 import * as db from "../db";
 import { localSet } from "../localStore";
 import { getSessionCookieOptions } from "./cookies";
-import { sdk } from "./sdk";
+import { createGitHubSessionToken } from "./githubSession";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -117,7 +117,7 @@ export function registerOAuthRoutes(app: Express) {
         localSet(`githubConnection:${openId}`, { githubId: String(profile.id), accessToken, scope: tokenResponse.scope ?? null, login: profile.login, updatedAt: Date.now() });
       }
 
-      const sessionToken = await sdk.createSessionToken(openId, {
+      const sessionToken = await createGitHubSessionToken(openId, {
         name: profile.name || profile.login,
         expiresInMs: ONE_YEAR_MS,
       });
