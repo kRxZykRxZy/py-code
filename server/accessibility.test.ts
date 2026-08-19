@@ -69,6 +69,10 @@ describe("accessibility regression contract", () => {
     expect(vite).toContain("CANONICAL_ORIGIN");
     expect(vite).toContain("noindex,nofollow");
     expect(vite).toContain("requestOrigin");
+    expect(vite).toContain("SITE_LOCALE");
+    expect(vite).toContain("og:locale");
+    expect(home).toContain('"og:locale": publicLocale');
+    expect(home).toContain("VITE_SITE_LOCALE");
     expect(home).toContain('link[rel="canonical"]');
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');

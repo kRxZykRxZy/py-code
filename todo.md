@@ -254,7 +254,7 @@
 - [x] F082 Add sitemap generation
 - [x] F083 Add robots.txt controls
 - [x] F084 Add canonical URL controls
-- [ ] F085 Add locale metadata
+- [x] F085 Add locale metadata
 - [ ] F086 Add language alternate links
 - [ ] F087 Add custom favicon upload
 - [ ] F088 Add custom domain host resolution
@@ -388,3 +388,6 @@
 - [x] Emit absolute canonical URLs using CANONICAL_ORIGIN or resolved request host
 - [x] Add regression coverage for canonical URLs on portfolio and project routes
 - [x] Prevent preview/private routes from emitting indexable canonicals
+
+- [x] Use one configurable locale source for server and hydrated client metadata
+- [x] Add delivered-locale regression coverage for portfolio and project routes
