@@ -308,8 +308,8 @@
 - [x] Add provider webhook regression coverage, endpoint documentation, and configuration checks
 - [x] F111 Add Paddle invoice history view
 - [ ] F112 Add Paddle tax and billing address fields
-- [ ] F113 Add plan upgrade proration messaging
-- [ ] F114 Add plan downgrade safeguards
+- [x] F113 Add plan upgrade proration messaging
+- [x] F114 Add plan downgrade safeguards
 - [ ] F115 Add managed-domain order timeline
 - [ ] F116 Add managed-domain renewal reminders
 - [ ] F117 Add usage-limit warning notifications
