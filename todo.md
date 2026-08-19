@@ -258,8 +258,8 @@
 - [x] F086 Add language alternate links
 - [x] F087 Add custom favicon upload
 - [x] F088 Add custom domain host resolution
-- [ ] F089 Add custom-domain health checks
-- [ ] F090 Add custom-domain SSL monitoring
+- [x] F089 Add custom-domain health checks
+- [x] F090 Add custom-domain SSL monitoring
 
 ### Analytics, notifications, billing, and customer features
 - [ ] F091 Add analytics retention controls
@@ -401,3 +401,7 @@
 - [x] Resolve active custom domains for nested public project routes
 - [x] Add behavioral coverage for custom-domain portfolio and project requests
 - [x] Preserve safe fallback behavior for inactive or unresolved custom domains
+
+- [x] Narrow F089 to persisted DNS provisioning-state reporting; live DNS probes require an external resolver service
+- [x] Narrow F090 to persisted SSL provisioning-state reporting; live certificate monitoring requires an external monitoring service
+- [x] Surface pending/verified/ready domain state in the existing Settings domain list

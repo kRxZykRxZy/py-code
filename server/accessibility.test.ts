@@ -85,6 +85,11 @@ describe("accessibility regression contract", () => {
     expect(index).toContain("req.hostname");
     expect(index).toContain("req.url =");
     expect(index).toContain("req.path === \"/\" ? \"\" : req.path");
+    const routers = await readFile(join(projectRoot, "server/routers.ts"), "utf8");
+    expect(routers).toContain("domains: router");
+    expect(routers).toContain("health: protectedProcedure");
+    expect(routers).toContain('dns: active ? "verified" : "pending"');
+    expect(routers).toContain('ssl: active ? "ready" : "pending"');
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');
