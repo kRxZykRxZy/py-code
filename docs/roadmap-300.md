@@ -1,0 +1,40 @@
+# GitFolio 300-Feature Expansion Roadmap
+
+This roadmap defines **300 additive, testable product and platform improvements**. The first delivery batch prioritizes security, stable GitHub-only authentication, Supabase persistence, and observable runtime behavior. Each row contains ten independently trackable features.
+
+| Range | Workstream | Features |
+|---|---|---|
+| F001–F010 | Platform foundations | health endpoint; readiness endpoint; version endpoint; build metadata; runtime configuration report; environment validation; startup dependency checks; graceful shutdown; process metrics; error boundary telemetry |
+| F011–F020 | Security remediation | dependency advisory gate; lockfile policy; CSP reporting; strict transport policy review; security headers tests; request correlation IDs; structured security logs; secret redaction; webhook replay metrics; rate-limit dashboard |
+| F021–F030 | GitHub-only identity | explicit GitHub CTA copy; OAuth callback diagnostics; consent screen help; state mismatch UI; PKCE renewal; session activity timeouts; session devices list; sign-out-all sessions; profile identity reconciliation; OAuth failure analytics |
+| F031–F040 | Supabase data migration | Postgres schema apply; Drizzle Postgres schema; Postgres query adapter; migration status UI; migration backup export; data-count verification; reconciliation report; rollback plan; storage reference migration; database health check |
+| F041–F050 | Asset storage | storage bucket policies; image malware-type validation; image metadata extraction; image size optimization; WebP conversion policy; storage usage meter; orphaned-file report; asset replacement history; signed private downloads; bulk asset deletion |
+| F051–F060 | Portfolio identity | display-name variants; pronunciation field; professional headline variants; availability dates; work authorization; preferred locations; social profile validation; profile completeness score; profile confidence controls; profile sharing QR customization |
+| F061–F070 | Portfolio authoring | section drafts; scheduled publishing; field-level restore; content templates; reusable snippets; duplicate section detection; broken-link scanner; content linting; character budget hints; editorial checklist |
+| F071–F080 | Repository intelligence | stale repository detection; archived project recommendations; dependency-language trends; repository maturity score; bus-factor warning; README quality score; documentation links; issue velocity trends; release cadence; maintainer activity badges |
+| F081–F090 | Project storytelling | problem statement field; outcome metrics field; architecture summary; role and team size; project timeline; challenge log; lesson learned field; media gallery; case-study layout; stakeholder-safe mode |
+| F091–F100 | Templates and themes | theme marketplace-ready metadata; contrast-safe palettes; custom font pairing; branded gradients; border-style presets; card-layout presets; timeline layouts; case-study layouts; minimal CV layout; accessibility-first template |
+| F101–F110 | Public discovery | profile search index preparation; tag landing pages; featured creators; collections; related portfolios; topic pages; project category pages; public profile RSS; changelog feed; portfolio subscribe link |
+| F111–F120 | SEO and sharing | JSON-LD Person; JSON-LD SoftwareSourceCode; breadcrumb schema; FAQ schema; noindex diagnostics; meta description editor; social-card variants; image alt SEO audit; sitemap health report; search-console export |
+| F121–F130 | Contact and CRM | contact inbox filters; contact labels; reply templates; contact assignments; contact archive; contact export; spam explanation; follow-up reminders; reply-status tracking; privacy consent history |
+| F131–F140 | Newsletter growth | double opt-in; subscriber segments; source attribution; campaign drafts; campaign preview; unsubscribe reason; suppression list; welcome sequence; engagement score; CSV import validation |
+| F141–F150 | Analytics | funnel builder; event taxonomy editor; audience segments; retention cohort graph; conversion comparison; goal tracking; anomaly detection; weekly insight digest; report sharing; privacy budget monitor |
+| F151–F160 | Collaboration | portfolio collaborators; editor roles; reviewer comments; approval requests; mention notifications; task checklist; shared drafts; change comparison; audit trail; collaborator removal safeguards |
+| F161–F170 | Billing | Paddle invoice history; billing address; tax fields; proration preview; downgrade safeguards; payment recovery steps; managed-domain timeline; renewal reminders; usage warnings; cancellation survey |
+| F171–F180 | Administration | customer search; customer export; audit log; impersonation safeguards; support notes; tier history; admin alerts; abuse review queue; feature flags; maintenance announcements |
+| F181–F190 | Custom domains | DNS record scanner; verification retries; domain expiry tracking; HTTPS renewal state; redirect rules; www preference; apex guidance; subdomain mapping; domain ownership transfer; domain event history |
+| F191–F200 | Notifications | notification channels; digest scheduling; retry policy; quiet hours; notification templates; notification preview; delivery analytics; failure diagnostics; push permission guide; unsubscribe center |
+| F201–F210 | GitHub synchronization | schedule controls; incremental sync; sync backoff; sync queue; sync status timeline; failed-sync persistence; retry controls; idempotency keys; repository sync diff; scope downgrade recovery |
+| F211–F220 | API and integrations | portfolio API tokens; API scopes; API usage logs; API docs; webhooks for portfolio updates; Zapier-ready events; Plausible connector; Google Analytics connector; Sentry connector; status-page connector |
+| F221–F230 | Reliability | database migration health; fallback diagnostics; status page; structured server logs; correlation IDs; error budgets; uptime probes; background job monitor; cache diagnostics; incident timeline |
+| F231–F240 | Privacy and compliance | data retention controls; export encryption; consent ledger; data processing record; delete-job monitor; regional consent controls; cookie settings; privacy request workflow; token rotation; audit-log retention |
+| F241–F250 | Accessibility | automated browser checks; keyboard end-to-end tests; landmark audit; contrast checks; reduced-motion visual tests; focus order review; accessible chart tables; screen-reader copy review; skip-link audit; caption support |
+| F251–F260 | Performance | image lazy-loading audit; bundle budget; route code splitting; web-vitals monitor; cache-control tuning; prefetch controls; CPU profiling; server response budget; database query tracing; asset compression report |
+| F261–F270 | Mobile and PWA | offline shell; update prompt; install analytics; responsive editor; mobile navigation polish; offline draft queue; push deep links; app shortcuts; adaptive icon; PWA diagnostics |
+| F271–F280 | Developer experience | typed API fixtures; contract-test utilities; test data factories; feature checklist automation; changelog generator; release checklist; local setup validator; migration linter; architecture map; contribution guide |
+| F281–F290 | AI assistance | portfolio tone guardrails; citation-aware summaries; AI change preview; per-field AI rewrite; repository comparison; audience targeting; skills gap analysis; interview prompt builder; AI audit review; model fallback metrics |
+| F291–F300 | Launch readiness | onboarding tour; empty-state polish; feature discovery; feedback capture; NPS-free satisfaction prompt; release notes; production checklist; rollback playbook; launch analytics board; quarterly roadmap review |
+
+## Delivery sequence
+
+The first implementation batch is **F011–F040**: security remediation, GitHub-only authentication hardening, and Supabase persistence migration. Subsequent batches follow the table order, with each milestone requiring TypeScript validation, Vitest coverage, visual verification where applicable, a checkpoint, and a GitHub synchronization.

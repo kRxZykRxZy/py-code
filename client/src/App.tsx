@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home, { PortfolioPreview } from "./pages/Home";
@@ -10,7 +10,7 @@ import Home, { PortfolioPreview } from "./pages/Home";
 function PublicPortfolioRoute() { return <PortfolioPreview />; }
 
 function GitFolioBranding() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const replaceBrand = (value: string) => value.replaceAll("GitHubFolio", "GitFolio").replaceAll("githubfolio.com", "gitfolio.com");
     const applyBranding = (root: Node) => {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -21,12 +21,13 @@ function GitFolioBranding() {
       }
     };
     applyBranding(document.body);
+    const settleTimer = window.setTimeout(() => applyBranding(document.body), 0);
     const observer = new MutationObserver(records => records.forEach(record => {
       if (record.type === "characterData" && record.target.nodeValue) record.target.nodeValue = replaceBrand(record.target.nodeValue);
       record.addedNodes.forEach(node => applyBranding(node));
     }));
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-    return () => observer.disconnect();
+    return () => { window.clearTimeout(settleTimer); observer.disconnect(); };
   }, []);
   return null;
 }

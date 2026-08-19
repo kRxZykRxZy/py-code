@@ -41,6 +41,12 @@ async function startServer() {
   app.post("/api/github/webhook", express.raw({ type: "application/json", limit: "1mb" }), githubWebhookHandler);
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ limit: "2mb", extended: true }));
+  app.get("/api/healthz", (_req, res) => res.status(200).json({ status: "ok", service: "gitfolio", timestamp: new Date().toISOString() }));
+  app.get("/api/readyz", async (_req, res) => {
+    const database = await getDb();
+    res.status(200).json({ status: "ready", service: "gitfolio", persistence: database ? "connected" : "fallback" });
+  });
+  app.get("/api/version", (_req, res) => res.status(200).json({ service: "gitfolio", version: process.env.APP_VERSION || "development" }));
   registerOAuthRoutes(app);
   app.get("/robots.txt", (_req, res) => {
     const origin = process.env.CANONICAL_ORIGIN || "";

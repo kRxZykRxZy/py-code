@@ -3,6 +3,11 @@
 - [ ] Rename all GitHubFolio product branding and user-facing metadata to GitFolio
 - [x] Remove any remaining non-GitHub sign-up or login entry point and synchronize the verified update to GitHub
 - [x] Fix the live sign-up redirect so it targets GitHub OAuth rather than Manus OAuth
+- [ ] Audit, plan, and implement the GitFolio 300-feature expansion in prioritized, tested milestones
+- [x] Remediate audited high-severity production dependency advisories and verify the runtime
+- [x] F001 Add public health endpoint for deployment probes
+- [x] F002 Add public readiness endpoint with persistence mode diagnostics
+- [x] F003 Add public application version endpoint
 - [ ] Migrate application data to Supabase Postgres and all uploaded files to Supabase Storage
 - [ ] Remove legacy platform-specific application runtime paths, assets, types, routes, development hooks, and references while retaining GitHub OAuth-only authentication and Pollinations AI
 - [ ] Remove the remaining legacy internal image-path acceptance and require supported production URLs
