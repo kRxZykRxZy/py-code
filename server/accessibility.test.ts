@@ -65,6 +65,11 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("quickchart.io/og");
     const vite = await readFile(join(projectRoot, "server/_core/vite.ts"), "utf8");
     expect(vite).toContain("application/ld+json");
+    expect(vite).toContain('rel="canonical"');
+    expect(vite).toContain("CANONICAL_ORIGIN");
+    expect(vite).toContain("noindex,nofollow");
+    expect(vite).toContain("requestOrigin");
+    expect(home).toContain('link[rel="canonical"]');
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');
     expect(home).toContain("projectSlug");

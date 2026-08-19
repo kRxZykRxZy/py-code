@@ -253,7 +253,7 @@
 - [ ] F081 Add JSON-LD SoftwareSourceCode metadata
 - [x] F082 Add sitemap generation
 - [x] F083 Add robots.txt controls
-- [ ] F084 Add canonical URL controls
+- [x] F084 Add canonical URL controls
 - [ ] F085 Add locale metadata
 - [ ] F086 Add language alternate links
 - [ ] F087 Add custom favicon upload
@@ -384,3 +384,7 @@
 - [x] Add regression coverage for dynamic sitemap route enumeration
 - [x] Implement robots.txt behavior tied to visibility and SEO settings
 - [x] Add regression coverage for configurable robots directives
+
+- [x] Emit absolute canonical URLs using CANONICAL_ORIGIN or resolved request host
+- [x] Add regression coverage for canonical URLs on portfolio and project routes
+- [x] Prevent preview/private routes from emitting indexable canonicals
