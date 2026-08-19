@@ -13,6 +13,7 @@
 - [x] F131 Add structured server logging for request completion
 - [x] F132 Add request correlation IDs to all responses and logs
 - [ ] Migrate application data to Supabase Postgres and all uploaded files to Supabase Storage
+- [x] Apply and verify the versioned Supabase Postgres core schema migration
 - [ ] Remove legacy platform-specific application runtime paths, assets, types, routes, development hooks, and references while retaining GitHub OAuth-only authentication and Pollinations AI
 - [ ] Remove the remaining legacy internal image-path acceptance and require supported production URLs
 - [ ] Replace the disabled direct image-upload flow with a provider-neutral production implementation or remove the editor flow
