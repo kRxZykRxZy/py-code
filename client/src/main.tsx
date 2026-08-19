@@ -53,7 +53,7 @@ const trpcClient = trpc.createClient({
 });
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { void navigator.serviceWorker.register("/sw.js"); });
+  window.addEventListener("load", () => { void navigator.serviceWorker.register("/sw.js?revision=gitfolio-2"); });
 }
 
 window.addEventListener("beforeinstallprompt", (event) => {
