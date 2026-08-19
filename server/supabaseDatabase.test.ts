@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import { describe, expect, it } from "vitest";
+import { getSupabaseSql } from "./supabaseDb";
 
 describe("Supabase Postgres connection", () => {
   it("connects to the configured Supabase database", async () => {
@@ -12,5 +13,11 @@ describe("Supabase Postgres connection", () => {
     } finally {
       await sql.end({ timeout: 2 });
     }
+  }, 15_000);
+
+  it("uses a pooler-safe client without prepared statements", async () => {
+    const sql = getSupabaseSql();
+    const result = await sql<{ healthy: number }[]>`select 1 as healthy`;
+    expect(result[0]?.healthy).toBe(1);
   }, 15_000);
 });
