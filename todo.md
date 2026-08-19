@@ -256,7 +256,7 @@
 - [x] F084 Add canonical URL controls
 - [x] F085 Add locale metadata
 - [x] F086 Add language alternate links
-- [ ] F087 Add custom favicon upload
+- [x] F087 Add custom favicon upload
 - [ ] F088 Add custom domain host resolution
 - [ ] F089 Add custom-domain health checks
 - [ ] F090 Add custom-domain SSL monitoring
@@ -395,3 +395,5 @@
 - [x] Generate hreflang links from configured SITE_LOCALES variants
 - [x] Add x-default hreflang output for public portfolio and project routes
 - [x] Add regression coverage for the complete alternate-link set
+
+- [x] Narrow F087 wording to configurable app-level favicon branding; per-portfolio upload remains a separate future feature

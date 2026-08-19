@@ -64,6 +64,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("twitter:image");
     expect(home).toContain("quickchart.io/og");
     const vite = await readFile(join(projectRoot, "server/_core/vite.ts"), "utf8");
+    const html = await readFile(join(projectRoot, "client/index.html"), "utf8");
+    expect(html).toContain('rel="icon"');
+    expect(html).toContain("VITE_APP_LOGO");
     expect(vite).toContain("application/ld+json");
     expect(vite).toContain('rel="canonical"');
     expect(vite).toContain("CANONICAL_ORIGIN");
