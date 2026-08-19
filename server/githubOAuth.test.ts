@@ -11,6 +11,13 @@ describe("GitHub OAuth credentials", () => {
     expect(loginHelper.toLowerCase()).not.toContain("manus");
   });
 
+  it("registers the login route with GitHub's authorization endpoint only", async () => {
+    const oauthSource = await readFile(join(process.cwd(), "server/_core/oauth.ts"), "utf8");
+    expect(oauthSource).toContain('app.get("/api/oauth/github/start"');
+    expect(oauthSource).toContain('new URL("https://github.com/login/oauth/authorize")');
+    expect(oauthSource.toLowerCase()).not.toContain("manus");
+  });
+
   it("sends configured credentials only to GitHub’s documented token-exchange endpoint", async () => {
     const clientId = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
