@@ -257,7 +257,7 @@
 - [x] F085 Add locale metadata
 - [x] F086 Add language alternate links
 - [x] F087 Add custom favicon upload
-- [ ] F088 Add custom domain host resolution
+- [x] F088 Add custom domain host resolution
 - [ ] F089 Add custom-domain health checks
 - [ ] F090 Add custom-domain SSL monitoring
 
@@ -397,3 +397,7 @@
 - [x] Add regression coverage for the complete alternate-link set
 
 - [x] Narrow F087 wording to configurable app-level favicon branding; per-portfolio upload remains a separate future feature
+
+- [x] Resolve active custom domains for nested public project routes
+- [x] Add behavioral coverage for custom-domain portfolio and project requests
+- [x] Preserve safe fallback behavior for inactive or unresolved custom domains

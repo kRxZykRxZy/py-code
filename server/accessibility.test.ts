@@ -80,6 +80,12 @@ describe("accessibility regression contract", () => {
     expect(home).toContain('"og:locale": publicLocale');
     expect(home).toContain("VITE_SITE_LOCALE");
     expect(home).toContain('link[rel="canonical"]');
+    const index = await readFile(join(projectRoot, "server/_core/index.ts"), "utf8");
+    expect(index).toContain("customDomains");
+    expect(index).toContain("req.hostname");
+    expect(index).toContain("req.url =");
+    expect(index).toContain("req.path === \"/\" ? \"\" : req.path");
+    expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');
     expect(home).toContain("projectSlug");

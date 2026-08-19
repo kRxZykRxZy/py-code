@@ -10,8 +10,8 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { getDb } from "../db";
-import { profiles, repositories } from "../../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { customDomains, profiles, repositories } from "../../drizzle/schema";
+import { and, eq } from "drizzle-orm";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -63,6 +63,16 @@ async function startServer() {
     } catch (error) {
       next(error);
     }
+  });
+  app.use(async (req, _res, next) => {
+    if (!req.path.startsWith("/api") && !req.path.startsWith("/manus-storage") && !req.path.includes(".") && !["localhost", "127.0.0.1"].includes(req.hostname)) {
+      const db = await getDb();
+      if (db) {
+        const match = await db.select({ slug: profiles.slug }).from(customDomains).innerJoin(profiles, eq(customDomains.profileId, profiles.id)).where(and(eq(customDomains.domain, req.hostname), eq(customDomains.status, "active"))).limit(1);
+        if (match[0]?.slug) req.url = `/${encodeURIComponent(match[0].slug)}${req.path === "/" ? "" : req.path}${req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""}`;
+      }
+    }
+    next();
   });
   // tRPC API
   app.use(
