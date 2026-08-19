@@ -67,24 +67,24 @@
 - [x] Add pinned project comparison layout
 - [x] Add project demo and homepage link badges
 - [x] Add open-source project highlights from repository metadata
-- [ ] Add public contact form with spam protection
-- [ ] Implement functional public newsletter signup with validation and persistence
-- [ ] Model writing/notes links or entries and render persisted content
-- [ ] Persist now and currently-learning content through profile settings
-- [ ] Add testimonial-free recommendation or endorsement links section
+- [x] Add public contact form with spam protection
+- [x] Implement functional public newsletter signup with validation and persistence
+- [x] Model writing/notes links or entries and render persisted content
+- [x] Persist now and currently-learning content through profile settings
+- [x] Add testimonial-free recommendation or endorsement links section
 - [x] Add theme presets with typography controls
 - [x] Add visual color palette editor
 - [x] Add layout density and spacing controls
 - [x] Add drag-and-drop section ordering
 - [x] Add drag-and-drop repository ordering
 - [x] Add repository search and bulk selection
-- [ ] Add repository import exclusions
-- [ ] Add manual projects separate from GitHub repositories
-- [ ] Add project image and cover upload support
-- [ ] Add Markdown editor for custom portfolio copy
+- [x] Add repository import exclusions
+- [x] Add manual projects separate from GitHub repositories
+- [x] Add project image and cover upload support
+- [x] Add Markdown editor for custom portfolio copy
 - [x] Add live device preview switcher
-- [ ] Add revision history and restore points
-- [ ] Add portfolio duplication and template cloning
+- [x] Add revision history and restore points
+- [x] Add portfolio duplication and template cloning
 - [x] Add custom domain DNS verification guide
 - [x] Add domain health and SSL status view
 - [x] Add GitHub token scope and privacy controls
@@ -325,12 +325,12 @@
 - [ ] F125 Add sync retry controls
 - [ ] F126 Add sync backoff policy
 - [ ] F127 Add idempotent repository synchronization
-- [ ] F128 Add database migration health checks
-- [ ] F129 Add local fallback health diagnostics
-- [ ] F130 Add application status page
-- [ ] F131 Add structured server logging
-- [ ] F132 Add request correlation IDs
-- [ ] F133 Add security event audit log
+- [x] F128 Add database migration health checks
+- [x] F129 Add local fallback health diagnostics
+- [x] F130 Add application status page
+- [x] F131 Add structured server logging
+- [x] F132 Add request correlation IDs
+- [x] F133 Add security event audit log
 - [ ] F134 Add session revocation controls
 - [ ] F135 Add OAuth scope downgrade handling
 - [ ] F136 Add account recovery safeguards

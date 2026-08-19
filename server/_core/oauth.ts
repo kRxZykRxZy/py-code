@@ -9,6 +9,7 @@ import * as db from "../db";
 import { localSet } from "../localStore";
 import { getSessionCookieOptions } from "./cookies";
 import { createGitHubSessionToken } from "./githubSession";
+import { recordSecurityAudit } from "../securityAudit";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -54,6 +55,7 @@ export function registerOAuthRoutes(app: Express) {
     authorizeUrl.searchParams.set("code_challenge", challenge);
     authorizeUrl.searchParams.set("code_challenge_method", "S256");
     authorizeUrl.searchParams.set("prompt", "select_account");
+    recordSecurityAudit("oauth_started", "accepted");
     res.redirect(302, authorizeUrl.toString());
   });
 
@@ -64,6 +66,7 @@ export function registerOAuthRoutes(app: Express) {
 
     if (oauthError) {
       clearOauthCookies(req, res);
+      recordSecurityAudit("oauth_denied", "rejected");
       res.redirect(302, `/?github_oauth_error=${encodeURIComponent(oauthError)}`);
       return;
     }
@@ -77,6 +80,7 @@ export function registerOAuthRoutes(app: Express) {
     const expectedState = cookies[OAUTH_STATE_COOKIE];
     const verifier = cookies[GITHUB_OAUTH_VERIFIER_COOKIE];
     if (!expectedState || state !== expectedState || !verifier) {
+      recordSecurityAudit("oauth_state_rejected", "rejected");
       res.status(403).json({ error: "invalid oauth state" });
       return;
     }
@@ -125,9 +129,11 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
+      recordSecurityAudit("oauth_succeeded", "accepted");
       res.redirect(302, "/");
     } catch (error) {
       console.error("[GitHub OAuth] Callback failed", error);
+      recordSecurityAudit("oauth_failed", "failed");
       res.status(500).json({ error: "GitHub OAuth callback failed" });
     }
   });
