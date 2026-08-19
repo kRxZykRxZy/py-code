@@ -1,8 +1,16 @@
 import axios from "axios";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { exchangeGitHubOAuthCode } from "./_core/oauth";
 
 describe("GitHub OAuth credentials", () => {
+  it("uses the GitHub OAuth start route as the only client login entry point", async () => {
+    const loginHelper = await readFile(join(process.cwd(), "client/src/const.ts"), "utf8");
+    expect(loginHelper).toContain('window.location.assign("/api/oauth/github/start")');
+    expect(loginHelper.toLowerCase()).not.toContain("manus");
+  });
+
   it("sends configured credentials only to GitHub’s documented token-exchange endpoint", async () => {
     const clientId = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
