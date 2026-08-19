@@ -268,14 +268,14 @@
 - [x] F094 Add live visitor presence metrics
 - [x] F095 Add project-level view analytics
 - [x] F096 Add outbound-link click analytics
-- [ ] F097 Add contact conversion analytics
-- [ ] F098 Add newsletter conversion analytics
-- [ ] F099 Add dashboard cohort comparisons
-- [ ] F100 Add analytics timezone selector
-- [ ] F101 Add portfolio update notification digest
-- [ ] F102 Add digest frequency controls
-- [ ] F103 Add notification delivery history
-- [ ] F104 Add failed notification retry controls
+- [x] F097 Add contact conversion analytics
+- [x] F098 Add newsletter conversion analytics
+- [x] F099 Add dashboard cohort comparisons
+- [x] F100 Add analytics timezone selector
+- [x] F101 Add portfolio update notification digest
+- [x] F102 Add digest frequency controls
+- [x] F103 Add notification delivery history
+- [x] F104 Add failed notification retry controls
 - [ ] F105 Add browser push subscription persistence
 - [ ] F106 Add email notification preferences
 - [ ] F107 Add Paddle customer portal deep links
