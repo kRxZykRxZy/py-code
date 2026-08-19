@@ -333,7 +333,7 @@
 - [x] F133 Add security event audit log
 - [x] F134 Add session revocation controls
 - [x] F135 Add OAuth scope downgrade handling
-- [ ] F136 Add account recovery safeguards
+- [x] F136 Add account recovery safeguards
 - [ ] F137 Add export encryption option
 - [ ] F138 Add data retention deletion jobs
 - [x] F139 Add CSP violation reporting
