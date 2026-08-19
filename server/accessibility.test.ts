@@ -90,6 +90,10 @@ describe("accessibility regression contract", () => {
     expect(routers).toContain("health: protectedProcedure");
     expect(routers).toContain('dns: active ? "verified" : "pending"');
     expect(routers).toContain('ssl: active ? "ready" : "pending"');
+    expect(routers).toContain("analyticsRetentionDays");
+    expect(routers).toContain("analytics-retention:");
+    expect(routers).toContain("events.filter((event) => Number(event.createdAt) >= cutoff)");
+    expect(home).toContain('aria-label="Analytics retention"');
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');

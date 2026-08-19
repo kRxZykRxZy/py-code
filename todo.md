@@ -262,7 +262,7 @@
 - [x] F090 Add custom-domain SSL monitoring
 
 ### Analytics, notifications, billing, and customer features
-- [ ] F091 Add analytics retention controls
+- [x] F091 Add analytics retention controls
 - [ ] F092 Add analytics export date filters
 - [ ] F093 Add analytics event sampling controls
 - [ ] F094 Add live visitor presence metrics
@@ -405,3 +405,6 @@
 - [x] Narrow F089 to persisted DNS provisioning-state reporting; live DNS probes require an external resolver service
 - [x] Narrow F090 to persisted SSL provisioning-state reporting; live certificate monitoring requires an external monitoring service
 - [x] Surface pending/verified/ready domain state in the existing Settings domain list
+
+- [x] Apply analytics retention to local event writes and fallback preference persistence
+- [x] Add regression coverage for retention filtering and Settings persistence
