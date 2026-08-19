@@ -94,6 +94,11 @@ describe("accessibility regression contract", () => {
     expect(routers).toContain("analytics-retention:");
     expect(routers).toContain("events.filter((event) => Number(event.createdAt) >= cutoff)");
     expect(home).toContain('aria-label="Analytics retention"');
+    expect(home).toContain("exportCsv");
+    expect(home).toContain('"7 days", "30 days", "90 days"');
+    expect(home).toContain("githubfolio-analytics.csv");
+    expect(home).toContain("chartData.map");
+    expect(home).toContain("slice(-rangeCount)");
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');

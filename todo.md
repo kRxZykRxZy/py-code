@@ -263,8 +263,8 @@
 
 ### Analytics, notifications, billing, and customer features
 - [x] F091 Add analytics retention controls
-- [ ] F092 Add analytics export date filters
-- [ ] F093 Add analytics event sampling controls
+- [x] F092 Add analytics export date filters
+- [x] F093 Add analytics event sampling controls
 - [ ] F094 Add live visitor presence metrics
 - [ ] F095 Add project-level view analytics
 - [ ] F096 Add outbound-link click analytics
@@ -408,3 +408,10 @@
 
 - [x] Apply analytics retention to local event writes and fallback preference persistence
 - [x] Add regression coverage for retention filtering and Settings persistence
+
+- [x] Add bounded analytics event sampling preference and apply it to local recording
+- [x] Add accessible Settings control and regression coverage for sampling
+
+- [x] Apply analytics sampling to database-backed recording with deterministic visitor bucketing
+- [x] Persist analytics sampling settings in profile section configuration when database-backed
+- [x] Add sampling-path source coverage and validate 100/50/10 percent controls
