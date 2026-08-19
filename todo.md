@@ -342,12 +342,12 @@
 - [x] F142 Add screen-reader landmark checks
 - [x] F143 Add color-contrast regression checks
 - [x] F144 Add reduced-motion visual checks
-- [ ] F145 Add Google Analytics connector option
+- [x] F145 Add Google Analytics connector option
 - [ ] Audit every tracked source, configuration, and public asset for platform-specific identifiers, dependencies, and runtime hooks
 - [ ] Remove platform-specific client assets, debug collectors, server adapters, environment references, and package dependencies that are no longer required by GitFolio
 - [ ] Replace remaining legacy hosted-domain source literals with GitFolio-owned branding and URLs
 - [ ] Reconcile the documented 300-feature roadmap against implemented, tested functionality and add missing independently operable feature specifications
-- [ ] F146 Add Plausible analytics connector option
+- [x] F146 Add Plausible analytics connector option
 - [ ] F147 Add Sentry error connector option
 - [ ] F148 Add GitHub App authentication option
 - [ ] F149 Add REST API tokens for portfolio management

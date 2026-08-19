@@ -47,8 +47,29 @@ const sessionRouter = router({
   }),
 });
 
+const analyticsConnectorInput = z.discriminatedUnion("provider", [
+  z.object({ provider: z.literal("google"), measurementId: z.string().trim().regex(/^G-[A-Z0-9]{6,20}$/i) }),
+  z.object({ provider: z.literal("plausible"), domain: z.string().trim().toLowerCase().regex(/^(?=.{3,255}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/) }),
+]);
+
+const analyticsConnectorRouter = router({
+  list: protectedProcedure.query(({ ctx }) => localGet<Array<{ provider: "google" | "plausible"; measurementId?: string; domain?: string }>>(`analytics-connectors:${ctx.user.id}`, [])),
+  save: protectedProcedure.input(analyticsConnectorInput).mutation(({ ctx, input }) => {
+    const current = localGet<Array<{ provider: "google" | "plausible"; measurementId?: string; domain?: string }>>(`analytics-connectors:${ctx.user.id}`, []);
+    const next = [...current.filter((connector) => connector.provider !== input.provider), input];
+    localSet(`analytics-connectors:${ctx.user.id}`, next);
+    return input;
+  }),
+  remove: protectedProcedure.input(z.object({ provider: z.enum(["google", "plausible"]) })).mutation(({ ctx, input }) => {
+    const current = localGet<Array<{ provider: "google" | "plausible"; measurementId?: string; domain?: string }>>(`analytics-connectors:${ctx.user.id}`, []);
+    localSet(`analytics-connectors:${ctx.user.id}`, current.filter((connector) => connector.provider !== input.provider));
+    return { removed: true } as const;
+  }),
+});
+
 export const appRouter = router({
   session: sessionRouter,
+  analyticsConnector: analyticsConnectorRouter,
   auth: router({ me: publicProcedure.query(opts => opts.ctx.user), logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }) }),
   integrations: publicProcedure.query(() => integrationConfig),
   github: router({
