@@ -99,6 +99,9 @@ describe("accessibility regression contract", () => {
     expect(home).toContain("githubfolio-analytics.csv");
     expect(home).toContain("chartData.map");
     expect(home).toContain("slice(-rangeCount)");
+    expect(routers).toContain("liveVisitors");
+    expect(home).toContain('label="Live now"');
+    expect(home).toContain("last 5 min");
     expect(index).toContain("!req.path.includes(\".\")");
     expect(vite).toContain("SoftwareSourceCode");
     expect(vite).toContain('"@type": "Person"');

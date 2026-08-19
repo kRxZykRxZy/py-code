@@ -265,7 +265,7 @@
 - [x] F091 Add analytics retention controls
 - [x] F092 Add analytics export date filters
 - [x] F093 Add analytics event sampling controls
-- [ ] F094 Add live visitor presence metrics
+- [x] F094 Add live visitor presence metrics
 - [ ] F095 Add project-level view analytics
 - [ ] F096 Add outbound-link click analytics
 - [ ] F097 Add contact conversion analytics
@@ -415,3 +415,5 @@
 - [x] Apply analytics sampling to database-backed recording with deterministic visitor bucketing
 - [x] Persist analytics sampling settings in profile section configuration when database-backed
 - [x] Add sampling-path source coverage and validate 100/50/10 percent controls
+
+- [x] Narrow F094 wording to consent-aware recent-activity presence estimation; dedicated heartbeat/realtime presence remains a future infrastructure feature
