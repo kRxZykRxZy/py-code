@@ -339,9 +339,9 @@
 - [x] F139 Add CSP violation reporting
 - [ ] F140 Add accessibility automated browser checks
 - [ ] F141 Add keyboard navigation end-to-end tests
-- [ ] F142 Add screen-reader landmark checks
-- [ ] F143 Add color-contrast regression checks
-- [ ] F144 Add reduced-motion visual checks
+- [x] F142 Add screen-reader landmark checks
+- [x] F143 Add color-contrast regression checks
+- [x] F144 Add reduced-motion visual checks
 - [ ] F145 Add Google Analytics connector option
 - [ ] Audit every tracked source, configuration, and public asset for platform-specific identifiers, dependencies, and runtime hooks
 - [ ] Remove platform-specific client assets, debug collectors, server adapters, environment references, and package dependencies that are no longer required by GitFolio
