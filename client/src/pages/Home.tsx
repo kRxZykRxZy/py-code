@@ -13,6 +13,7 @@ import { trpc } from "@/lib/trpc";
 import { renderMarkdown } from "@shared/markdown";
 import { toast } from "sonner";
 import { scopePortfolioCss, validatePortfolioCss } from "@shared/customCss";
+import { encryptAccountExport } from "@shared/accountExportEncryption";
 
 const repos = [
   { name: "orbit-ui", description: "A small, intentional component system for expressive product interfaces.", language: "TypeScript", stars: 184, forks: 19, summary: "A thoughtful UI foundation that balances accessible primitives with a strong visual point of view.", url: "https://github.com/alexmorgan/orbit-ui", homepage: null, color: "#3178c6", pinned: true },
@@ -267,9 +268,12 @@ function Settings({ billingEnabled = false }: { billingEnabled?: boolean }) {
   const exportAccountData = async () => {
     try {
       const payload = await utils.account.exportData.fetch();
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `githubfolio-account-export-${new Date().toISOString().slice(0, 10)}.json`; anchor.click(); URL.revokeObjectURL(url);
-      toast.success("Account data export downloaded");
+      const passphrase = window.prompt("Optional: enter a passphrase to encrypt this export (12+ characters). Leave blank for standard JSON.");
+      if (passphrase === null) return;
+      const encrypted = passphrase ? await encryptAccountExport(payload, passphrase) : null;
+      const blob = new Blob([JSON.stringify(encrypted || payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `gitfolio-account-export-${new Date().toISOString().slice(0, 10)}${encrypted ? ".encrypted" : ""}.json`; anchor.click(); URL.revokeObjectURL(url);
+      toast.success(encrypted ? "Encrypted account export downloaded" : "Account data export downloaded");
     } catch (error) { toast.error(error instanceof Error ? error.message : "Could not export account data"); }
   };
   const requestAccountDeletion = () => { const confirmation = window.prompt('Type DELETE MY ACCOUNT to permanently delete your GitFolio data.'); if (confirmation === "DELETE MY ACCOUNT") deleteAccount.mutate({ confirmation }); else if (confirmation !== null) toast.error("Confirmation text did not match"); };

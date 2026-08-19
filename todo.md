@@ -334,7 +334,7 @@
 - [x] F134 Add session revocation controls
 - [x] F135 Add OAuth scope downgrade handling
 - [x] F136 Add account recovery safeguards
-- [ ] F137 Add export encryption option
+- [x] F137 Add export encryption option
 - [ ] F138 Add data retention deletion jobs
 - [x] F139 Add CSP violation reporting
 - [ ] F140 Add accessibility automated browser checks
