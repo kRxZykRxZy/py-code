@@ -4,10 +4,12 @@ import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import * as db from "../db";
+import { localGet, localSet } from "../localStore";
 
 export type GitHubSessionPayload = {
   openId: string;
   name: string;
+  issuedAt: number;
 };
 
 function sessionSecret() {
@@ -37,8 +39,14 @@ export async function createGitHubSessionToken(openId: string, options: { expire
   const expiresAt = Math.floor((Date.now() + (options.expiresInMs ?? ONE_YEAR_MS)) / 1000);
   return new SignJWT({ openId, name: options.name || "GitHub user" })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setIssuedAt()
     .setExpirationTime(expiresAt)
     .sign(sessionSecret());
+}
+
+export function revokeGitHubSessions(openId: string) {
+  if (!openId.startsWith("github:")) throw new Error("GitHub session identity is required");
+  localSet(`session-revoked-after:${openId}`, Math.floor(Date.now() / 1000));
 }
 
 export async function verifyGitHubSessionToken(value: string | undefined | null): Promise<GitHubSessionPayload | null> {
@@ -47,7 +55,9 @@ export async function verifyGitHubSessionToken(value: string | undefined | null)
     const { payload } = await jwtVerify(value, sessionSecret(), { algorithms: ["HS256"] });
     const openId = payload.openId;
     const name = payload.name;
-    return typeof openId === "string" && openId.startsWith("github:") && typeof name === "string" ? { openId, name } : null;
+    const issuedAt = typeof payload.iat === "number" ? payload.iat : 0;
+    const revokedAfter = typeof openId === "string" ? localGet<number>(`session-revoked-after:${openId}`, 0) : 0;
+    return typeof openId === "string" && openId.startsWith("github:") && typeof name === "string" && issuedAt > revokedAfter ? { openId, name, issuedAt } : null;
   } catch {
     return null;
   }

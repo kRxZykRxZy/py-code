@@ -13,6 +13,7 @@ import { sanitizeMarkdownSource, markdownLimits } from "../shared/markdown";
 import { sanitizeHttpUrl, sanitizePlainText } from "./sanitization";
 import { localDelete, localDeleteByPrefix, localGet, localSet } from "./localStore";
 import { putProjectImage } from "./objectStorage";
+import { revokeGitHubSessions } from "./_core/githubSession";
 
 async function appendAiGenerationAudit(ctx: any, slug: string, action: "narrative" | "comparison" | "bio-rewrite" | "title" | "tags" | "summary", status: "draft" | "approved" | "rejected" | "completed" | "failed", repositoryName?: string) {
   const db = await getDb();
@@ -34,7 +35,16 @@ function effectivePlan(subscription: any) { return subscription?.status === "act
 function createPreviewToken() { return randomBytes(24).toString("base64url"); }
 function withDetailNarratives(profile: any) { if (!profile) return profile; const parsedSectionConfig = typeof profile.sectionConfig === "string" ? (() => { try { return JSON.parse(profile.sectionConfig); } catch { return {}; } })() : (profile.sectionConfig || {}); const guestbookEntries = parsedSectionConfig?.content?.guestbookEntries; const sectionConfig = { ...parsedSectionConfig, ...(Array.isArray(guestbookEntries) ? { content: { ...(parsedSectionConfig.content || {}), guestbookEntries: guestbookEntries.filter((entry: any) => entry.approved === true) } } : {}) }; if (!profile.repositories) return { ...profile, sectionConfig }; return { ...profile, sectionConfig, repositories: profile.repositories.map((repo: any) => ({ ...repo, updatedAt: repo.updatedAt || repo.lastActivityAt || null, detailNarrative: repo.detailNarrative || `${repo.aiSummary || repo.description || "This project demonstrates a considered approach to building useful software."} It combines ${repo.language || "software"} craft with the practical constraints reflected in ${repo.stars || 0} stars and ${repo.forks || 0} forks.`, commitActivitySummary: repo.commitActivitySummary || summarizeCommitActivity(repo.commitActivity) })) }; }
 
+const sessionRouter = router({
+  revokeAll: protectedProcedure.mutation(({ ctx }) => {
+    revokeGitHubSessions(ctx.user.openId);
+    ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: -1 });
+    return { revoked: true } as const;
+  }),
+});
+
 export const appRouter = router({
+  session: sessionRouter,
   auth: router({ me: publicProcedure.query(opts => opts.ctx.user), logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }) }),
   integrations: publicProcedure.query(() => integrationConfig),
   github: router({

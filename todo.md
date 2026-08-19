@@ -331,7 +331,7 @@
 - [x] F131 Add structured server logging
 - [x] F132 Add request correlation IDs
 - [x] F133 Add security event audit log
-- [ ] F134 Add session revocation controls
+- [x] F134 Add session revocation controls
 - [ ] F135 Add OAuth scope downgrade handling
 - [ ] F136 Add account recovery safeguards
 - [ ] F137 Add export encryption option
