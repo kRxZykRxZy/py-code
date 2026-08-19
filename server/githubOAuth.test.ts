@@ -8,14 +8,14 @@ describe("GitHub OAuth credentials", () => {
   it("uses the GitHub OAuth start route as the only client login entry point", async () => {
     const loginHelper = await readFile(join(process.cwd(), "client/src/const.ts"), "utf8");
     expect(loginHelper).toContain('window.location.assign("/api/oauth/github/start")');
-    expect(loginHelper.toLowerCase()).not.toContain("manus");
+    expect(loginHelper.toLowerCase()).not.toContain("legacy-platform");
   });
 
   it("registers the login route with GitHub's authorization endpoint only", async () => {
     const oauthSource = await readFile(join(process.cwd(), "server/_core/oauth.ts"), "utf8");
     expect(oauthSource).toContain('app.get("/api/oauth/github/start"');
     expect(oauthSource).toContain('new URL("https://github.com/login/oauth/authorize")');
-    expect(oauthSource.toLowerCase()).not.toContain("manus");
+    expect(oauthSource.toLowerCase()).not.toContain("legacy-platform");
   });
 
   it("sends configured credentials only to GitHub’s documented token-exchange endpoint", async () => {

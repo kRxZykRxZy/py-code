@@ -1,4 +1,4 @@
-const CACHE = "githubfolio-shell-v1";
+const CACHE = "gitfolio-shell-v1";
 const SHELL = ["/", "/manifest.json"];
 self.addEventListener("install", event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener("activate", event => { event.waitUntil(self.clients.claim()); });

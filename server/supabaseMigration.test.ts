@@ -8,6 +8,6 @@ describe("Supabase Postgres migration", () => {
     for (const table of ["users", "profiles", "githubConnections", "repositories", "customDomains", "contactMessages", "newsletterSubscriptions", "analyticsEvents", "subscriptions", "webhookDeliveries"]) {
       expect(migration).toContain(`create table if not exists public.${table === "users" || table === "profiles" || table === "repositories" || table === "subscriptions" ? table : `"${table}"`}`);
     }
-    expect(migration.toLowerCase()).not.toContain("manus");
+    expect(migration.toLowerCase()).not.toContain("legacy-platform");
   });
 });

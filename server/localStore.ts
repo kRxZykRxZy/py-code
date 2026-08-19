@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 type DatabaseSync = import("node:sqlite").DatabaseSync;
 const DatabaseSyncCtor = (process as NodeJS.Process & { getBuiltinModule?: (name: string) => unknown }).getBuiltinModule?.("node:sqlite") as { DatabaseSync: new (path: string, options?: { timeout?: number }) => DatabaseSync } | undefined;
 
-const file = process.env.LOCAL_DB_PATH || join(process.cwd(), "data", "githubfolio.local.sqlite");
+const file = process.env.LOCAL_DB_PATH || join(process.cwd(), "data", "gitfolio.local.sqlite");
 let db: DatabaseSync | null = null;
 
 export function getLocalStore() {

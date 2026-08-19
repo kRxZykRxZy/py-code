@@ -60,12 +60,12 @@ export function paddleLifecycleStatus(eventType: string, data: PaddleData) {
 }
 
 function planFromData(data: PaddleData, fallback: "free" | "pro" | "proPlus" = "free") {
-  const value = String(data.custom_data?.githubfolio_plan || data.custom_data?.plan || fallback);
+  const value = String(data.custom_data?.gitfolio_plan || data.custom_data?.plan || fallback);
   return value === "pro" || value === "proPlus" ? value : fallback;
 }
 
 function userIdFromData(data: PaddleData) {
-  const value = data.custom_data?.githubfolio_user_id ?? data.custom_data?.user_id;
+  const value = data.custom_data?.gitfolio_user_id ?? data.custom_data?.user_id;
   const userId = typeof value === "number" ? value : Number(value);
   return Number.isInteger(userId) && userId > 0 ? userId : null;
 }
@@ -113,7 +113,7 @@ async function applyPaddleEvent(event: PaddleEvent) {
   const db = await getDb();
   const userId = userIdFromData(data);
   if (!db) throw new Error("database-unavailable");
-  if (!userId) return { applied: false, reason: "missing-githubfolio-user-id" };
+  if (!userId) return { applied: false, reason: "missing-gitfolio-user-id" };
 
   const existing = (await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1))[0];
   const subscriptionId = data.id?.startsWith("sub_") ? data.id : data.subscription_id;
@@ -124,7 +124,7 @@ async function applyPaddleEvent(event: PaddleEvent) {
     paddleSubscriptionId: subscriptionId || existing?.paddleSubscriptionId || null,
     plan: planFromData(data, existing?.plan || "free"),
     status: nextStatus,
-    managedDomainAddOn: Boolean(data.custom_data?.githubfolio_managed_domain ?? existing?.managedDomainAddOn),
+    managedDomainAddOn: Boolean(data.custom_data?.gitfolio_managed_domain ?? existing?.managedDomainAddOn),
     managedDomainName: existing?.managedDomainName || null,
     managedDomainStatus: existing?.managedDomainStatus || "none",
     renewsAt: data.next_billed_at ? new Date(data.next_billed_at) : existing?.renewsAt || null,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sanitizePlainText } from "./sanitization";
+import { sanitizeImageUrl, sanitizePlainText } from "./sanitization";
 import { renderMarkdown, sanitizeMarkdownSource } from "../shared/markdown";
 
 describe("plain text sanitization", () => {
@@ -21,5 +21,11 @@ describe("plain text sanitization", () => {
 
   it("bounds Markdown source length", () => {
     expect(sanitizeMarkdownSource("x".repeat(20), 8)).toHaveLength(8);
+  });
+
+  it("accepts only externally served HTTPS project images", () => {
+    expect(sanitizeImageUrl("https://storage.example.test/project.png")).toBe("https://storage.example.test/project.png");
+    expect(sanitizeImageUrl("http://storage.example.test/project.png")).toBeNull();
+    expect(sanitizeImageUrl("/legacy-storage/project.png")).toBeNull();
   });
 });

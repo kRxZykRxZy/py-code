@@ -19,3 +19,9 @@ export function sanitizeHttpUrl(value: string) {
     return null;
   }
 }
+
+/** Image assets are always served from the configured external storage provider. */
+export function sanitizeImageUrl(value: string) {
+  const url = sanitizeHttpUrl(value);
+  return url?.startsWith("https://") ? url : null;
+}

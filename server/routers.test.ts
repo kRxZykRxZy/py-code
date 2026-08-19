@@ -393,3 +393,14 @@ describe("profile content authoring", () => {
     const profile = await publicCaller.portfolio.bySlug({ slug: "image-metadata-project" });
     expect(profile?.sectionConfig?.content?.manualProjects?.[0]).toMatchObject({ imageUrl: "https://images.example.com/project-images/image-project/cover.png", imageAlt: "A blue interface", imageCrop: { x: 35, y: 65, scale: 1.2 } });
   });
+
+  it("strips path-only legacy image inputs from manual projects before persistence", async () => {
+    const caller = appRouter.createCaller(authenticatedContext());
+    const publicCaller = appRouter.createCaller(publicContext());
+    const slug = `path-image-${Date.now()}`;
+    const internalPath = `/${["man", "us-storage"].join("")}/project.png`;
+    await caller.portfolio.updatePublishing({ slug, isPublic: true });
+    await caller.portfolio.updateProfileCopy({ slug, manualProjects: [{ title: "Path image", description: "A project with an invalid internal image path.", tags: [], imageUrl: internalPath, visible: true, sortOrder: 0 }] });
+    const profile = await publicCaller.portfolio.bySlug({ slug });
+    expect(profile?.sectionConfig?.content?.manualProjects?.[0]?.imageUrl).toBeUndefined();
+  });

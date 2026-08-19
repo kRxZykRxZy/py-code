@@ -2,7 +2,7 @@
 
 - [ ] Rename all GitHubFolio product branding and user-facing metadata to GitFolio
 - [x] Remove any remaining non-GitHub sign-up or login entry point and synchronize the verified update to GitHub
-- [x] Fix the live sign-up redirect so it targets GitHub OAuth rather than Manus OAuth
+- [x] Fix the live sign-up redirect so it targets GitHub OAuth rather than the prior OAuth route
 - [ ] Audit, plan, and implement the GitFolio 300-feature expansion in prioritized, tested milestones
 - [x] Remediate audited high-severity production dependency advisories and verify the runtime
 - [x] F001 Add public health endpoint for deployment probes
@@ -310,7 +310,7 @@
 - [ ] F112 Add Paddle tax and billing address fields
 - [x] F113 Add plan upgrade proration messaging
 - [x] F114 Add plan downgrade safeguards
-- [ ] F115 Add managed-domain order timeline
+- [x] F115 Add managed-domain order timeline
 - [ ] F116 Add managed-domain renewal reminders
 - [ ] F117 Add usage-limit warning notifications
 - [ ] F118 Add admin customer search
@@ -343,6 +343,10 @@
 - [ ] F143 Add color-contrast regression checks
 - [ ] F144 Add reduced-motion visual checks
 - [ ] F145 Add Google Analytics connector option
+- [ ] Audit every tracked source, configuration, and public asset for platform-specific identifiers, dependencies, and runtime hooks
+- [ ] Remove platform-specific client assets, debug collectors, server adapters, environment references, and package dependencies that are no longer required by GitFolio
+- [ ] Replace remaining GitHubFolio and legacy hosted-domain source literals with GitFolio-owned branding and URLs
+- [ ] Reconcile the documented 300-feature roadmap against implemented, tested functionality and add missing independently operable feature specifications
 - [ ] F146 Add Plausible analytics connector option
 - [ ] F147 Add Sentry error connector option
 - [ ] F148 Add GitHub App authentication option

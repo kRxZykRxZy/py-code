@@ -59,7 +59,7 @@ if ("serviceWorker" in navigator) {
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
   (window as Window & { deferredInstallPrompt?: Event }).deferredInstallPrompt = event;
-  window.dispatchEvent(new CustomEvent("githubfolio-install-ready"));
+  window.dispatchEvent(new CustomEvent("gitfolio-install-ready"));
 });
 
 createRoot(document.getElementById("root")!).render(

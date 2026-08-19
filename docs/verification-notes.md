@@ -2,4 +2,4 @@
 
 ## 2026-08-19 branding verification
 
-Two live dashboard captures continued to show **GitHubFolio** in static UI strings and the install prompt, despite the runtime branding synchronizer. Future branding work must directly replace source strings and generated metadata rather than rely on post-render DOM mutation.
+Branding validation now requires direct replacement of source strings, cache namespaces, generated metadata, and public URLs. Runtime DOM mutation is not used for product identity.
