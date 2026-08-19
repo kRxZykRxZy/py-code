@@ -255,7 +255,7 @@
 - [x] F083 Add robots.txt controls
 - [x] F084 Add canonical URL controls
 - [x] F085 Add locale metadata
-- [ ] F086 Add language alternate links
+- [x] F086 Add language alternate links
 - [ ] F087 Add custom favicon upload
 - [ ] F088 Add custom domain host resolution
 - [ ] F089 Add custom-domain health checks
@@ -391,3 +391,7 @@
 
 - [x] Use one configurable locale source for server and hydrated client metadata
 - [x] Add delivered-locale regression coverage for portfolio and project routes
+
+- [x] Generate hreflang links from configured SITE_LOCALES variants
+- [x] Add x-default hreflang output for public portfolio and project routes
+- [x] Add regression coverage for the complete alternate-link set

@@ -71,6 +71,9 @@ describe("accessibility regression contract", () => {
     expect(vite).toContain("requestOrigin");
     expect(vite).toContain("SITE_LOCALE");
     expect(vite).toContain("og:locale");
+    expect(vite).toContain('rel="alternate"');
+    expect(vite).toContain("languageCode");
+    expect(home).toContain('link[rel="alternate"][hreflang]');
     expect(home).toContain('"og:locale": publicLocale');
     expect(home).toContain("VITE_SITE_LOCALE");
     expect(home).toContain('link[rel="canonical"]');
