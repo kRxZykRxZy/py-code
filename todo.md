@@ -306,7 +306,7 @@
 - [x] Prepare a fail-closed GitHub webhook endpoint for repository push, repository, and installation events
 - [x] Document the separately configured GitHub webhook secret, delivery deduplication, and safe sync-queue handoff
 - [x] Add provider webhook regression coverage, endpoint documentation, and configuration checks
-- [ ] F111 Add Paddle invoice history view
+- [x] F111 Add Paddle invoice history view
 - [ ] F112 Add Paddle tax and billing address fields
 - [ ] F113 Add plan upgrade proration messaging
 - [ ] F114 Add plan downgrade safeguards
