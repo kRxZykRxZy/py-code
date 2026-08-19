@@ -12,6 +12,8 @@
 - [x] F130 Add public application status endpoint with persistence state
 - [x] F131 Add structured server logging for request completion
 - [x] F132 Add request correlation IDs to all responses and logs
+- [x] F128 Add Supabase database migration-health diagnostic
+- [x] F129 Add fallback persistence mode diagnostics
 - [ ] Migrate application data to Supabase Postgres and all uploaded files to Supabase Storage
 - [x] Apply and verify the versioned Supabase Postgres core schema migration
 - [ ] Remove legacy platform-specific application runtime paths, assets, types, routes, development hooks, and references while retaining GitHub OAuth-only authentication and Pollinations AI
@@ -266,8 +268,8 @@
 - [x] F077 Add per-project social metadata
 - [x] F078 Add Open Graph image generation
 - [x] F079 Add Twitter card metadata
-- [ ] F080 Add JSON-LD Person metadata
-- [ ] F081 Add JSON-LD SoftwareSourceCode metadata
+- [x] F080 Add JSON-LD Person metadata
+- [x] F081 Add JSON-LD SoftwareSourceCode metadata
 - [x] F082 Add sitemap generation
 - [x] F083 Add robots.txt controls
 - [x] F084 Add canonical URL controls

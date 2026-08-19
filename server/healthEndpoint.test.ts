@@ -24,4 +24,11 @@ describe("health endpoint", () => {
     expect(source).toContain('status: "operational"');
     expect(source).toContain('components: { api: "operational"');
   });
+
+  it("checks essential Supabase table readiness without exposing database details", async () => {
+    const source = await readFile(join(process.cwd(), "server/_core/index.ts"), "utf8");
+    expect(source).toContain('app.get("/api/database/health"');
+    expect(source).toContain("information_schema.tables");
+    expect(source).toContain('persistence: "supabase"');
+  });
 });

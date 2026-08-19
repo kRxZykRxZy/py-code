@@ -13,6 +13,7 @@ import { getDb } from "../db";
 import { customDomains, profiles, repositories } from "../../drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { githubWebhookHandler, paddleWebhookHandler } from "../webhooks";
+import { getSupabaseSql } from "../supabaseDb";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -58,6 +59,16 @@ async function startServer() {
   app.get("/api/status", async (_req, res) => {
     const database = await getDb();
     res.status(200).json({ service: "gitfolio", status: "operational", components: { api: "operational", persistence: database ? "connected" : "fallback" } });
+  });
+  app.get("/api/database/health", async (_req, res) => {
+    try {
+      const sql = getSupabaseSql();
+      const rows = await sql<{ table_name: string }[]>`select table_name from information_schema.tables where table_schema = 'public' and table_name in ('users', 'profiles', 'repositories', 'subscriptions')`;
+      const healthy = new Set(rows.map((row) => row.table_name)).size === 4;
+      res.status(healthy ? 200 : 503).json({ service: "gitfolio", status: healthy ? "ready" : "degraded", persistence: "supabase" });
+    } catch {
+      res.status(503).json({ service: "gitfolio", status: "degraded", persistence: "unavailable" });
+    }
   });
   app.get("/api/version", (_req, res) => res.status(200).json({ service: "gitfolio", version: process.env.APP_VERSION || "development", revision: process.env.GIT_SHA || "local" }));
   registerOAuthRoutes(app);
